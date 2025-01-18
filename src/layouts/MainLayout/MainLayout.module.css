@@ -1,0 +1,24 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--tg-theme-bg-color);
+  position: relative;
+}
+
+.ready {
+  opacity: 1;
+  visibility: visible;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: calc(env(safe-area-inset-top) + 56px + 44px);
+  margin-bottom: calc(56px + env(safe-area-inset-bottom) + 20px);
+  background-color: var(--tg-theme-bg-color);
+} 

@@ -1,0 +1,128 @@
+.bidDetails {
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.backButton,
+.editButton {
+  padding: 8px 16px;
+  background-color: var(--tg-theme-secondary-bg-color);
+  border: none;
+  border-radius: 8px;
+  color: var(--tg-theme-text-color);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.editButton {
+  margin-left: auto;
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.content {
+  background-color: var(--tg-theme-bg-color);
+  border: 1px solid var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--tg-theme-secondary-bg-color);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 15px;
+  color: var(--tg-theme-hint-color);
+}
+
+.value {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.type {
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-size: 15px;
+}
+
+.type.buy {
+  background-color: rgba(52, 199, 89, 0.1);
+  color: #34C759;
+}
+
+.type.sell {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #FF3B30;
+}
+
+.loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--tg-theme-hint-color);
+}
+
+.error {
+  padding: 16px;
+  text-align: center;
+}
+
+.error p {
+  color: #FF3B30;
+  margin-bottom: 16px;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.editButton,
+.deleteButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.editButton {
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+}
+
+.deleteButton {
+  background-color: #FF3B30;
+  color: white;
+}
+
+.editButton:disabled,
+.deleteButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+} 

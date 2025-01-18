@@ -1,0 +1,142 @@
+.projectScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--tg-theme-bg-color);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  margin-top: calc(env(safe-area-inset-top) + 56px + 44px);
+  margin-bottom: 16px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.content::-webkit-scrollbar {
+  display: none;
+}
+
+.projectHeader {
+  background-color: var(--tg-theme-bg-color);
+  border: 1px solid var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.projectInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.projectLogo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.projectName {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+  margin: 0;
+}
+
+.projectDescription {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--tg-theme-text-color);
+  margin: 0;
+}
+
+.projectDetails {
+  background-color: var(--tg-theme-bg-color);
+  border: 1px solid var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 0;
+}
+
+.detailRow {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-bottom: 1px solid var(--tg-theme-secondary-bg-color);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.detailLabel {
+  font-size: 17px;
+  color: var(--tg-theme-hint-color);
+}
+
+.detailValue {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.percentage {
+  padding: 4px 8px;
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.buyType {
+  color: #34C759;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  width: 80%;
+  background-color: #E7FF52;
+  border-radius: 4px;
+}
+
+.placeBidButton {
+  width: 100%;
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #4A4A4A;
+  color: var(--tg-theme-button-text-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.placeBidButton:active {
+  opacity: 0.7;
+} 

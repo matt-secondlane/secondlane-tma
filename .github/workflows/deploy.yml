@@ -1,0 +1,54 @@
+name: Deploy
+on:
+  # Trigger on push to main
+  push:
+    branches: [ main ]
+  # Manually trigger the workflow
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Set environment variables
+        run: |
+          # Development deployment for main branch
+          echo "ENVIRONMENT=development" >> $GITHUB_ENV
+          echo "SECONDLANE_API_URL=https://nonprod.secondlane.io" >> $GITHUB_ENV
+          
+      - name: Create env file
+        run: |
+          echo "VITE_SECONDLANE_API_URL=${{ env.SECONDLANE_API_URL }}" >> .env
+          echo "VITE_API_URL=http://127.0.0.1:5173" >> .env
+          echo "VITE_IS_TEST_ENV=false" >> .env
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build
+        run: npm run build:${{ env.ENVIRONMENT }}
+        
+      - name: Log deployment info
+        run: |
+          echo "Deploying to ${{ env.ENVIRONMENT }} environment"
+          echo "Using API URL: ${{ env.SECONDLANE_API_URL }}"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload dist repository
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

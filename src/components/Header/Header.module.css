@@ -1,0 +1,28 @@
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--tg-theme-bg-color);
+    position: fixed;
+    top: var(--header-top-offset);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.3);
+    height: var(--header-height);
+  }
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .logo {
+    height: 32px;
+    width: auto;
+    margin-top: -20px;
+    transform: translateY(-1px);
+  }
+  
