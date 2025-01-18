@@ -14,10 +14,16 @@ class ApiError extends Error {
 const api = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    ...API_CONFIG.HEADERS,
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
     'Expires': '0'
+  },
+  // Add withCredentials if your API requires cookies/auth to be passed
+  withCredentials: false,
+  // Ensure OPTIONS requests are handled
+  validateStatus: (status) => {
+    return status >= 200 && status < 500; // Handle all status codes except server errors
   }
 });
 
@@ -57,13 +63,16 @@ api.interceptors.request.use((config) => {
   // Set authorization header
   config.headers.Authorization = `tma ${initData}`;
   
-  console.log('API Interceptor: Request config:', {
+  // Add more detailed logging
+  console.log('API Interceptor: Full request config:', {
     url: config.url,
     method: config.method,
+    baseURL: config.baseURL,
     headers: {
       ...config.headers,
-      Authorization: config.headers.Authorization?.substring(0, 50) + '...'
-    }
+      Authorization: 'tma ' + initData.substring(0, 20) + '...' // Log partial token for debugging
+    },
+    withCredentials: config.withCredentials
   });
 
   return config;
