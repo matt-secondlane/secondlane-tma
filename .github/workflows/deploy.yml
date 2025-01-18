@@ -2,7 +2,7 @@ name: Deploy
 on:
   # Trigger on push to main
   push:
-    branches: [ main ]
+    branches: [ master ]
   # Manually trigger the workflow
   workflow_dispatch:
 
@@ -15,7 +15,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: 'npm'
 
       - name: Set environment variables
         run: |
