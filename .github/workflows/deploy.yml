@@ -1,4 +1,10 @@
 name: Deploy
+# Add permissions block at the top level
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 on:
   # Trigger on push to main
   push:
@@ -8,6 +14,10 @@ on:
 
 jobs:
   build:
+    # Add environment configuration
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
