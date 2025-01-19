@@ -76,7 +76,7 @@ export const PlaceInquiryScreen: React.FC = () => {
           console.log('Setting form type:', data.type);
           setFormData(prev => ({
             ...prev,
-            type: data.type === 'BUY' ? 'Buy' : 'Sell'
+            type: data.type === 'BUY' ? 'Sell' : 'Buy'
           }));
         }
       } catch (err) {
