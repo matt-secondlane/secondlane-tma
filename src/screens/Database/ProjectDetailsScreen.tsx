@@ -130,7 +130,7 @@ export const ProjectDetailsScreen: React.FC = () => {
             <h1 className={styles.detailsName}>{project.project_name}</h1>
             {project.link && (
               <a href={project.link} target="_blank" rel="noopener noreferrer" className={styles.projectSubtitle}>
-                {project.link}
+                {project.link.substring(0, 35)}
               </a>
             )}
           </div>
