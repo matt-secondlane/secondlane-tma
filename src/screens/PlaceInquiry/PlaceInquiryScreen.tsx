@@ -7,6 +7,27 @@ import WebApp from '@twa-dev/sdk';
 import { useTelegram } from '../../hooks/useTelegram';
 import { Loader } from '../../components/Loader';
 
+const parseNumberWithSuffix = (value: string): number | null => {
+  // Remove all spaces and convert to lowercase
+  const cleaned = value.replace(/\s+/g, '').toLowerCase();
+  
+  // Match number followed by optional suffix
+  const match = cleaned.match(/^(-?\d*\.?\d+)(k|m|b)?$/);
+  if (!match) return null;
+
+  const [, num, suffix] = match;
+  const baseValue = parseFloat(num);
+  
+  if (isNaN(baseValue)) return null;
+
+  switch (suffix) {
+    case 'k': return baseValue * 1000;
+    case 'm': return baseValue * 1000000;
+    case 'b': return baseValue * 1000000000;
+    default: return baseValue;
+  }
+};
+
 export const PlaceInquiryScreen: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
@@ -110,17 +131,23 @@ export const PlaceInquiryScreen: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Get user data from WebApp
       const user = WebApp.initDataUnsafe?.user;
       if (!user) {
         throw new Error('User data is not available');
       }
 
+      // Parse the numeric values before sending to API
+      const trancheSize = parseNumberWithSuffix(formData.tranche_size);
+      const valuation = parseNumberWithSuffix(formData.valuation);
+
+      if (trancheSize === null || valuation === null) {
+        throw new Error('Invalid number format');
+      }
+
       await apiService.placeBid({
         ...formData,
-        tranche_size: Number(formData.tranche_size),
-        valuation: Number(formData.valuation),
-        // Use data from Telegram
+        tranche_size: trancheSize,
+        valuation: valuation,
         name: user.first_name + (user.last_name ? ` ${user.last_name}` : ''),
         email: user.username ? `${user.username}@telegram.org` : `id${user.id}@telegram.org`
       });
@@ -142,14 +169,16 @@ export const PlaceInquiryScreen: React.FC = () => {
 
   const validateField = (name: string, value: string) => {
     if (name === 'tranche_size') {
-      const num = Number(value);
+      const num = parseNumberWithSuffix(value);
+      if (num === null) return 'Please enter a valid number (e.g. 1M, 500K, 2.5B)';
       if (num <= 0) return 'Size must be greater than 0';
       if (orderDetails && num > orderDetails.offered_amount) {
         return 'Size cannot exceed available amount';
       }
     }
     if (name === 'valuation') {
-      const num = Number(value);
+      const num = parseNumberWithSuffix(value);
+      if (num === null) return 'Please enter a valid number (e.g. 1M, 500K, 2.5B)';
       if (num <= 0) return 'Valuation must be greater than 0';
     }
     return '';
@@ -278,13 +307,13 @@ export const PlaceInquiryScreen: React.FC = () => {
                 <div className={styles.field}>
                   <label className={styles.label}>Tranche Size (USD)</label>
                   <input
-                    type="number"
+                    type="text"
                     className={`${styles.input} ${fieldErrors.tranche_size ? styles.inputError : ''}`}
                     value={formData.tranche_size}
                     onChange={(e) => handleFieldChange('tranche_size', e.target.value)}
                     onKeyPress={() => WebApp.HapticFeedback.impactOccurred('light')}
                     onFocus={() => WebApp.HapticFeedback.impactOccurred('light')}
-                    placeholder="Enter tranche size"
+                    placeholder="Enter tranche size (e.g. 1M, 500K)"
                     required
                   />
                   {fieldErrors.tranche_size && (
@@ -295,13 +324,13 @@ export const PlaceInquiryScreen: React.FC = () => {
                 <div className={styles.field}>
                   <label className={styles.label}>Valuation (USD)</label>
                   <input
-                    type="number"
+                    type="text"
                     className={`${styles.input} ${fieldErrors.valuation ? styles.inputError : ''}`}
                     value={formData.valuation}
                     onChange={(e) => handleFieldChange('valuation', e.target.value)}
                     onKeyPress={() => WebApp.HapticFeedback.impactOccurred('light')}
                     onFocus={() => WebApp.HapticFeedback.impactOccurred('light')}
-                    placeholder="Enter valuation"
+                    placeholder="Enter valuation (e.g. 2.5M, 1B)"
                     required
                   />
                   {fieldErrors.valuation && (
