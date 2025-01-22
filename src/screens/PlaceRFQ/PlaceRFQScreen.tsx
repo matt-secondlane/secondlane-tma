@@ -262,15 +262,15 @@ export const PlaceRFQScreen: React.FC = () => {
               />
               <div className={styles.projectDetails}>
                 <h2 className={styles.projectName}>
-                  {projectDetails?.project_name}
+                  {projectDetails.project_name}
                 </h2>
                 <div className={styles.projectMeta}>
                   {projectDetails?.rounds && projectDetails.rounds.length > 0 && (
                     <span className={styles.round}>{projectDetails.rounds[0].round_name}</span>
                   )}
-                  <span className={styles.assetType}>
+                  {/* <span className={styles.assetType}>
                     {dealTypeFromState?.includes('LIQUID_TOKEN') ? 'Token' : 'Equity'}
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </div>
