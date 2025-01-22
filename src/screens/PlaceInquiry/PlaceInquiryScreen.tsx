@@ -313,7 +313,7 @@ export const PlaceInquiryScreen: React.FC = () => {
                     onChange={(e) => handleFieldChange('tranche_size', e.target.value)}
                     onKeyPress={() => WebApp.HapticFeedback.impactOccurred('light')}
                     onFocus={() => WebApp.HapticFeedback.impactOccurred('light')}
-                    placeholder="Enter tranche size (e.g. 1M, 500K)"
+                    placeholder="Enter tranche size"
                     required
                   />
                   {fieldErrors.tranche_size && (
@@ -330,7 +330,7 @@ export const PlaceInquiryScreen: React.FC = () => {
                     onChange={(e) => handleFieldChange('valuation', e.target.value)}
                     onKeyPress={() => WebApp.HapticFeedback.impactOccurred('light')}
                     onFocus={() => WebApp.HapticFeedback.impactOccurred('light')}
-                    placeholder="Enter valuation (e.g. 2.5M, 1B)"
+                    placeholder="Enter valuation"
                     required
                   />
                   {fieldErrors.valuation && (

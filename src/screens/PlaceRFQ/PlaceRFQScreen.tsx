@@ -252,8 +252,8 @@ export const PlaceRFQScreen: React.FC = () => {
           <div className={styles.orderInfo}>
             <div className={styles.projectInfo}>
               <img 
-                src={logoFromState || projectDetails.logo || '/default-project-logo.svg'} 
-                alt={projectDetails.project_name}
+                src={logoFromState || projectDetails?.logo || '/default-project-logo.svg'} 
+                alt={projectDetails?.project_name}
                 className={styles.projectLogo}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
@@ -261,9 +261,11 @@ export const PlaceRFQScreen: React.FC = () => {
                 }}
               />
               <div className={styles.projectDetails}>
-                <h2 className={styles.projectName}>{projectDetails.project_name}</h2>
+                <h2 className={styles.projectName}>
+                  {projectDetails?.project_name}
+                </h2>
                 <div className={styles.projectMeta}>
-                  {projectDetails.rounds && projectDetails.rounds.length > 0 && (
+                  {projectDetails?.rounds && projectDetails.rounds.length > 0 && (
                     <span className={styles.round}>{projectDetails.rounds[0].round_name}</span>
                   )}
                   <span className={styles.assetType}>
@@ -314,7 +316,7 @@ export const PlaceRFQScreen: React.FC = () => {
                     onChange={(e) => handleFieldChange('tranche_size', e.target.value)}
                     onKeyPress={() => WebApp.HapticFeedback.impactOccurred('light')}
                     onFocus={() => WebApp.HapticFeedback.impactOccurred('light')}
-                    placeholder="Enter tranche size (e.g. 1M, 500K)"
+                    placeholder="Enter tranche size"
                     required
                   />
                   {fieldErrors.tranche_size && (
@@ -331,7 +333,7 @@ export const PlaceRFQScreen: React.FC = () => {
                     onChange={(e) => handleFieldChange('valuation', e.target.value)}
                     onKeyPress={() => WebApp.HapticFeedback.impactOccurred('light')}
                     onFocus={() => WebApp.HapticFeedback.impactOccurred('light')}
-                    placeholder="Enter valuation (e.g. 2.5M, 1B)"
+                    placeholder="Enter valuation"
                     required
                   />
                   {fieldErrors.valuation && (
