@@ -196,19 +196,29 @@ export const ProjectDetailsScreen: React.FC = () => {
         className={styles.placeBidButton}
         onClick={() => {
           console.log('Place RFQ button clicked', {
-            projectId: project.project_id,
-            logo: project.logo,
-            navigationPath: `/place-rfq/${project.project_id}`
+            projectId: project?.project_id,
+            projectState: project,
+            logo: project?.logo,
+            navigationPath: `/place-rfq/${project?.project_id}`
           });
+          
+          if (!project?.project_id) {
+            console.error('No project ID available');
+            return;
+          }
           
           WebApp.HapticFeedback.impactOccurred('light');
-          navigate(`/place-rfq/${project.project_id}`, {
-            state: {
-              logo: project.logo
-            }
-          });
-          
-          console.log('Navigation attempted');
+          try {
+            navigate(`/place-rfq/${project.project_id}`, {
+              state: {
+                logo: project.logo,
+                deal_type: project.rounds?.[0]?.round_name?.includes('Token') ? 'LIQUID_TOKEN' : 'EQUITY'
+              }
+            });
+            console.log('Navigation completed');
+          } catch (error) {
+            console.error('Navigation failed:', error);
+          }
         }}
       >
         Place Bid
