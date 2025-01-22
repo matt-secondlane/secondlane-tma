@@ -195,12 +195,20 @@ export const ProjectDetailsScreen: React.FC = () => {
       <button 
         className={styles.placeBidButton}
         onClick={() => {
+          console.log('Place RFQ button clicked', {
+            projectId: project.project_id,
+            logo: project.logo,
+            navigationPath: `/place-rfq/${project.project_id}`
+          });
+          
           WebApp.HapticFeedback.impactOccurred('light');
           navigate(`/place-rfq/${project.project_id}`, {
             state: {
-              logo: project.logo,
+              logo: project.logo
             }
           });
+          
+          console.log('Navigation attempted');
         }}
       >
         Place Bid

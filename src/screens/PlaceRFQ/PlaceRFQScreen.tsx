@@ -55,11 +55,22 @@ export const PlaceRFQScreen: React.FC = () => {
     valuation: ''
   });
 
+  // Add logging at component mount
+  useEffect(() => {
+    console.log('PlaceRFQScreen mounted', {
+      projectId,
+      locationState: location.state,
+      pathname: location.pathname,
+      isReady
+    });
+  }, []);
+
   useEffect(() => {
     const loadProjectDetails = async () => {
       console.log('Starting loadProjectDetails:', { 
         projectId, 
         isReady,
+        locationState: location.state,
         webAppState: {
           initData: WebApp.initData?.substring(0, 50),
           user: WebApp.initDataUnsafe?.user,
