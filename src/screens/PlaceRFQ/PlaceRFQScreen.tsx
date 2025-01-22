@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import styles from './PlaceInquiryScreen.module.css';
+import styles from './PlaceRFQScreen.module.css';
 import { apiService } from '../../utils/api';
 import WebApp from '@twa-dev/sdk';
 import { useTelegram } from '../../hooks/useTelegram';
