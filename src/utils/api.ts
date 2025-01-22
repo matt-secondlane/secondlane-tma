@@ -58,7 +58,7 @@ export const apiService = {
   // Get project details
   async getProjectById(id: string): Promise<Project> {
     const response = await api.get(`/projects/${id}`);
-    return response.data;
+    return response.data.data;
   },
 
   // Place RFQ
