@@ -183,3 +183,63 @@ export interface ProjectResponse {
   total: number;
   data: Project;
 } 
+
+// Place RFQ request
+export interface PlaceRFQRequest {
+  project_id: string;
+  tranche_size: number;
+  valuation: number;
+  terms: string;
+  type: 'BUY' | 'SELL';
+}
+
+// Place RFQ response
+export interface PlaceRFQResponse {
+  rfq_id: string;
+  project_id: string;
+  project_name: string;
+  tranche_size: number;
+  valuation: number;
+  type: 'BUY' | 'SELL';
+  status: string;
+  logo: string | null;
+  created_at: string;
+}
+
+// RFQ details
+export interface RFQDetails {
+  data: {
+    rfq_id: string;
+    project_id: string;
+    project_name: string;
+    tranche_size: number;
+    valuation: number;
+    type: 'BUY' | 'SELL';
+    status: string;
+    terms: string;
+    logo: string;
+    created_at: string;
+    updated_at: string;
+  }
+}
+
+// Update RFQ request
+export interface UpdateRFQRequest {
+  rfq_id: string;
+  tranche_size: number;
+  valuation: number;
+  terms: string;
+}
+
+// Update RFQ response
+export interface UpdateRFQResponse {
+  data: {
+    rfq_id: string;
+    project_id: string;
+    tranche_size: number;
+    valuation: number;
+    type: 'BUY' | 'SELL';
+    status: string;
+    terms: string;
+  }
+}

@@ -192,7 +192,17 @@ export const ProjectDetailsScreen: React.FC = () => {
         </div>
       </div>
 
-      <button className={styles.placeBidButton}>
+      <button 
+        className={styles.placeBidButton}
+        onClick={() => {
+          WebApp.HapticFeedback.impactOccurred('light');
+          navigate(`/place-rfq/${project.project_id}`, {
+            state: {
+              logo: project.logo,
+            }
+          });
+        }}
+      >
         Place Bid
       </button>
     </div>

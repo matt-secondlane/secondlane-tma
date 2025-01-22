@@ -11,7 +11,12 @@ import type {
   ProjectsResponse,
   Project,
   OrderbookResponse,
-  OrderDetails
+  OrderDetails,
+  PlaceRFQRequest,
+  PlaceRFQResponse,
+  RFQDetails,
+  UpdateRFQRequest,
+  UpdateRFQResponse
 } from '../types/api';
 
 export const apiService = {
@@ -53,6 +58,24 @@ export const apiService = {
   // Get project details
   async getProjectById(id: string): Promise<Project> {
     const response = await api.get(`/projects/${id}`);
+    return response.data;
+  },
+
+  // Place RFQ
+  async placeRFQ(data: PlaceRFQRequest): Promise<PlaceRFQResponse> {
+    const response = await api.post('/rfq', data);
+    return response.data;
+  },
+
+  // Get RFQ details
+  async getRFQDetails(rfqId: string): Promise<RFQDetails> {
+    const response = await api.get(`/rfq/${rfqId}`);
+    return response.data;
+  },
+
+  // Update RFQ
+  async updateRFQ(data: UpdateRFQRequest): Promise<UpdateRFQResponse> {
+    const response = await api.put(`/rfq/${data.rfq_id}`, data);
     return response.data;
   },
 

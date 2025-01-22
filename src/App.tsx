@@ -7,6 +7,7 @@ import { DatabaseScreen } from './screens/Database';
 import { ProjectDetailsScreen } from './screens/Database/ProjectDetailsScreen';
 import PortfolioScreen from './screens/Portfolio';
 import { PlaceInquiryScreen } from './screens/PlaceInquiry/PlaceInquiryScreen';
+import { PlaceRFQScreen } from './screens/PlaceRFQ/PlaceRFQScreen';
 import { Loader } from './components/Loader';
 
 // Global flag for App.tsx
@@ -46,6 +47,7 @@ function App() {
           <Route path="/database/project/:projectId" element={<ProjectDetailsScreen />} />
           <Route path="/portfolio" element={<PortfolioScreen />} />
           <Route path="/place-inquiry/:orderId" element={<PlaceInquiryScreen />} />
+          <Route path="/place-rfq/:projectId" element={<PlaceRFQScreen />} />
           <Route path="*" element={<Navigate to="/deals" replace />} />
         </Route>
       </Routes>
