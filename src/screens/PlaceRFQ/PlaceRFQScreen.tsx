@@ -265,7 +265,8 @@ export const PlaceRFQScreen: React.FC = () => {
                   {projectDetails.project_name}
                 </h2>
                 <div className={styles.projectMeta}>
-                  {projectDetails?.rounds && projectDetails.rounds.length > 0 && (
+                  {projectDetails?.rounds && projectDetails.rounds.length > 0 && 
+                    !projectDetails.rounds[0].round_name.toLowerCase().includes('private') && (
                     <span className={styles.round}>{projectDetails.rounds[0].round_name}</span>
                   )}
                   {/* <span className={styles.assetType}>
