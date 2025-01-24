@@ -143,7 +143,12 @@ export const ProjectDetailsScreen: React.FC = () => {
 
       <div className={styles.timelineSection}>
         <div className={styles.timeline}>
-          {project.rounds?.map((round: FundingRound, index: number) => (
+          {project.rounds?.sort((a, b) => {
+            if (!a.date && !b.date) return 0;
+            if (!a.date) return 1;
+            if (!b.date) return -1;
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+          }).map((round: FundingRound, index: number) => (
             <div key={index} className={styles.timelineItem}>
               <div className={styles.timelineMarker} />
               <div 
