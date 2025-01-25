@@ -143,7 +143,7 @@ export const PlaceRFQScreen: React.FC = () => {
 
       WebApp.showPopup({
         title: 'Success',
-        message: 'Your inquiry has been placed successfully',
+        message: 'Your inquiry has been placed successfully.\nThe SecondLane team will get in touch with you within 24 hours with details.',
         buttons: [{ type: 'ok' }]
       });
       WebApp.HapticFeedback.notificationOccurred('success');
