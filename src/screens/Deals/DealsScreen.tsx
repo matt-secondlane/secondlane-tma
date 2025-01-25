@@ -6,6 +6,7 @@ import { apiService } from '../../utils/api';
 import { OrderbookItem } from '../../types/api';
 import styles from './DealsScreen.module.css';
 import { Loader } from '../../components/Loader';
+import { parseNumberWithSuffix, formatMoney } from '../../utils/money';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -154,12 +155,16 @@ export const DealsScreen = () => {
                       <div className={styles.dealValues}>
                         <div className={styles.valueGroup}>
                           <span className={styles.valueLabel}>Amount</span>
-                          <span className={styles.valueAmount}>${(deal.offered_amount / 1000000).toFixed(1)}M</span>
+                          <span className={styles.valueAmount}>
+                            {formatMoney(deal.offered_amount)}
+                          </span>
                         </div>
                         <div className={styles.separator}>•</div>
                         <div className={styles.valueGroup}>
                           <span className={styles.valueLabel}>FDV</span>
-                          <span className={styles.valueAmount}>${(deal.offered_fully_diluted_value / 1000000).toFixed(0)}M</span>
+                          <span className={styles.valueAmount}>
+                            {formatMoney(deal.offered_fully_diluted_value)}
+                          </span>
                         </div>
                       </div>
                     </div>
