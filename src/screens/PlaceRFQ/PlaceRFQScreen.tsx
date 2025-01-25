@@ -6,27 +6,7 @@ import WebApp from '@twa-dev/sdk';
 import { useTelegram } from '../../hooks/useTelegram';
 import { Loader } from '../../components/Loader';
 import { Project } from '../../types/api';
-
-const parseNumberWithSuffix = (value: string): number | null => {
-  // Remove all spaces and convert to lowercase
-  const cleaned = value.replace(/\s+/g, '').toLowerCase();
-  
-  // Match number followed by optional suffix
-  const match = cleaned.match(/^(-?\d*\.?\d+)(k|m|b)?$/);
-  if (!match) return null;
-
-  const [, num, suffix] = match;
-  const baseValue = parseFloat(num);
-  
-  if (isNaN(baseValue)) return null;
-
-  switch (suffix) {
-    case 'k': return baseValue * 1000;
-    case 'm': return baseValue * 1000000;
-    case 'b': return baseValue * 1000000000;
-    default: return baseValue;
-  }
-};
+import { parseNumberWithSuffix, formatMoney } from '../../utils/money';
 
 export const PlaceRFQScreen: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -281,7 +261,9 @@ export const PlaceRFQScreen: React.FC = () => {
                 <div className={styles.summaryItem}>
                   <span className={styles.summaryLabel}>FDV</span>
                   <span className={styles.summaryValue}>
-                    ${projectDetails.rounds?.[0]?.fully_diluted_valuation ? (projectDetails.rounds[0].fully_diluted_valuation / 1000000).toFixed(0) + 'M' : 'N/A'}
+                    {projectDetails.rounds?.[0]?.fully_diluted_valuation 
+                      ? formatMoney(projectDetails.rounds[0].fully_diluted_valuation)
+                      : 'N/A'}
                   </span>
                 </div>
               </div>

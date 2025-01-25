@@ -6,27 +6,7 @@ import { OrderDetails } from '../../types/api';
 import WebApp from '@twa-dev/sdk';
 import { useTelegram } from '../../hooks/useTelegram';
 import { Loader } from '../../components/Loader';
-
-const parseNumberWithSuffix = (value: string): number | null => {
-  // Remove all spaces and convert to lowercase
-  const cleaned = value.replace(/\s+/g, '').toLowerCase();
-  
-  // Match number followed by optional suffix
-  const match = cleaned.match(/^(-?\d*\.?\d+)(k|m|b)?$/);
-  if (!match) return null;
-
-  const [, num, suffix] = match;
-  const baseValue = parseFloat(num);
-  
-  if (isNaN(baseValue)) return null;
-
-  switch (suffix) {
-    case 'k': return baseValue * 1000;
-    case 'm': return baseValue * 1000000;
-    case 'b': return baseValue * 1000000000;
-    default: return baseValue;
-  }
-};
+import { parseNumberWithSuffix, formatMoney } from '../../utils/money';
 
 export const PlaceInquiryScreen: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
@@ -271,13 +251,13 @@ export const PlaceInquiryScreen: React.FC = () => {
                 <div className={styles.summaryItem}>
                   <span className={styles.summaryLabel}>Amount</span>
                   <span className={styles.summaryValue}>
-                    ${(orderDetails.offered_amount / 1000000).toFixed(1)}M
+                    {formatMoney(orderDetails.offered_amount)}
                   </span>
                 </div>
                 <div className={styles.summaryItem}>
                   <span className={styles.summaryLabel}>FDV</span>
                   <span className={styles.summaryValue}>
-                    ${(orderDetails.offered_fully_diluted_value / 1000000).toFixed(0)}M
+                    {formatMoney(orderDetails.offered_fully_diluted_value)}
                   </span>
                 </div>
               </div>
