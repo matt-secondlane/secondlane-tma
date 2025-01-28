@@ -47,7 +47,9 @@ const DatabaseScreen: React.FC = () => {
   
   const loadingRef = useRef(false);
   const observer = useRef<IntersectionObserver | null>(null);
-  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const currentSearchRef = useRef('');
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleProjectSelect = (project: Project) => {
     WebApp.HapticFeedback.impactOccurred('light');
@@ -56,23 +58,32 @@ const DatabaseScreen: React.FC = () => {
 
   // Projects loading function
   const loadProjects = useCallback(async (page: number, search: string) => {
-    if (loadingRef.current) {
-      return;
+    if (loadingRef.current) return;
+
+    // Cancel previous request if exists
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
+    abortControllerRef.current = new AbortController();
 
     try {
-      setIsLoading(true);
       loadingRef.current = true;
+      setIsLoading(true);
       setError(null);
       
-      const offset = (page - 1) * 10;
       const response = await api.get('/projects', {
         params: {
-          offset,
+          offset: (page - 1) * 10,
           limit: 10,
           search: search || ''
-        }
+        },
+        signal: abortControllerRef.current.signal
       });
+      
+      // Check if search query hasn't changed during loading
+      if (currentSearchRef.current !== search) {
+        return;
+      }
       
       let projectsData: Project[];
       let total: number = 0;
@@ -98,15 +109,21 @@ const DatabaseScreen: React.FC = () => {
       }
       
       setTotalCount(total);
-      setHasMore(projectsData.length > 0 && offset + projectsData.length < total);
+      setHasMore(projectsData.length === 10 && (page - 1) * 10 + projectsData.length < total);
       
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
       console.error('Error loading projects:', err);
       setError('Failed to load projects');
       setHasMore(false);
     } finally {
       setIsLoading(false);
       loadingRef.current = false;
+      if (abortControllerRef.current?.signal.aborted) {
+        abortControllerRef.current = null;
+      }
     }
   }, []);
 
@@ -114,6 +131,7 @@ const DatabaseScreen: React.FC = () => {
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
+    currentSearchRef.current = value;
     
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
@@ -129,7 +147,7 @@ const DatabaseScreen: React.FC = () => {
 
   // Load next page on scroll
   const lastProjectRef = useCallback((node: HTMLDivElement) => {
-    if (isLoading || !hasMore || loadingRef.current) return;
+    if (!node || isLoading || !hasMore || loadingRef.current) return;
     
     if (observer.current) observer.current.disconnect();
     
@@ -141,9 +159,11 @@ const DatabaseScreen: React.FC = () => {
           return nextPage;
         });
       }
+    }, {
+      rootMargin: '100px' // Preload until end of list
     });
     
-    if (node) observer.current.observe(node);
+    observer.current.observe(node);
   }, [hasMore, isLoading, loadProjects, searchQuery]);
 
   // Initial load
@@ -152,6 +172,9 @@ const DatabaseScreen: React.FC = () => {
     return () => {
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
   }, [loadProjects]);

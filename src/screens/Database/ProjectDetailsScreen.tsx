@@ -10,7 +10,8 @@ const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'long'
+    month: 'long',
+    day: 'numeric'
   });
 };
 
@@ -129,7 +130,7 @@ export const ProjectDetailsScreen: React.FC = () => {
             <h1 className={styles.detailsName}>{project.project_name}</h1>
             {project.link && (
               <a href={project.link} target="_blank" rel="noopener noreferrer" className={styles.projectSubtitle}>
-                {project.link.substring(0, 35)}
+                {project.link}
               </a>
             )}
           </div>
@@ -143,12 +144,7 @@ export const ProjectDetailsScreen: React.FC = () => {
 
       <div className={styles.timelineSection}>
         <div className={styles.timeline}>
-          {project.rounds?.sort((a, b) => {
-            if (!a.date && !b.date) return 0;
-            if (!a.date) return 1;
-            if (!b.date) return -1;
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
-          }).map((round: FundingRound, index: number) => (
+          {project.rounds?.map((round: FundingRound, index: number) => (
             <div key={index} className={styles.timelineItem}>
               <div className={styles.timelineMarker} />
               <div 
@@ -158,7 +154,7 @@ export const ProjectDetailsScreen: React.FC = () => {
                 <div className={styles.roundHeader}>
                   <span className={styles.roundTitle}>
                     {getRoundIcon(round.round_name)}
-                    {round.date ? formatDate(round.date) + ' ' : ''}{round.round_name === 'Unknown' ? 'Round Unknown' : round.round_name}
+                    {formatDate(round.date)} {round.round_name}
                   </span>
                   <svg className={styles.expandIcon} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -196,35 +192,7 @@ export const ProjectDetailsScreen: React.FC = () => {
         </div>
       </div>
 
-      <button 
-        className={styles.placeBidButton}
-        onClick={() => {
-          console.log('Place RFQ button clicked', {
-            projectId: project?.project_id,
-            projectState: project,
-            logo: project?.logo,
-            navigationPath: `/place-rfq/${project?.project_id}`
-          });
-          
-          if (!project?.project_id) {
-            console.error('No project ID available');
-            return;
-          }
-          
-          WebApp.HapticFeedback.impactOccurred('light');
-          try {
-            navigate(`/place-rfq/${project.project_id}`, {
-              state: {
-                logo: project.logo,
-                deal_type: project.rounds?.[0]?.round_name?.includes('Token') ? 'LIQUID_TOKEN' : 'EQUITY'
-              }
-            });
-            console.log('Navigation completed');
-          } catch (error) {
-            console.error('Navigation failed:', error);
-          }
-        }}
-      >
+      <button className={styles.placeBidButton}>
         Place Bid
       </button>
     </div>
