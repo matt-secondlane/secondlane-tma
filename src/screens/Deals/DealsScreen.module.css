@@ -277,3 +277,15 @@
 .type.sell {
   color: #F44336;
 } 
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  position: sticky;
+  bottom: 0;
+  background: var(--tg-theme-bg-color);
+  z-index: 1;
+}
