@@ -18,7 +18,7 @@
   position: relative;
   margin-top: 15px;
   pointer-events: auto;
-  z-index: 1;
+  z-index: 10;
 }
 
 .searchInput {
@@ -31,8 +31,11 @@
   color: var(--tg-theme-text-color);
   pointer-events: auto;
   cursor: text;
-  -webkit-appearance: none;
-  appearance: none;
+  position: relative;
+  z-index: 11;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
   user-select: text;
 }
 
