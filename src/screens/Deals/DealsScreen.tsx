@@ -91,6 +91,8 @@ export const DealsScreen = () => {
             placeholder="Search deals"
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
+            onClick={(e) => e.currentTarget.focus()}
+            onTouchStart={(e) => e.currentTarget.focus()}
           />
         </div>
 

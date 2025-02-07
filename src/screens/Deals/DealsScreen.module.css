@@ -17,6 +17,8 @@
   width: 100%;
   position: relative;
   margin-top: 15px;
+  pointer-events: auto;
+  z-index: 1;
 }
 
 .searchInput {
@@ -27,6 +29,11 @@
   border-radius: 10px;
   font-size: 17px;
   color: var(--tg-theme-text-color);
+  pointer-events: auto;
+  cursor: text;
+  -webkit-appearance: none;
+  appearance: none;
+  user-select: text;
 }
 
 .searchInput::placeholder {
