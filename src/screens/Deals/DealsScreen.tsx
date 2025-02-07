@@ -90,29 +90,9 @@ export const DealsScreen = () => {
             className={styles.searchInput}
             placeholder="Search deals"
             value={searchQuery}
-            onChange={(e) => {
-              console.log('onChange event triggered');
-              handleSearchChange(e.target.value);
-            }}
-            onClick={(e) => {
-              console.log('onClick event triggered');
-              e.currentTarget.focus();
-            }}
-            onTouchStart={(e) => {
-              console.log('onTouchStart event triggered');
-              e.currentTarget.focus();
-            }}
-            onFocus={() => {
-              console.log('onFocus event triggered');
-            }}
-            onMouseDown={(e) => {
-              console.log('onMouseDown event triggered');
-              e.currentTarget.focus();
-            }}
-            onPointerDown={(e) => {
-              console.log('onPointerDown event triggered');
-              e.currentTarget.focus();
-            }}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            onClick={(e) => e.currentTarget.focus()}
+            onTouchStart={(e) => e.currentTarget.focus()}
           />
         </div>
 
