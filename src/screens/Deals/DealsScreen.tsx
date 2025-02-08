@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import { useTelegram } from '../../hooks/useTelegram';
@@ -20,9 +20,13 @@ export const DealsScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const loadingRef = useRef(false);
 
   const loadDeals = useCallback(async () => {
+    if (loadingRef.current) return;
+
     try {
+      loadingRef.current = true;
       setLoading(true);
       setError(null);
       
@@ -36,7 +40,13 @@ export const DealsScreen = () => {
       if (page === 1) {
         setDeals(response.data);
       } else {
-        setDeals(prev => [...prev, ...response.data]);
+        setDeals(prev => {
+          // Remove duplicates by order_id
+          const newDeals = response.data.filter(
+            newDeal => !prev.some(existingDeal => existingDeal.order_id === newDeal.order_id)
+          );
+          return [...prev, ...newDeals];
+        });
       }
       
       setHasMore(response.data.length === ITEMS_PER_PAGE);
@@ -45,6 +55,7 @@ export const DealsScreen = () => {
       setError(err instanceof Error ? err.message : 'An error occurred while loading deals');
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
   }, [activeTab, searchQuery, page]);
 
@@ -56,18 +67,16 @@ export const DealsScreen = () => {
     }
   }, [isReady, activeTab, searchQuery, loadDeals]);
 
-  useEffect(() => {
-    if (page > 1 && isReady) {
-      loadDeals();
-    }
-  }, [page, isReady, loadDeals]);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5 && !loading && hasMore) {
+    if (
+      scrollHeight - scrollTop <= clientHeight * 1.5 && 
+      !loadingRef.current && 
+      hasMore
+    ) {
       setPage(prev => prev + 1);
     }
-  };
+  }, [hasMore]);
 
   const handleTabChange = (tab: 'all' | 'buy' | 'sell') => {
     webApp?.HapticFeedback.impactOccurred('light');
@@ -122,38 +131,39 @@ export const DealsScreen = () => {
         {error ? (
           <div className={styles.error}>{error}</div>
         ) : (
-          <div className={styles.dealsList}>
-            {deals.map((deal) => (
-              <div 
-                key={deal.order_id}
-                className={styles.dealCard}
-                onClick={() => {
-                  webApp?.HapticFeedback.impactOccurred('light');
-                  console.log('Deal type before navigation:', deal.deal_type);
-                  navigate(`/place-inquiry/${deal.order_id}`, {
-                    state: { 
-                      logo: deal.logo,
-                      deal_type: deal.deal_type
-                    }
-                  });
-                }}
-              >
-                <div className={styles.cardContent}>
-                  <div className={styles.leftSection}>
-                    <img 
-                      src={deal.logo || '/default-project-logo.svg'} 
-                      alt={deal.project_name}
-                      className={styles.projectLogo}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/default-project-logo.svg';
-                      }}
-                    />
-                    <div className={styles.projectInfo}>
-                      <div className={styles.projectMain}>
-                        <span className={styles.projectName}>{deal.project_name}</span>
-                        <span className={styles.assetType}>{deal.deal_type === 'LIQUID_TOKEN' ? 'Token' : 'Equity'}</span>
-                      </div>
+          <>
+            <div className={styles.dealsList}>
+              {deals.map((deal) => (
+                <div 
+                  key={deal.order_id}
+                  className={styles.dealCard}
+                  onClick={() => {
+                    webApp?.HapticFeedback.impactOccurred('light');
+                    console.log('Deal type before navigation:', deal.deal_type);
+                    navigate(`/place-inquiry/${deal.order_id}`, {
+                      state: { 
+                        logo: deal.logo,
+                        deal_type: deal.deal_type
+                      }
+                    });
+                  }}
+                >
+                  <div className={styles.cardContent}>
+                    <div className={styles.leftSection}>
+                      <img 
+                        src={deal.logo || '/default-project-logo.svg'} 
+                        alt={deal.project_name}
+                        className={styles.projectLogo}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/default-project-logo.svg';
+                        }}
+                      />
+                      <div className={styles.projectInfo}>
+                        <div className={styles.projectMain}>
+                          <span className={styles.projectName}>{deal.project_name}</span>
+                          <span className={styles.assetType}>{deal.deal_type === 'LIQUID_TOKEN' ? 'Token' : 'Equity'}</span>
+                        </div> 
                       <div className={styles.dealValues}>
                         <div className={styles.valueGroup}>
                           <span className={styles.valueLabel}>Amount</span>
@@ -179,12 +189,13 @@ export const DealsScreen = () => {
                 </div>
               </div>
             ))}
+            </div>
             {loading && (
-              <div className={styles.loading}>
+              <div className={styles.loaderContainer}>
                 <Loader />
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
