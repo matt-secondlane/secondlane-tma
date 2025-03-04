@@ -5,6 +5,7 @@ import styles from './ProjectDetailsScreen.module.css';
 import { Project, FundingRound } from '../../types/api';
 import api from '../../services/api';
 import { Loader } from '../../components/Loader';
+import ProjectChart from '../../components/ProjectChart/ProjectChart';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -60,13 +61,17 @@ export const ProjectDetailsScreen: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedRoundIndex, setExpandedRoundIndex] = useState<number | null>(0);
+  const [expandedRoundIndex, setExpandedRoundIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const loadProject = async () => {
       try {
         setIsLoading(true);
         setError(null);
+        
+        if (!projectId) {
+          throw new Error('Project ID is required');
+        }
         
         const response = await api.get(`/projects/${projectId}`, {
           params: {
@@ -78,7 +83,7 @@ export const ProjectDetailsScreen: React.FC = () => {
         setProject(response.data.data);
       } catch (err) {
         console.error('Error loading project:', err);
-        setError('Failed to load project details');
+        setError(err instanceof Error ? err.message : 'Failed to load project details');
       } finally {
         setIsLoading(false);
       }
@@ -95,8 +100,24 @@ export const ProjectDetailsScreen: React.FC = () => {
   };
 
   const handleRoundClick = (index: number) => {
-    WebApp.HapticFeedback.impactOccurred('light');
-    setExpandedRoundIndex(expandedRoundIndex === index ? null : index);
+    // First trigger haptic feedback immediately to ensure it works
+    WebApp.HapticFeedback.notificationOccurred('success');
+    
+    // Then update the state
+    setExpandedRoundIndex((prevIndex) => {
+      if (prevIndex === index) {
+        return null; // Close the round
+      } else {
+        return index; // Open the round
+      }
+    });
+  };
+
+  const handlePlaceBid = () => {
+    if (!project) return;
+    
+    WebApp.HapticFeedback.impactOccurred('medium');
+    navigate(`/place-bid/${project.project_id}`);
   };
 
   if (isLoading) {
@@ -114,6 +135,8 @@ export const ProjectDetailsScreen: React.FC = () => {
     );
   }
 
+  const logoUrl = project.logo || '/assets/default-project-logo.svg';
+
   return (
     <div className={styles.projectDetails}>
       <button className={styles.backButton} onClick={handleBack}>
@@ -124,7 +147,7 @@ export const ProjectDetailsScreen: React.FC = () => {
 
       <div className={styles.projectHeader}>
         <div className={styles.projectMain}>
-          <img src={project.logo || '/assets/default-project-logo.svg'} alt={project.project_name} className={styles.detailsLogo} />
+          <img src={logoUrl} alt={project.project_name} className={styles.detailsLogo} />
           <div className={styles.projectInfo}>
             <h1 className={styles.detailsName}>{project.project_name}</h1>
             {project.link && (
@@ -141,9 +164,14 @@ export const ProjectDetailsScreen: React.FC = () => {
         <p className={styles.description}>{project.description || 'No description available'}</p>
       </div>
 
+      <div className={styles.chartSection}>
+        <h2 className={styles.sectionTitle}>Project Valuation (FDV)</h2>
+        <ProjectChart projectId={projectId || ''} />
+      </div>
+
       <div className={styles.timelineSection}>
         <div className={styles.timeline}>
-          {project.rounds?.sort((a, b) => {
+        {project.rounds?.sort((a, b) => {
             if (!a.date && !b.date) return 0;
             if (!a.date) return 1;
             if (!b.date) return -1;

@@ -243,3 +243,58 @@ export interface UpdateRFQResponse {
     terms: string;
   }
 }
+
+// Project graph response interface
+export interface ProjectGraphResponse {
+  data: {
+    project_id: string;
+    orders?: Array<{
+      date: string;
+      type: string;
+      offered_fully_diluted_valuation: number;
+      offered_amount: number;
+      order_id: string;
+      round: string | null;
+      deal_type: string;
+    }>;
+    funding_rounds?: Array<{
+      date: string;
+      valuation: number | null;
+      amount_raised?: number | null;
+      round_name?: string;
+      fill?: Array<{
+        date: string;
+        valuation: number | null;
+        amount_raised?: number | null;
+      }>;
+    }>;
+    price_history?: Array<{
+      date: string;
+      price_usd: number;
+      market_cap_usd: number;
+      total_volume_usd?: number;
+    }>;
+  };
+  project_name?: string;
+  symbol?: string;
+}
+
+// Graph data point for processed chart data
+export interface GraphDataPoint {
+  date: string;
+  marketValue?: number;
+  fundingValue?: number;
+  secondLaneBuy?: number;
+  secondLaneSell?: number;
+  offered_fully_diluted_valuation?: number;
+  type?: string;
+  allBuyOrders?: Array<OrderData>;
+  allSellOrders?: Array<OrderData>;
+}
+
+// Order data for tooltips
+export interface OrderData {
+  id: string;
+  fdv: number;
+  amount: number;
+} 

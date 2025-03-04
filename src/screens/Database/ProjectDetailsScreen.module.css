@@ -141,7 +141,7 @@
 }
 
 .descriptionSection {
-  margin: 24px 0;
+  margin-bottom: 24px;
   padding: 16px;
   background: var(--tg-theme-secondary-bg-color);
   border-radius: 16px;
@@ -370,4 +370,17 @@
 .roundCard:active {
   transform: translateX(4px) scale(0.98);
   opacity: 0.9;
+}
+
+.chartSection {
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.chartSection {
+  margin: 24px 0;
+  padding: 16px;
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 } 
