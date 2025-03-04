@@ -16,7 +16,8 @@ import type {
   PlaceRFQResponse,
   RFQDetails,
   UpdateRFQRequest,
-  UpdateRFQResponse
+  UpdateRFQResponse,
+  ProjectGraphResponse
 } from '../types/api';
 
 export const apiService = {
@@ -96,6 +97,40 @@ export const apiService = {
         error,
         message: error instanceof Error ? error.message : String(error),
         orderId
+      });
+      throw error;
+    }
+  },
+
+  // Get project graph data
+  getProjectGraph: async (projectId: string): Promise<ProjectGraphResponse> => {
+    console.log('API: getProjectGraph called with:', { projectId });
+    try {
+      const response = await api.get(`/projects/${projectId}/graph`);
+      console.log('API: getProjectGraph response:', response.data);
+      
+      if (response.data && (response.data.data || Array.isArray(response.data))) {
+        return Array.isArray(response.data) 
+          ? { data: response.data, project_name: '', symbol: '' }
+          : response.data;
+      } else {
+        console.warn('API: getProjectGraph received unexpected data format:', response.data);
+        return {
+          data: {
+            project_id: projectId,
+            orders: [],
+            funding_rounds: [],
+            price_history: []
+          },
+          project_name: '',
+          symbol: ''
+        };
+      }
+    } catch (error) {
+      console.error('API: getProjectGraph error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        projectId
       });
       throw error;
     }
