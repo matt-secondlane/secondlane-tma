@@ -124,8 +124,8 @@
 .legendItem {
   display: flex;
   align-items: center;
-  margin: 0 5px;
-  white-space: nowrap;
+  gap: 8px;
+  color: var(--text-color, #000000);
 }
 
 .legendColor {
@@ -135,6 +135,10 @@
   border-radius: 2px;
   display: inline-block;
   flex-shrink: 0;
+}
+
+.legendText {
+  color: var(--text-color, #000000);
 }
 
 /* Адаптивные стили для разных устройств */
@@ -196,5 +200,21 @@
   .chartControls,
   .mockDataNote {
     display: none;
+  }
+}
+
+/* Optional: Add these CSS variables to your root/global CSS */
+:root {
+  --text-color: #000000;
+  --background-color: #ffffff;
+  --border-color: #cccccc;
+}
+
+/* And their dark mode variants */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #ffffff;
+    --background-color: #1a1a1a;
+    --border-color: #404040;
   }
 } 
