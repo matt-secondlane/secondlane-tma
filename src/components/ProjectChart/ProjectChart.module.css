@@ -1,5 +1,5 @@
 .chartContainer {
-  background: #ffffff;
+  background: var(--background-color, #ffffff);
   border-radius: 12px;
   padding: 12px 8px 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -125,7 +125,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-color, #000000);
 }
 
 .legendColor {
@@ -203,18 +202,37 @@
   }
 }
 
-/* Optional: Add these CSS variables to your root/global CSS */
+/* Update the root variables */
 :root {
   --text-color: #000000;
   --background-color: #ffffff;
   --border-color: #cccccc;
 }
 
-/* And their dark mode variants */
 @media (prefers-color-scheme: dark) {
   :root {
     --text-color: #ffffff;
     --background-color: #1a1a1a;
     --border-color: #404040;
+  }
+
+  .chartContainer {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Update grid and axis colors for dark mode */
+  :global(.recharts-cartesian-grid-vertical line),
+  :global(.recharts-cartesian-grid-horizontal line) {
+    stroke: rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.recharts-xAxis line),
+  :global(.recharts-yAxis line) {
+    stroke: rgba(255, 255, 255, 0.3);
+  }
+
+  :global(.recharts-xAxis text),
+  :global(.recharts-yAxis text) {
+    fill: var(--text-color);
   }
 } 

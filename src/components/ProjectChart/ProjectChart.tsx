@@ -251,6 +251,12 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
                 border: '1px solid var(--border-color, #cccccc)',
                 color: 'var(--text-color, #000000)',
               }}
+              itemStyle={{
+                color: 'var(--text-color, #000000)',
+              }}
+              labelStyle={{
+                color: 'var(--text-color, #000000)',
+              }}
               formatter={(value: number, name: string, entry: {payload?: GraphDataPoint}) => {
                 const formattedValue = formatCurrency(value);
                 const labels = {
