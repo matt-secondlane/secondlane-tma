@@ -282,7 +282,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               formatter={(value: number, name: string, entry: {payload?: GraphDataPoint}) => {
                 const formattedValue = formatCurrency(value);
                 const labels = {
-                  marketValue: 'Spot FDV',
+                  marketValue: 'Spot Market Cap',
                   fundingValue: 'Funding FDV',
                   secondLaneBuy: 'SecondLane Buy',
                   secondLaneSell: 'SecondLane Sell'
@@ -352,7 +352,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
           <div className={styles.legendRow}>
             <div className={styles.legendItem}>
               <div className={styles.legendColor} style={{ backgroundColor: "var(--tg-theme-text-color, #000000)" }} />
-              <span>Spot FDV</span>
+              <span>Spot Market Cap</span>
             </div>
             {hasFundingValuation && (
               <div className={styles.legendItem}>
