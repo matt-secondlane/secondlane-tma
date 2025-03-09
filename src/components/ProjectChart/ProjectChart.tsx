@@ -51,13 +51,14 @@ const processPriceHistory = (
   priceHistory: ProjectGraphResponse['data']['price_history'] = [],
   dataMap: Map<string, GraphDataPoint>
 ): Map<string, GraphDataPoint> => {
-  if (!Array.isArray(priceHistory)) return dataMap;
-  
   priceHistory.forEach(point => {
-    dataMap.set(point.date, {
-      date: point.date,
-      marketValue: point.market_cap_usd || 0
-    });
+    // Only add points with non-zero market cap values
+    if (point.market_cap_usd && point.market_cap_usd > 0) {
+      dataMap.set(point.date, {
+        date: point.date,
+        marketValue: point.market_cap_usd
+      });
+    }
   });
   
   return dataMap;
@@ -68,8 +69,6 @@ const processFundingRounds = (
   fundingRounds: ProjectGraphResponse['data']['funding_rounds'] = [],
   dataMap: Map<string, GraphDataPoint>
 ): Map<string, GraphDataPoint> => {
-  if (!Array.isArray(fundingRounds)) return dataMap;
-  
   if (fundingRounds.length) {
     let currentValuation = 0;
     fundingRounds.forEach(round => {
@@ -82,13 +81,11 @@ const processFundingRounds = (
       dataMap.set(round.date, entry);
 
       // Process fill data
-      if (Array.isArray(round.fill)) {
-        round.fill.forEach(fillPoint => {
-          const fillEntry = dataMap.get(fillPoint.date) || { date: fillPoint.date };
-          fillEntry.fundingValue = fillPoint.valuation ?? currentValuation;
-          dataMap.set(fillPoint.date, fillEntry);
-        });
-      }
+      round.fill?.forEach(fillPoint => {
+        const fillEntry = dataMap.get(fillPoint.date) || { date: fillPoint.date };
+        fillEntry.fundingValue = fillPoint.valuation ?? currentValuation;
+        dataMap.set(fillPoint.date, fillEntry);
+      });
     });
   }
   
@@ -100,8 +97,6 @@ const processOrders = (
   orders: ProjectGraphResponse['data']['orders'] = [],
   dataMap: Map<string, GraphDataPoint>
 ): Map<string, GraphDataPoint> => {
-  if (!Array.isArray(orders)) return dataMap;
-  
   const orderMapBuy = new Map<string, number>();
   const orderMapSell = new Map<string, number>();
   const allOrdersMap = new Map<string, { buys: OrderData[], sells: OrderData[] }>();
@@ -161,7 +156,8 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [chartData, setChartData] = useState<GraphDataPoint[]>([]);
-  const [hasData, setHasData] = useState(false);
+  const [hasFundingValuation, setHasFundingValuation] = useState(false);
+  const [shouldShowChart, setShouldShowChart] = useState(true);
 
   // Note: All values on the chart (Y-axis) are represented in FDV (Fully Diluted Valuation)
   // The black line represents market cap (from market_cap_usd)
@@ -179,19 +175,46 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
           throw new Error('No data available');
         }
 
-        // Check if we have any data to display
-        const hasPriceHistory = response.data.price_history && response.data.price_history.length > 0;
-        const hasFundingRounds = response.data.funding_rounds && response.data.funding_rounds.length > 0;
+        // Check if we should show the chart
         const hasOrders = response.data.orders && response.data.orders.length > 0;
+        const hasPriceHistory = response.data.price_history && response.data.price_history.length > 0;
         
-        // If all data types are empty, don't display the chart
-        if (!hasPriceHistory && !hasFundingRounds && !hasOrders) {
-          setHasData(false);
+        // Check if any funding round has FDV and it's not zero
+        let anyFundingRoundHasFDV = false;
+        if (response.data.funding_rounds && response.data.funding_rounds.length > 0) {
+          anyFundingRoundHasFDV = response.data.funding_rounds.some(round => 
+            round.valuation !== null && round.valuation > 0
+          );
+          setHasFundingValuation(anyFundingRoundHasFDV);
+        }
+
+        // Check if price history has non-zero values
+        let hasNonZeroPriceHistory = false;
+        if (hasPriceHistory) {
+          hasNonZeroPriceHistory = response.data.price_history!.some(
+            item => item.market_cap_usd > 0
+          );
+        }
+
+        // Check if orders have non-zero values
+        let hasNonZeroOrders = false;
+        if (hasOrders) {
+          hasNonZeroOrders = response.data.orders!.some(
+            order => order.offered_fully_diluted_valuation > 0
+          );
+        }
+
+        // If there are funding rounds but no FDV or only zero FDVs, no orders or only zero orders, 
+        // and no price history or only zero market caps, we should not show the chart
+        if ((response.data.funding_rounds && 
+            response.data.funding_rounds.length > 0 && 
+            !anyFundingRoundHasFDV) && 
+            (!hasOrders || !hasNonZeroOrders) && 
+            (!hasPriceHistory || !hasNonZeroPriceHistory)) {
+          setShouldShowChart(false);
           setLoading(false);
           return;
         }
-        
-        setHasData(true);
 
         // Initialization of dataMap for storing chart data
         let dataMap = new Map<string, GraphDataPoint>();
@@ -217,7 +240,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
 
   if (loading) return <div className={styles.loaderContainer}><Loader /></div>;
   if (error) return <div className={styles.errorContainer}>{error}</div>;
-  if (!hasData) return <div className={styles.noDataContainer}>No chart data available</div>;
+  if (!shouldShowChart) return <div className={styles.noDataContainer}>No chart data available</div>;
   if (!chartData.length) return <div className={styles.noDataContainer}>No data available</div>;
 
   return (
@@ -230,16 +253,21 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
             barGap={10}
             barCategoryGap="15%"
           >
-            <CartesianGrid vertical={true} horizontal={false} stroke="rgba(0,0,0,0.1)" />
+            <CartesianGrid 
+              vertical={true} 
+              horizontal={true} 
+              stroke="var(--tg-theme-hint-color, rgba(0,0,0,0.1))"
+              opacity={0.5}
+            />
             <XAxis 
               dataKey="date" 
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: "var(--tg-theme-text-color)" }}
               tickMargin={10}
               stroke="rgba(0,0,0,0.5)"
             />
             <YAxis 
               tickFormatter={formatCurrency}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: "var(--tg-theme-text-color)" }}
               width={60}
               stroke="rgba(0,0,0,0.5)"
               // Y-axis represents FDV (Fully Diluted Valuation)
@@ -247,25 +275,20 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
             
             <Tooltip 
               contentStyle={{
-                backgroundColor: 'var(--background-color, #ffffff)',
-                border: '1px solid var(--border-color, #cccccc)',
-                color: 'var(--text-color, #000000)',
-              }}
-              itemStyle={{
-                color: 'var(--text-color, #000000)',
-              }}
-              labelStyle={{
-                color: 'var(--text-color, #000000)',
+                backgroundColor: "var(--tg-theme-bg-color)",
+                border: "1px solid rgba(0,0,0,0.1)",
+                color: "var(--tg-theme-text-color)"
               }}
               formatter={(value: number, name: string, entry: {payload?: GraphDataPoint}) => {
                 const formattedValue = formatCurrency(value);
                 const labels = {
-                  marketValue: 'Market Cap',
-                  fundingValue: 'Funding',
+                  marketValue: 'Spot FDV',
+                  fundingValue: 'Funding FDV',
                   secondLaneBuy: 'SecondLane Buy',
                   secondLaneSell: 'SecondLane Sell'
                 };
                 
+                // If this is a buy or sell order, and there is an array of all orders, enhance the tooltip
                 if (entry?.payload) {
                   const data = entry.payload;
                   
@@ -287,39 +310,30 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
                 return [formattedValue, labels[name as keyof typeof labels]];
               }}
               labelFormatter={(label) => `Date: ${label}`}
-              labelStyle={{
-                color: 'var(--text-color, #000000)',
-              }}
             />
             
-            {chartData.some(d => d.secondLaneBuy !== undefined) && (
-              <Bar 
-                dataKey="secondLaneBuy"
-                fill="#ccff00"
-                barSize={12}
-              />
-            )}
+            <Bar 
+              dataKey="secondLaneBuy"
+              fill="#ccff00"
+              barSize={12}
+            />
             
-            {chartData.some(d => d.secondLaneSell !== undefined) && (
-              <Bar 
-                dataKey="secondLaneSell"
-                barSize={12}
-                shape={<CustomBarShape />}
-              />
-            )}
+            <Bar 
+              dataKey="secondLaneSell"
+              barSize={12}
+              shape={<CustomBarShape />}
+            />
             
-            {chartData.some(d => d.marketValue !== undefined) && (
-              <Line
-                type="monotone"
-                dataKey="marketValue"
-                stroke="#000000"
-                strokeWidth={2}
-                dot={false}
-                connectNulls
-              />
-            )}
+            <Line
+              type="monotone"
+              dataKey="marketValue"
+              stroke="var(--tg-theme-text-color, #000000)"
+              strokeWidth={2}
+              dot={false}
+              connectNulls
+            />
             
-            {chartData.some(d => d.fundingValue !== undefined) && (
+            {hasFundingValuation && (
               <Line
                 type="stepAfter"
                 dataKey="fundingValue"
@@ -336,34 +350,28 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
       <div className={styles.bottomLegend}>
         <div className={styles.legendWrapper}>
           <div className={styles.legendRow}>
-            {chartData.some(d => d.marketValue !== undefined) && (
-              <div className={styles.legendItem}>
-                <div className={styles.legendColor} style={{ backgroundColor: '#000000' }} />
-                <span className={styles.legendText}>Market Cap</span>
-              </div>
-            )}
-            {chartData.some(d => d.fundingValue !== undefined) && (
+            <div className={styles.legendItem}>
+              <div className={styles.legendColor} style={{ backgroundColor: "var(--tg-theme-text-color, #000000)" }} />
+              <span>Spot FDV</span>
+            </div>
+            {hasFundingValuation && (
               <div className={styles.legendItem}>
                 <div className={styles.legendColor} style={{ backgroundColor: '#a52a2a' }} />
-                <span className={styles.legendText}>Funding</span>
+                <span>Funding FDV</span>
               </div>
             )}
           </div>
           <div className={styles.legendRow}>
-            {chartData.some(d => d.secondLaneBuy !== undefined) && (
-              <div className={styles.legendItem}>
-                <div className={styles.legendColor} style={{ backgroundColor: '#ccff00' }} />
-                <span className={styles.legendText}>SecondLane Buy</span>
-              </div>
-            )}
-            {chartData.some(d => d.secondLaneSell !== undefined) && (
-              <div className={styles.legendItem}>
-                <div className={styles.legendColor} style={{ 
-                  backgroundImage: 'repeating-linear-gradient(45deg, #888888, #888888 2px, #ffffff 2px, #ffffff 4px)' 
-                }} />
-                <span className={styles.legendText}>SecondLane Sell</span>
-              </div>
-            )}
+            <div className={styles.legendItem}>
+              <div className={styles.legendColor} style={{ backgroundColor: '#ccff00' }} />
+              <span>SecondLane Buy</span>
+            </div>
+            <div className={styles.legendItem}>
+              <div className={styles.legendColor} style={{ 
+                backgroundImage: 'repeating-linear-gradient(45deg, #888888, #888888 2px, var(--tg-theme-bg-color) 2px, var(--tg-theme-bg-color) 4px)' 
+              }} />
+              <span>SecondLane Sell</span>
+            </div>
           </div>
         </div>
       </div>
