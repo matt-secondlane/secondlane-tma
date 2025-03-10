@@ -51,15 +51,17 @@ const processPriceHistory = (
   priceHistory: ProjectGraphResponse['data']['price_history'] = [],
   dataMap: Map<string, GraphDataPoint>
 ): Map<string, GraphDataPoint> => {
-  priceHistory.forEach(point => {
-    // Only add points with non-zero market cap values
-    if (point.market_cap_usd && point.market_cap_usd > 0) {
-      dataMap.set(point.date, {
-        date: point.date,
-        marketValue: point.market_cap_usd
-      });
-    }
-  });
+  if (priceHistory.length) {
+    priceHistory.forEach(point => {
+      // Only add points with non-zero market cap values
+      if (point.market_cap_usd && point.market_cap_usd > 0) {
+        dataMap.set(point.date, {
+          date: point.date,
+          marketValue: point.market_cap_usd
+        });
+      }
+    });
+  }
   
   return dataMap;
 };
@@ -101,46 +103,48 @@ const processOrders = (
   const orderMapSell = new Map<string, number>();
   const allOrdersMap = new Map<string, { buys: OrderData[], sells: OrderData[] }>();
 
-  orders.forEach(order => {
-    const date = order.date;
-    const fdv = order.offered_fully_diluted_valuation;
-    const amount = order.offered_amount;
-    const id = order.order_id;
-    
-    // Collecting all orders for each date
-    if (!allOrdersMap.has(date)) {
-      allOrdersMap.set(date, { buys: [], sells: [] });
-    }
-    const ordersForDate = allOrdersMap.get(date)!;
-    
-    if (order.type.includes('BUY')) {
-      // For BUY orders we take the minimum FDV value
-      if (!orderMapBuy.has(date) || fdv < orderMapBuy.get(date)!) {
-        orderMapBuy.set(date, fdv);
+  if (orders.length) {
+    orders.forEach(order => {
+      const date = order.date;
+      const fdv = order.offered_fully_diluted_valuation;
+      const amount = order.offered_amount;
+      const id = order.order_id;
+      
+      // Collecting all orders for each date
+      if (!allOrdersMap.has(date)) {
+        allOrdersMap.set(date, { buys: [], sells: [] });
       }
-      ordersForDate.buys.push({ id, fdv, amount });
-    } else if (order.type.includes('SELL')) {
-      // For SELL orders we take the maximum FDV value
-      if (!orderMapSell.has(date) || fdv > orderMapSell.get(date)!) {
-        orderMapSell.set(date, fdv);
+      const ordersForDate = allOrdersMap.get(date)!;
+      
+      if (order.type.includes('BUY')) {
+        // For BUY orders we take the minimum FDV value
+        if (!orderMapBuy.has(date) || fdv < orderMapBuy.get(date)!) {
+          orderMapBuy.set(date, fdv);
+        }
+        ordersForDate.buys.push({ id, fdv, amount });
+      } else if (order.type.includes('SELL')) {
+        // For SELL orders we take the maximum FDV value
+        if (!orderMapSell.has(date) || fdv > orderMapSell.get(date)!) {
+          orderMapSell.set(date, fdv);
+        }
+        ordersForDate.sells.push({ id, fdv, amount });
       }
-      ordersForDate.sells.push({ id, fdv, amount });
+    });
+
+    // Apply collected values to dataMap
+    for (const [date, fdv] of orderMapBuy.entries()) {
+      const entry = dataMap.get(date) || { date };
+      entry.secondLaneBuy = fdv;
+      entry.allBuyOrders = allOrdersMap.get(date)?.buys;
+      dataMap.set(date, entry);
     }
-  });
 
-  // Apply collected values to dataMap
-  for (const [date, fdv] of orderMapBuy.entries()) {
-    const entry = dataMap.get(date) || { date };
-    entry.secondLaneBuy = fdv;
-    entry.allBuyOrders = allOrdersMap.get(date)?.buys;
-    dataMap.set(date, entry);
-  }
-
-  for (const [date, fdv] of orderMapSell.entries()) {
-    const entry = dataMap.get(date) || { date };
-    entry.secondLaneSell = fdv;
-    entry.allSellOrders = allOrdersMap.get(date)?.sells;
-    dataMap.set(date, entry);
+    for (const [date, fdv] of orderMapSell.entries()) {
+      const entry = dataMap.get(date) || { date };
+      entry.secondLaneSell = fdv;
+      entry.allSellOrders = allOrdersMap.get(date)?.sells;
+      dataMap.set(date, entry);
+    }
   }
   
   return dataMap;
