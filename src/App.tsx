@@ -65,7 +65,9 @@ function App() {
     <HashRouter>
       <Routes>
         {/* Attestation screen (outside of MainLayout) */}
-        <Route path="/attestation" element={<AttestationScreen />} />
+        <Route path="/attestation" element={
+          isAttested ? <Navigate to="/" replace /> : <AttestationScreen />
+        } />
         
         <Route element={<MainLayout />}>
           {/* Redirect to attestation if not attested */}
