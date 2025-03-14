@@ -297,4 +297,46 @@ export interface OrderData {
   id: string;
   fdv: number;
   amount: number;
+}
+
+// Attestation data
+export interface Attestation {
+  attestation_id: string;
+  attestation_year: number;
+  individual_income_test: boolean;
+  joint_income_test: boolean;
+  net_worth_test: boolean;
+  affirmation: boolean;
+  country: string;
+  email: string;
+  created_at: string;
+}
+
+// Attestation status response
+export interface AttestationStatus {
+  is_attested: boolean;
+  attestation_date?: string;
+  data?: Attestation[];
+  latest_attestation_year?: number | null;
+  has_attestation?: boolean;
+  is_accredited?: boolean;
+}
+
+// Attestation request
+export interface AttestationRequest {
+  attestation_year: number;
+  individual_income_test: boolean;
+  joint_income_test: boolean;
+  net_worth_test: boolean;
+  affirmation: boolean;
+  country: string;
+  email: string;
+}
+
+// Attestation response
+export interface AttestationResponse {
+  success: boolean;
+  message?: string;
+  attestation_id?: string;
+  data?: Attestation;
 } 
