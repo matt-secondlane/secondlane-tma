@@ -25,6 +25,7 @@ function App() {
     if (isReady) {
       const checkAttestationStatus = async () => {
         try {
+          setIsCheckingAttestation(true);
           const response = await apiService.getAttestationStatus();
           setIsAttested(response.is_attested);
         } catch (error) {
@@ -39,6 +40,25 @@ function App() {
       checkAttestationStatus();
     }
   }, [isReady]);
+
+  // Add a function to refresh attestation status
+  const refreshAttestationStatus = async () => {
+    try {
+      setIsCheckingAttestation(true);
+      const response = await apiService.getAttestationStatus();
+      setIsAttested(response.is_attested);
+      
+      // If the user is now attested, navigate them away from the attestation screen
+      if (response.is_attested) {
+        // We'll let the route handling in the return statement handle the navigation
+        console.log('User is now attested, will redirect to main app');
+      }
+    } catch (error) {
+      console.error('Error refreshing attestation status:', error);
+    } finally {
+      setIsCheckingAttestation(false);
+    }
+  };
 
   useEffect(() => {
     // Wait until root element is available and WebApp is ready
@@ -66,7 +86,9 @@ function App() {
       <Routes>
         {/* Attestation screen (outside of MainLayout) */}
         <Route path="/attestation" element={
-          isAttested ? <Navigate to="/" replace /> : <AttestationScreen />
+          isAttested 
+            ? <Navigate to="/" replace /> 
+            : <AttestationScreen onAttestationComplete={refreshAttestationStatus} />
         } />
         
         <Route element={<MainLayout />}>
