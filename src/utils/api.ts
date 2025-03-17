@@ -279,7 +279,7 @@ export const apiService = {
   },
 
   // Get portfolio asset by ID
-  getPortfolioAssetById: async (portfolioId: string, assetId: string): Promise<PortfolioAsset> => {
+  getPortfolioAssetById: async (_portfolioId: string, assetId: string): Promise<PortfolioAsset> => {
     const response = await api.get(`/portfolio/assets/${assetId}`);
     return response.data.data;
   },
@@ -305,7 +305,7 @@ export const apiService = {
   },
 
   // Update portfolio asset
-  updatePortfolioAsset: async (portfolioId: string, assetId: string, data: UpdatePortfolioAssetRequest): Promise<PortfolioAsset> => {
+  updatePortfolioAsset: async (_portfolioId: string, assetId: string, data: UpdatePortfolioAssetRequest): Promise<PortfolioAsset> => {
     // Transform data to the correct format
     const formattedData = {
       project_id: data.project_id || null,
@@ -326,12 +326,12 @@ export const apiService = {
   },
 
   // Delete portfolio asset
-  deletePortfolioAsset: async (portfolioId: string, assetId: string): Promise<void> => {
+  deletePortfolioAsset: async (_portfolioId: string, assetId: string): Promise<void> => {
     await api.delete(`/portfolio/assets/${assetId}`);
   },
 
   // Upload portfolio assets CSV
-  uploadPortfolioAssetsCSV: async (portfolioId: string, file: File): Promise<void> => {
+  uploadPortfolioAssetsCSV: async (_portfolioId: string, file: File): Promise<void> => {
     const formData = new FormData();
     formData.append('file', file);
     
