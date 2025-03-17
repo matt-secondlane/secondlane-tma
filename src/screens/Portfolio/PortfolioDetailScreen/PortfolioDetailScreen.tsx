@@ -34,13 +34,9 @@ export const PortfolioDetailScreen: React.FC = () => {
         apiService.getPortfolioAssets(portfolioId)
       ]);
       
-      console.log('Received portfolio details:', JSON.stringify(portfolioDetails, null, 2));
-      console.log('Received portfolio assets:', JSON.stringify(assets, null, 2));
-      
       setPortfolio(portfolioDetails);
       setPortfolioAssets(assets);
     } catch (err) {
-      console.error('Error fetching portfolio details:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(`Failed to load portfolio details: ${errorMessage}. Please try again.`);
     } finally {
@@ -73,8 +69,7 @@ export const PortfolioDetailScreen: React.FC = () => {
       
       // Refresh assets
       fetchPortfolioDetails();
-    } catch (err) {
-      console.error('Error uploading CSV:', err);
+    } catch {
       WebApp.showAlert('Error uploading CSV. Please try again.');
       webApp?.HapticFeedback.notificationOccurred('error');
     } finally {
@@ -113,8 +108,7 @@ export const PortfolioDetailScreen: React.FC = () => {
             // Update assets list
             setPortfolioAssets(prev => prev.filter(a => a.asset_id !== assetId));
             webApp?.HapticFeedback.notificationOccurred('success');
-          } catch (err) {
-            console.error('Error deleting asset:', err);
+          } catch {
             WebApp.showAlert('Failed to delete asset. Please try again.');
             webApp?.HapticFeedback.notificationOccurred('error');
           } finally {
@@ -131,7 +125,7 @@ export const PortfolioDetailScreen: React.FC = () => {
       return '$0.00';
     }
     
-    // Преобразуем строку в число, если это строка
+    // Convert string to number if it's a string
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     
     if (isNaN(numValue)) {
@@ -152,13 +146,12 @@ export const PortfolioDetailScreen: React.FC = () => {
       return 'N/A';
     }
     
-    // Попытка обработать разные форматы даты
+    // Try to parse different date formats
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      // Если не удалось распарсить дату, пробуем другие форматы
-      console.warn('Failed to parse date:', dateString);
+      // If parsing failed, try other formats
       
-      // Попытка обработать формат YYYY-MM-DD
+      // Try to parse YYYY-MM-DD format
       if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
         const [year, month, day] = dateString.split('-').map(Number);
         return new Date(year, month - 1, day).toLocaleDateString('en-US', {
@@ -168,7 +161,7 @@ export const PortfolioDetailScreen: React.FC = () => {
         });
       }
       
-      return dateString; // Возвращаем исходную строку, если не удалось распарсить
+      return dateString; // Return original string if parsing failed
     }
     
     return date.toLocaleDateString('en-US', {

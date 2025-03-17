@@ -18,7 +18,7 @@ export const EditPortfolioAssetScreen: React.FC = () => {
   
   const [formData, setFormData] = useState<UpdatePortfolioAssetRequest>({
     project_name: '',
-    date: new Date().toISOString().split('T')[0], // Устанавливаем текущую дату по умолчанию
+    date: new Date().toISOString().split('T')[0], // Set current date as default
     invested_amount: 0,
     terms: '',
     project_website: '',
@@ -41,29 +41,27 @@ export const EditPortfolioAssetScreen: React.FC = () => {
       const assetDetails = await apiService.getPortfolioAssetById(portfolioId, assetId);
       setAsset(assetDetails);
       
-      // Форматируем дату для input[type="date"]
-      let dateValue = new Date().toISOString().split('T')[0]; // Значение по умолчанию - текущая дата
+      // Format date for input[type="date"]
+      let dateValue = new Date().toISOString().split('T')[0]; // Default value - current date
       
       if (assetDetails.date) {
-        // Преобразуем дату в формат YYYY-MM-DD для input[type="date"]
+        // Convert date to YYYY-MM-DD format for input[type="date"]
         const date = new Date(assetDetails.date);
         if (!isNaN(date.getTime())) {
           dateValue = date.toISOString().split('T')[0];
         } else if (typeof assetDetails.date === 'string') {
-          // Если дата в формате YYYY-MM-DD, используем её как есть
+          // If date is in YYYY-MM-DD format, use it as is
           if (assetDetails.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
             dateValue = assetDetails.date;
           }
         }
       } else if (assetDetails.created_at) {
-        // Если нет даты, используем дату создания
+        // If no date, use creation date
         const date = new Date(assetDetails.created_at);
         if (!isNaN(date.getTime())) {
           dateValue = date.toISOString().split('T')[0];
         }
       }
-      
-      console.log('Asset date value:', dateValue);
       
       // Initialize form data
       setFormData({
@@ -75,8 +73,7 @@ export const EditPortfolioAssetScreen: React.FC = () => {
         valuation: assetDetails.valuation,
         equity_or_tokens_amount: assetDetails.equity_or_tokens_amount
       });
-    } catch (err) {
-      console.error('Error fetching asset details:', err);
+    } catch {
       setError('Failed to load asset details. Please try again.');
     } finally {
       setLoading(false);
@@ -137,12 +134,11 @@ export const EditPortfolioAssetScreen: React.FC = () => {
       webApp?.HapticFeedback.notificationOccurred('success');
       WebApp.showAlert('Asset updated successfully!');
       
-      // Сначала снимаем состояние загрузки, затем навигируем
+      // First remove loading state, then navigate
       setSubmitting(false);
       // Navigate back to portfolio screen
       navigate(`/portfolio/${portfolioId}`);
-    } catch (err) {
-      console.error('Error updating portfolio asset:', err);
+    } catch {
       setError('Failed to update portfolio asset. Please try again.');
       webApp?.HapticFeedback.notificationOccurred('error');
       setSubmitting(false);

@@ -42,8 +42,7 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
       const results = await apiService.searchProjects(query);
       setSearchResults(results);
       setShowSearchResults(true);
-    } catch (err) {
-      console.error('Error searching projects:', err);
+    } catch {
       WebApp.showAlert('Error searching projects. Please try again.');
     } finally {
       setSearchLoading(false);
@@ -121,22 +120,19 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
       setSubmitting(true);
       setError(null);
       
-      // Отправляем данные без преобразования даты
+      // Send data without date conversion
       const apiData = {
         ...formData
       };
       
-      console.log('Sending form data:', JSON.stringify(apiData, null, 2));
-      const createdAsset = await apiService.createPortfolioAsset(portfolioId, apiData);
-      console.log('Created asset:', JSON.stringify(createdAsset, null, 2));
+      await apiService.createPortfolioAsset(portfolioId, apiData);
       
       WebApp.HapticFeedback.notificationOccurred('success');
       WebApp.showAlert('Asset added successfully!');
       
       // Navigate back to portfolio screen
       navigate(`/portfolio`);
-    } catch (err) {
-      console.error('Error creating portfolio asset:', err);
+    } catch {
       setError('Failed to create portfolio asset. Please try again.');
       WebApp.HapticFeedback.notificationOccurred('error');
     } finally {

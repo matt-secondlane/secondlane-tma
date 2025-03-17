@@ -422,7 +422,7 @@
   opacity: 0.9;
 }
 
-/* Медиа-запросы для адаптивности */
+/* Media queries for responsiveness */
 @media (max-width: 480px) {
   .assetDetails {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -439,7 +439,7 @@
   }
 }
 
-/* Специфические стили для темной темы */
+/* Specific styles for dark theme */
 @media (prefers-color-scheme: dark) {
   .assetDetail {
     background-color: rgba(255, 255, 255, 0.05);

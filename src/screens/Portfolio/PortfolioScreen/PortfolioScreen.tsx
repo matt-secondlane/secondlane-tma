@@ -26,26 +26,21 @@ export const PortfolioScreen: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching portfolios...');
       const fetchedPortfolios = await apiService.getPortfolios();
-      console.log('Fetched portfolios:', fetchedPortfolios);
       
       if (fetchedPortfolios.length === 0) {
         // Create default portfolio if none exists
-        console.log('No portfolios found, creating default portfolio...');
         try {
           const defaultPortfolio = await apiService.createPortfolio({
             name: 'My Portfolio'
           });
-          console.log('Created default portfolio:', defaultPortfolio);
           setPortfolios([defaultPortfolio]);
         } catch (createError) {
-          console.error('Error creating default portfolio:', createError);
           const errorMessage = createError instanceof Error ? createError.message : 'Unknown error';
           setError(`Failed to create default portfolio: ${errorMessage}. Please try again.`);
         }
       } else {
-        // Получаем количество активов для каждого портфолио
+        // Get the number of assets for each portfolio
         const enhancedPortfolios = await Promise.all(
           fetchedPortfolios.map(async (portfolio) => {
             try {
@@ -54,8 +49,7 @@ export const PortfolioScreen: React.FC = () => {
                 ...portfolio,
                 assetsCount: assets.length
               };
-            } catch (err) {
-              console.error(`Error fetching assets for portfolio ${portfolio.portfolio_id}:`, err);
+            } catch {
               return {
                 ...portfolio,
                 assetsCount: 0
@@ -67,7 +61,6 @@ export const PortfolioScreen: React.FC = () => {
         setPortfolios(enhancedPortfolios);
       }
     } catch (err) {
-      console.error('Error fetching portfolios:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(`Failed to load portfolios: ${errorMessage}. Please try again.`);
     } finally {
@@ -79,13 +72,9 @@ export const PortfolioScreen: React.FC = () => {
   useEffect(() => {
     if (isReady) {
       WebApp.ready();
-      console.log('WebApp is ready, fetching portfolios...');
       fetchPortfolios().catch(err => {
-        console.error('Error in initial portfolio fetch:', err);
         setError(`Failed to initialize: ${err instanceof Error ? err.message : 'Unknown error'}`);
       });
-    } else {
-      console.log('WebApp is not ready yet');
     }
   }, [isReady, fetchPortfolios]);
 
@@ -111,8 +100,7 @@ export const PortfolioScreen: React.FC = () => {
       
       // Navigate to the new portfolio
       navigate(`/portfolio/${newPortfolio.portfolio_id}`);
-    } catch (err) {
-      console.error('Error creating portfolio:', err);
+    } catch {
       WebApp.showAlert('Failed to create portfolio. Please try again.');
       webApp?.HapticFeedback.notificationOccurred('error');
     } finally {
@@ -133,8 +121,7 @@ export const PortfolioScreen: React.FC = () => {
             // Update portfolios list
             setPortfolios(prev => prev.filter(p => p.portfolio_id !== portfolioId));
             webApp?.HapticFeedback.notificationOccurred('success');
-          } catch (err) {
-            console.error('Error deleting portfolio:', err);
+          } catch {
             WebApp.showAlert('Failed to delete portfolio. Please try again.');
             webApp?.HapticFeedback.notificationOccurred('error');
           } finally {

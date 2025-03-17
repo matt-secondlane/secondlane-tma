@@ -6,7 +6,7 @@ import { apiService } from '../../utils/api';
 import { OrderbookItem } from '../../types/api';
 import styles from './DealsScreen.module.css';
 import { Loader } from '../../components/Loader';
-import { parseNumberWithSuffix, formatMoney } from '../../utils/money';
+import { formatMoney } from '../../utils/money';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -139,7 +139,6 @@ export const DealsScreen = () => {
                   className={styles.dealCard}
                   onClick={() => {
                     webApp?.HapticFeedback.impactOccurred('light');
-                    console.log('Deal type before navigation:', deal.deal_type);
                     navigate(`/place-inquiry/${deal.order_id}`, {
                       state: { 
                         logo: deal.logo,

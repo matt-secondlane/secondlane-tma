@@ -143,6 +143,14 @@ function App() {
             } 
           />
           <Route 
+            path="/place-inquiry/:orderId" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/attestation" replace /> 
+                : <PlaceInquiryScreen />
+            } 
+          />
+          <Route 
             path="/place-rfq" 
             element={
               isAttested === false 

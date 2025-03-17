@@ -388,7 +388,7 @@
   }
 }
 
-/* Адаптация для темной темы */
+/* Adaptation for dark theme */
 @media (prefers-color-scheme: dark) {
   .portfolioItem {
     border: 1px solid rgba(255, 255, 255, 0.05);

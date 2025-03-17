@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  // URL для API через прокси сервер разработки
+  // URL for API through development proxy server
   BASE_URL: '/api/v1',
   IMAGE_BASE_URL: 'https://nonprod.secondlane.io',
   HEADERS: {

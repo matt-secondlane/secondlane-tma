@@ -127,7 +127,7 @@
   opacity: 0.7;
 }
 
-/* Стили для поля даты и календаря */
+/* Styles for date field and calendar */
 input[type="date"].input {
   cursor: pointer;
   position: relative;
@@ -153,12 +153,12 @@ input[type="date"].input:focus::-webkit-calendar-picker-indicator {
   opacity: 1;
 }
 
-/* Добавление эффекта размытия при открытии календаря */
+/* Adding blur effect when opening calendar */
 input[type="date"].input:focus {
   backdrop-filter: none;
 }
 
-/* Добавляем блюр на весь экран при открытом календаре */
+/* Adding blur to the entire screen when calendar is open */
 .formGroup:has(input[type="date"].input:focus)::after {
   content: "";
   position: fixed;
@@ -178,7 +178,7 @@ input[type="date"].input:focus {
   to { opacity: 1; }
 }
 
-/* Стили для input type="number" */
+/* Styles for input type="number" */
 input[type="number"].input {
   -webkit-appearance: none;
   appearance: none;
@@ -337,7 +337,7 @@ input[type="number"].input::-webkit-outer-spin-button {
   margin-left: 2px;
 }
 
-/* Медиа-запросы для адаптивности */
+/* Media queries for responsiveness */
 @media (max-width: 480px) {
   .formGroup {
     padding: 16px;
@@ -357,7 +357,7 @@ input[type="number"].input::-webkit-outer-spin-button {
   }
 }
 
-/* Специфические стили для темной темы */
+/* Specific styles for dark theme */
 @media (prefers-color-scheme: dark) {
   .input, .textarea {
     border-color: rgba(255, 255, 255, 0.1);

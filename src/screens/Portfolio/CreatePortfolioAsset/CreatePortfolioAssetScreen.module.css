@@ -331,7 +331,7 @@
   margin-left: 4px;
 }
 
-/* Адаптивные стили для мобильных устройств */
+/* Responsive styles for mobile devices */
 @media (max-width: 480px) {
   .formGroup {
     padding: 16px;
@@ -347,7 +347,7 @@
   }
 }
 
-/* Темная тема */
+/* Dark theme */
 @media (prefers-color-scheme: dark) {
   .input, .textarea {
     border-color: rgba(255, 255, 255, 0.1);
