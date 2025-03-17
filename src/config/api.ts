@@ -1,6 +1,7 @@
 export const API_CONFIG = {
-  BASE_URL: `${import.meta.env.VITE_SECONDLANE_API_URL}/api/v1`,
-  IMAGE_BASE_URL: import.meta.env.VITE_SECONDLANE_API_URL,
+  // URL для API через прокси сервер разработки
+  BASE_URL: '/api/v1',
+  IMAGE_BASE_URL: 'https://nonprod.secondlane.io',
   HEADERS: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'

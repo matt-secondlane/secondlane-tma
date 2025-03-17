@@ -49,7 +49,8 @@ const DatabaseScreen: React.FC = () => {
   const observer = useRef<IntersectionObserver | null>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>();
   const currentSearchRef = useRef('');
-  const abortControllerRef = useRef<AbortController | null>(null);
+  // Temporarily commenting out unused variable
+  // const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleProjectSelect = (project: Project) => {
     WebApp.HapticFeedback.impactOccurred('light');
@@ -62,28 +63,34 @@ const DatabaseScreen: React.FC = () => {
       return;
     }
 
-    // Cancel previous request if exists
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    abortControllerRef.current = new AbortController();
+    // Temporarily disable AbortController usage
+    // if (abortControllerRef.current && page > 1) {
+    //   abortControllerRef.current.abort();
+    // }
+    // abortControllerRef.current = new AbortController();
 
     try {
       loadingRef.current = true;
       setIsLoading(true);
       setError(null);
       
+      console.log(`Loading projects page ${page} with search: "${search}"`);
+      
       const response = await api.get('/projects', {
         params: {
           offset: (page - 1) * 10,
           limit: 10,
           search: search || ''
-        },
-        signal: abortControllerRef.current.signal
+        }
+        // Temporarily disable signal usage
+        // signal: abortControllerRef.current.signal
       });
+
+      console.log(`Received projects response for page ${page}:`, response);
 
       // Check if search query hasn't changed during loading
       if (currentSearchRef.current !== search) {
+        console.log('Search query changed during loading, ignoring results');
         return;
       }
       
@@ -97,6 +104,7 @@ const DatabaseScreen: React.FC = () => {
         projectsData = response.data.data;
         total = response.data.total || response.data.meta?.total || projectsData.length;
       } else {
+        console.error('Unexpected API response structure:', response.data);
         throw new Error('Unexpected API response structure');
       }
       
@@ -114,18 +122,23 @@ const DatabaseScreen: React.FC = () => {
       setHasMore(projectsData.length === 10 && (page - 1) * 10 + projectsData.length < total);
       
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        return;
-      }
+      // if (err instanceof Error && err.name === 'AbortError') {
+      //   console.log('Request was aborted');
+      //   return;
+      // }
       console.error('Error loading projects:', err);
+      console.error('Error type:', err instanceof Error ? err.name : typeof err);
+      console.error('Error message:', err instanceof Error ? err.message : String(err));
+      console.error('Error stack:', err instanceof Error ? err.stack : 'No stack trace');
+      
       setError('Failed to load projects');
       setHasMore(false);
     } finally {
       setIsLoading(false);
       loadingRef.current = false;
-      if (abortControllerRef.current?.signal.aborted) {
-        abortControllerRef.current = null;
-      }
+      // if (abortControllerRef.current?.signal.aborted) {
+      //   abortControllerRef.current = null;
+      // }
     }
   }, []);
 
@@ -175,9 +188,10 @@ const DatabaseScreen: React.FC = () => {
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
       }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      // Temporarily disable canceling requests on unmount
+      // if (abortControllerRef.current) {
+      //   abortControllerRef.current.abort();
+      // }
     };
   }, [loadProjects]);
 

@@ -27,21 +27,44 @@
   flex: 1;
   justify-content: center;
   padding: 4px 0;
-  transition: color 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .navItem.active {
-  color: #007AFF;
+  color: #4B4F47;
+  font-weight: 600;
+  transform: translateY(-2px);
+}
+
+.navItem.active::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background-color: #4B4F47;
+  border-radius: 2px;
 }
 
 .navItem.active svg {
-  color: #007AFF;
+  color: #4B4F47;
+  filter: drop-shadow(0 1px 2px rgba(75, 79, 71, 0.2));
+  transform: scale(1.1);
 }
 
 .navItem span {
   font-size: 10px;
   line-height: 12px;
   margin-top: 1px;
+  transition: all 0.3s ease;
+}
+
+.navItem.active span {
+  font-size: 11px;
+  letter-spacing: -0.2px;
 }
 
 .addButtonWrapper {
@@ -49,7 +72,7 @@
 }
 
 .addButton {
-  background: #007AFF;
+  background: #4B4F47;
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -60,7 +83,7 @@
   padding: 0;
   color: #fff;
   cursor: pointer;
-  box-shadow: 0px 4px 10px rgba(0, 122, 255, 0.3);
+  box-shadow: 0px 4px 10px rgba(75, 79, 71, 0.3);
 }
 
 .addButton:active {

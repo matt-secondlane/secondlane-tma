@@ -339,4 +339,94 @@ export interface AttestationResponse {
   message?: string;
   attestation_id?: string;
   data?: Attestation;
+}
+
+// Portfolio types
+export interface Portfolio {
+  portfolio_id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+  is_default: boolean;
+}
+
+export interface PortfolioAsset {
+  asset_id: string;
+  portfolio_id: string;
+  project_id?: string;
+  project_name: string;
+  date?: string;
+  invested_amount?: number;
+  tranche_size?: string | number;
+  terms?: string;
+  project_website?: string;
+  valuation?: number;
+  equity_or_tokens_amount?: number;
+  created_at: string;
+  updated_at: string;
+  logo?: string;
+  project?: {
+    project_id: string | null;
+    name: string;
+    image_url: string | null;
+  };
+}
+
+export interface PortfolioResponse {
+  data: Portfolio;
+}
+
+export interface PortfoliosResponse {
+  data: Portfolio[];
+}
+
+export interface PortfolioAssetResponse {
+  data: PortfolioAsset;
+}
+
+export interface PortfolioAssetsResponse {
+  data: PortfolioAsset[];
+}
+
+export interface CreatePortfolioRequest {
+  name: string;
+  description?: string;
+}
+
+export interface UpdatePortfolioRequest {
+  name?: string;
+  description?: string;
+}
+
+export interface CreatePortfolioAssetRequest {
+  project_id?: string;
+  project_name: string;
+  date: string;
+  invested_amount: number;
+  terms?: string;
+  project_website?: string;
+  valuation?: number;
+  equity_or_tokens_amount?: number;
+}
+
+export interface UpdatePortfolioAssetRequest {
+  project_id?: string;
+  project_name?: string;
+  date?: string;
+  invested_amount?: number;
+  terms?: string;
+  project_website?: string;
+  valuation?: number;
+  equity_or_tokens_amount?: number;
+}
+
+export interface ProjectSearchResult {
+  project_id: string;
+  project_name: string;
+}
+
+export interface ProjectSearchResponse {
+  total: number;
+  data: ProjectSearchResult[];
 } 

@@ -21,7 +21,15 @@ import type {
   AttestationStatus,
   AttestationRequest,
   AttestationResponse,
-  Attestation
+  Attestation,
+  Portfolio,
+  CreatePortfolioRequest,
+  UpdatePortfolioRequest,
+  PortfolioAsset,
+  CreatePortfolioAssetRequest,
+  UpdatePortfolioAssetRequest,
+  ProjectSearchResult,
+  ProjectSearchResponse
 } from '../types/api';
 
 export const apiService = {
@@ -262,6 +270,282 @@ export const apiService = {
       }
       
       return { success: false, error: "Failed to delete attestation" };
+    }
+  },
+
+  // Portfolio API methods
+  
+  // Get all portfolios
+  getPortfolios: async (): Promise<Portfolio[]> => {
+    console.log('API: getPortfolios called');
+    try {
+      // Используем GET-запрос в соответствии с документацией
+      const response = await api.get('/portfolio');
+      console.log('API: getPortfolios response:', response.data);
+      return response.data.data || [];
+    } catch (error) {
+      console.error('API: getPortfolios error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error)
+      });
+      throw error;
+    }
+  },
+
+  // Get portfolio by ID
+  getPortfolioById: async (portfolioId: string): Promise<Portfolio> => {
+    console.log('API: getPortfolioById called with:', { portfolioId });
+    try {
+      // Используем GET-запрос в соответствии с документацией
+      const response = await api.get(`/portfolio/${portfolioId}`);
+      console.log('API: getPortfolioById response:', response.data);
+      return response.data.data;
+    } catch (error) {
+      console.error('API: getPortfolioById error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId
+      });
+      throw error;
+    }
+  },
+
+  // Create portfolio
+  createPortfolio: async (data: CreatePortfolioRequest): Promise<Portfolio> => {
+    console.log('API: createPortfolio called with:', { data });
+    try {
+      const response = await api.post('/portfolio', data);
+      console.log('API: createPortfolio response:', response.data);
+      return response.data.data;
+    } catch (error) {
+      console.error('API: createPortfolio error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        data
+      });
+      throw error;
+    }
+  },
+
+  // Update portfolio
+  updatePortfolio: async (portfolioId: string, data: UpdatePortfolioRequest): Promise<Portfolio> => {
+    console.log('API: updatePortfolio called with:', { portfolioId, data });
+    try {
+      const response = await api.put(`/portfolio/${portfolioId}`, data);
+      console.log('API: updatePortfolio response:', response.data);
+      return response.data.data;
+    } catch (error) {
+      console.error('API: updatePortfolio error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId,
+        data
+      });
+      throw error;
+    }
+  },
+
+  // Delete portfolio
+  deletePortfolio: async (portfolioId: string): Promise<void> => {
+    console.log('API: deletePortfolio called with:', { portfolioId });
+    try {
+      await api.delete(`/portfolio/${portfolioId}`);
+      console.log('API: deletePortfolio successful');
+    } catch (error) {
+      console.error('API: deletePortfolio error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId
+      });
+      throw error;
+    }
+  },
+
+  // Get portfolio assets
+  getPortfolioAssets: async (portfolioId: string): Promise<PortfolioAsset[]> => {
+    console.log('API: getPortfolioAssets called with:', { portfolioId });
+    try {
+      // Получаем данные портфеля, включая активы
+      const response = await api.get(`/portfolio/${portfolioId}`);
+      console.log('API: getPortfolioAssets full response:', JSON.stringify(response.data, null, 2));
+      
+      // Возвращаем массив активов из ответа API
+      const assets = response.data.data.assets || [];
+      
+      // Преобразуем данные в правильный формат
+      return assets.map((asset: Partial<PortfolioAsset> & { 
+        project?: { 
+          project_id: string | null; 
+          name: string; 
+          image_url: string | null; 
+        } 
+      }) => ({
+        asset_id: asset.asset_id || '',
+        portfolio_id: asset.portfolio_id || '',
+        project_name: asset.project?.name || '',
+        project: asset.project,
+        project_website: asset.project_website || '',
+        tranche_size: asset.tranche_size,
+        valuation: asset.valuation,
+        terms: asset.terms || '',
+        date: asset.date || asset.created_at || '',
+        created_at: asset.created_at || '',
+        updated_at: asset.updated_at || ''
+      }));
+    } catch (error) {
+      console.error('API: getPortfolioAssets error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId
+      });
+      throw error;
+    }
+  },
+
+  // Get portfolio asset by ID
+  getPortfolioAssetById: async (portfolioId: string, assetId: string): Promise<PortfolioAsset> => {
+    console.log('API: getPortfolioAssetById called with:', { portfolioId, assetId });
+    try {
+      // Используем GET-запрос в соответствии с документацией
+      const response = await api.get(`/portfolio/assets/${assetId}`);
+      console.log('API: getPortfolioAssetById full response:', JSON.stringify(response.data, null, 2));
+      return response.data.data;
+    } catch (error) {
+      console.error('API: getPortfolioAssetById error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId,
+        assetId
+      });
+      throw error;
+    }
+  },
+
+  // Create portfolio asset
+  createPortfolioAsset: async (portfolioId: string, data: CreatePortfolioAssetRequest): Promise<PortfolioAsset> => {
+    console.log('API: createPortfolioAsset called with:', JSON.stringify({ portfolioId, data }, null, 2));
+    try {
+      // Преобразуем данные в правильный формат
+      const formattedData = {
+        project_id: data.project_id || null,
+        project_name: data.project_name,
+        // Отправляем дату без часового пояса, как требует API
+        date: data.date.split('T')[0], // Формат YYYY-MM-DD
+        // Используем invested_amount как строку, так как API ожидает строку
+        invested_amount: String(data.invested_amount),
+        terms: data.terms || '',
+        project_website: data.project_website || null,
+        valuation: data.valuation ? String(data.valuation) : null,
+        equity_or_tokens_amount: data.equity_or_tokens_amount ? String(data.equity_or_tokens_amount) : null
+      };
+      
+      console.log('API: createPortfolioAsset formatted data:', JSON.stringify(formattedData, null, 2));
+      
+      const response = await api.post(`/portfolio/${portfolioId}/assets`, formattedData);
+      console.log('API: createPortfolioAsset full response:', JSON.stringify(response.data, null, 2));
+      return response.data.data;
+    } catch (error) {
+      console.error('API: createPortfolioAsset error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId,
+        data
+      });
+      throw error;
+    }
+  },
+
+  // Update portfolio asset
+  updatePortfolioAsset: async (portfolioId: string, assetId: string, data: UpdatePortfolioAssetRequest): Promise<PortfolioAsset> => {
+    console.log('API: updatePortfolioAsset called with:', { portfolioId, assetId, data });
+    try {
+      // Преобразуем данные в правильный формат
+      const formattedData = {
+        project_id: data.project_id || null,
+        project_name: data.project_name,
+        // Отправляем дату без часового пояса, как требует API
+        date: data.date ? data.date.split('T')[0] : undefined, // Формат YYYY-MM-DD
+        // Используем числовые поля как строки, так как API ожидает строки
+        invested_amount: data.invested_amount !== undefined ? String(data.invested_amount) : undefined,
+        terms: data.terms || '',
+        project_website: data.project_website || null,
+        // Валидация должна быть в формате строки с плавающей точкой
+        valuation: data.valuation === null || data.valuation === undefined ? "0" : String(data.valuation),
+        equity_or_tokens_amount: data.equity_or_tokens_amount !== undefined ? String(data.equity_or_tokens_amount) : undefined
+      };
+      
+      console.log('API: updatePortfolioAsset formatted data:', JSON.stringify(formattedData, null, 2));
+      
+      const response = await api.put(`/portfolio/assets/${assetId}`, formattedData);
+      console.log('API: updatePortfolioAsset response:', response.data);
+      return response.data.data;
+    } catch (error) {
+      console.error('API: updatePortfolioAsset error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId,
+        assetId,
+        data
+      });
+      throw error;
+    }
+  },
+
+  // Delete portfolio asset
+  deletePortfolioAsset: async (portfolioId: string, assetId: string): Promise<void> => {
+    console.log('API: deletePortfolioAsset called with:', { portfolioId, assetId });
+    try {
+      await api.delete(`/portfolio/assets/${assetId}`);
+      console.log('API: deletePortfolioAsset successful');
+    } catch (error) {
+      console.error('API: deletePortfolioAsset error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId,
+        assetId
+      });
+      throw error;
+    }
+  },
+
+  // Upload portfolio assets CSV
+  uploadPortfolioAssetsCSV: async (portfolioId: string, file: File): Promise<void> => {
+    console.log('API: uploadPortfolioAssetsCSV called with:', { portfolioId });
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      await api.post('/portfolio/csv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      console.log('API: uploadPortfolioAssetsCSV successful');
+    } catch (error) {
+      console.error('API: uploadPortfolioAssetsCSV error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        portfolioId
+      });
+      throw error;
+    }
+  },
+
+  // Search projects for portfolio assets
+  searchProjects: async (query: string): Promise<ProjectSearchResult[]> => {
+    console.log('API: searchProjects called with:', { query });
+    try {
+      const response = await api.get<ProjectSearchResponse>('/projects/ids', { params: { search: query } });
+      console.log('API: searchProjects response:', response.data);
+      return response.data.data || [];
+    } catch (error) {
+      console.error('API: searchProjects error:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        query
+      });
+      throw error;
     }
   }
 }; 
