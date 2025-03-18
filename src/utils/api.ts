@@ -313,13 +313,11 @@ export const apiService = {
       project_name: data.project_name,
       // Send date without timezone as required by API
       date: data.date ? data.date.split('T')[0] : undefined, // Format YYYY-MM-DD
-      // Use numeric fields as strings since API expects strings
-      invested_amount: data.invested_amount !== undefined ? String(data.invested_amount) : undefined,
+      invested_amount: data.invested_amount,
       terms: data.terms || '',
       project_website: data.project_website || null,
-      // Validation should be in string format with floating point
-      valuation: data.valuation === null || data.valuation === undefined ? "0" : String(data.valuation),
-      equity_or_tokens_amount: data.equity_or_tokens_amount !== undefined ? String(data.equity_or_tokens_amount) : undefined
+      valuation: data.valuation ?? 0,
+      equity_or_tokens_amount: data.equity_or_tokens_amount
     };
     
     const response = await api.put(`/portfolio/assets/${assetId}`, formattedData);

@@ -6,7 +6,16 @@ import { apiService } from '../../../utils/api';
 import { PortfolioAsset, UpdatePortfolioAssetRequest } from '../../../types/api';
 import styles from './EditPortfolioAssetScreen.module.css';
 import { Loader } from '../../../components/Loader';
-import { parseNumberWithSuffix } from '../../../utils/money';
+import { parseNumberWithSuffix, formatMoney } from '../../../utils/money';
+
+// Format number with suffix without currency symbol
+const displayNumberWithSuffix = (value: number | undefined): string => {
+  if (value === undefined || value === null) return '';
+  
+  const formatted = formatMoney(value);
+  // Remove the $ sign from the formatted money value
+  return formatted.substring(1);
+};
 
 export const EditPortfolioAssetScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -64,11 +73,23 @@ export const EditPortfolioAssetScreen: React.FC = () => {
         }
       }
       
+      // Convert invested_amount to number if it's a string
+      const investedAmount = typeof assetDetails.invested_amount === 'string' 
+        ? parseFloat(assetDetails.invested_amount) 
+        : assetDetails.invested_amount;
+      
+      // Convert tranche_size to number if it exists
+      const trancheSize = assetDetails.tranche_size 
+        ? (typeof assetDetails.tranche_size === 'string' 
+            ? parseFloat(assetDetails.tranche_size) 
+            : assetDetails.tranche_size) 
+        : 0;
+      
       // Initialize form data
       setFormData({
         project_name: assetDetails.project_name || assetDetails.project?.name || '',
         date: dateValue,
-        invested_amount: assetDetails.invested_amount || parseFloat(assetDetails.tranche_size as string) || 0,
+        invested_amount: investedAmount || trancheSize || 0,
         terms: assetDetails.terms || '',
         project_website: assetDetails.project_website || '',
         valuation: assetDetails.valuation,
@@ -269,7 +290,9 @@ export const EditPortfolioAssetScreen: React.FC = () => {
             name="invested_amount"
             type="text"
             className={styles.input}
-            value={formData.invested_amount === null || formData.invested_amount === undefined ? '' : formData.invested_amount}
+            value={typeof formData.invested_amount === 'number' 
+              ? displayNumberWithSuffix(formData.invested_amount) 
+              : formData.invested_amount || ''}
             onChange={handleInputChange}
             placeholder="Enter amount in USD (e.g. 500k, 1.5M, 2B)"
             required
@@ -285,7 +308,9 @@ export const EditPortfolioAssetScreen: React.FC = () => {
             name="valuation"
             type="text"
             className={styles.input}
-            value={formData.valuation === null || formData.valuation === undefined ? '' : formData.valuation}
+            value={typeof formData.valuation === 'number'
+              ? displayNumberWithSuffix(formData.valuation)
+              : formData.valuation || ''}
             onChange={handleInputChange}
             placeholder="Enter valuation in USD (e.g. 5M, 10B)"
           />
@@ -300,7 +325,9 @@ export const EditPortfolioAssetScreen: React.FC = () => {
             name="equity_or_tokens_amount"
             type="text"
             className={styles.input}
-            value={formData.equity_or_tokens_amount === null || formData.equity_or_tokens_amount === undefined ? '' : formData.equity_or_tokens_amount}
+            value={typeof formData.equity_or_tokens_amount === 'number'
+              ? displayNumberWithSuffix(formData.equity_or_tokens_amount)
+              : formData.equity_or_tokens_amount || ''}
             onChange={handleInputChange}
             placeholder="Enter equity percentage or token amount"
           />
