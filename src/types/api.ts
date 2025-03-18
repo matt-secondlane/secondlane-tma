@@ -369,7 +369,7 @@ export interface PortfolioAsset {
   project?: {
     project_id: string | null;
     name: string;
-    image_url: string | null;
+    logo: string | null;
   };
 }
 

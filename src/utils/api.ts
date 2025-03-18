@@ -266,6 +266,7 @@ export const apiService = {
     }) => ({
       asset_id: asset.asset_id || '',
       portfolio_id: asset.portfolio_id || '',
+      logo: asset.project?.logo || '',
       project_name: asset.project?.name || '',
       project: asset.project,
       project_website: asset.project_website || '',
