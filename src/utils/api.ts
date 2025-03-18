@@ -261,7 +261,7 @@ export const apiService = {
       project?: { 
         project_id: string | null; 
         name: string; 
-        image_url: string | null; 
+        logo: string | null; 
       } 
     }) => ({
       asset_id: asset.asset_id || '',
