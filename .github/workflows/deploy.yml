@@ -22,21 +22,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    # Add manual approval step for PRs
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     steps:
-      # Add manual approval step for PR deployments
-      - name: Wait for manual approval for PR deployments
-        if: github.event_name == 'pull_request'
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: ${{ github.repository_owner }}
-          minimum-approvals: 1
-          issue-title: "Deploy PR #${{ github.event.pull_request.number }} to GitHub Pages"
-          issue-body: "Please approve or deny the deployment of PR #${{ github.event.pull_request.number }} to GitHub Pages."
-          exclude-workflow-initiator-as-approver: false
-          
       - uses: actions/checkout@v3
       
       - name: Setup Node.js
