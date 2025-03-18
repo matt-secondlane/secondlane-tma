@@ -5,6 +5,7 @@ import { apiService } from '../../../utils/api';
 import { CreatePortfolioAssetRequest, ProjectSearchResult } from '../../../types/api';
 import styles from './CreatePortfolioAssetScreen.module.css';
 import { Loader } from '../../../components/Loader';
+import { parseNumberWithSuffix } from '../../../utils/money';
 
 export const CreatePortfolioAssetScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -82,9 +83,24 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [name]: name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount'
-        ? value === '' ? undefined : parseFloat(value)
+        ? value === '' ? undefined : value
         : value
     }));
+  };
+
+  // Validate and parse monetary input
+  const validateMonetaryInput = (value: string): number | undefined => {
+    if (!value) return undefined;
+    
+    // Check if the value has suffixes like k, m, b
+    if (value.match(/^(-?\d*\.?\d+)(k|m|b)$/i)) {
+      const parsedValue = parseNumberWithSuffix(value);
+      return parsedValue !== null ? parsedValue : undefined;
+    }
+    
+    // Otherwise try to parse as regular number
+    const numValue = parseFloat(value);
+    return !isNaN(numValue) ? numValue : undefined;
   };
 
   // Handle form submission
@@ -106,7 +122,20 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
       return;
     }
     
-    if (!formData.invested_amount || formData.invested_amount <= 0) {
+    // Parse monetary values before submission
+    const investedAmount = typeof formData.invested_amount === 'string' 
+      ? validateMonetaryInput(formData.invested_amount) 
+      : formData.invested_amount;
+      
+    const valuation = typeof formData.valuation === 'string'
+      ? validateMonetaryInput(formData.valuation)
+      : formData.valuation;
+      
+    const equityAmount = typeof formData.equity_or_tokens_amount === 'string'
+      ? validateMonetaryInput(formData.equity_or_tokens_amount)
+      : formData.equity_or_tokens_amount;
+    
+    if (!investedAmount || investedAmount <= 0) {
       setError('Invested amount must be greater than 0');
       return;
     }
@@ -120,9 +149,12 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
       setSubmitting(true);
       setError(null);
       
-      // Send data without date conversion
+      // Send data with parsed values
       const apiData = {
-        ...formData
+        ...formData,
+        invested_amount: investedAmount,
+        valuation: valuation,
+        equity_or_tokens_amount: equityAmount
       };
       
       await apiService.createPortfolioAsset(portfolioId, apiData);
@@ -228,13 +260,11 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
           <input
             id="invested_amount"
             name="invested_amount"
-            type="number"
-            step="0.01"
-            min="0"
+            type="text"
             className={styles.input}
             value={formData.invested_amount || ''}
             onChange={handleInputChange}
-            placeholder="Enter amount in USD"
+            placeholder="Enter amount in USD (e.g. 500k, 1.5M, 2B)"
             required
           />
         </div>
@@ -246,13 +276,11 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
           <input
             id="valuation"
             name="valuation"
-            type="number"
-            step="0.01"
-            min="0"
+            type="text"
             className={styles.input}
             value={formData.valuation || ''}
             onChange={handleInputChange}
-            placeholder="Enter valuation in USD (optional)"
+            placeholder="Enter valuation in USD (e.g. 5M, 10B)"
           />
         </div>
 
@@ -263,13 +291,11 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
           <input
             id="equity_or_tokens_amount"
             name="equity_or_tokens_amount"
-            type="number"
-            step="0.000001"
-            min="0"
+            type="text"
             className={styles.input}
             value={formData.equity_or_tokens_amount || ''}
             onChange={handleInputChange}
-            placeholder="Enter amount of equity or tokens (optional)"
+            placeholder="Enter amount of equity or tokens"
           />
         </div>
 

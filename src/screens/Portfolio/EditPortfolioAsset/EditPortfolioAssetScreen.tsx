@@ -6,6 +6,7 @@ import { apiService } from '../../../utils/api';
 import { PortfolioAsset, UpdatePortfolioAssetRequest } from '../../../types/api';
 import styles from './EditPortfolioAssetScreen.module.css';
 import { Loader } from '../../../components/Loader';
+import { parseNumberWithSuffix } from '../../../utils/money';
 
 export const EditPortfolioAssetScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -96,9 +97,24 @@ export const EditPortfolioAssetScreen: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [name]: name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount'
-        ? value === '' ? undefined : parseFloat(value)
+        ? value === '' ? undefined : value
         : value
     }));
+  };
+
+  // Validate and parse monetary input
+  const validateMonetaryInput = (value: string): number | undefined => {
+    if (!value) return undefined;
+    
+    // Check if the value has suffixes like k, m, b
+    if (value.match(/^(-?\d*\.?\d+)(k|m|b)$/i)) {
+      const parsedValue = parseNumberWithSuffix(value);
+      return parsedValue !== null ? parsedValue : undefined;
+    }
+    
+    // Otherwise try to parse as regular number
+    const numValue = parseFloat(value);
+    return !isNaN(numValue) ? numValue : undefined;
   };
 
   // Handle form submission
@@ -120,7 +136,20 @@ export const EditPortfolioAssetScreen: React.FC = () => {
       return;
     }
     
-    if (!formData.invested_amount || formData.invested_amount <= 0) {
+    // Parse monetary values before submission
+    const investedAmount = typeof formData.invested_amount === 'string' 
+      ? validateMonetaryInput(formData.invested_amount) 
+      : formData.invested_amount;
+      
+    const valuation = typeof formData.valuation === 'string'
+      ? validateMonetaryInput(formData.valuation)
+      : formData.valuation;
+      
+    const equityAmount = typeof formData.equity_or_tokens_amount === 'string'
+      ? validateMonetaryInput(formData.equity_or_tokens_amount)
+      : formData.equity_or_tokens_amount;
+    
+    if (!investedAmount || investedAmount <= 0) {
       setError('Invested amount must be greater than 0');
       return;
     }
@@ -129,7 +158,12 @@ export const EditPortfolioAssetScreen: React.FC = () => {
       setSubmitting(true);
       setError(null);
       
-      await apiService.updatePortfolioAsset(portfolioId, assetId, formData);
+      await apiService.updatePortfolioAsset(portfolioId, assetId, {
+        ...formData,
+        invested_amount: investedAmount,
+        valuation: valuation,
+        equity_or_tokens_amount: equityAmount
+      });
       
       webApp?.HapticFeedback.notificationOccurred('success');
       WebApp.showAlert('Asset updated successfully!');
@@ -233,13 +267,11 @@ export const EditPortfolioAssetScreen: React.FC = () => {
           <input
             id="invested_amount"
             name="invested_amount"
-            type="number"
-            step="0.01"
-            min="0"
+            type="text"
             className={styles.input}
             value={formData.invested_amount === null || formData.invested_amount === undefined ? '' : formData.invested_amount}
             onChange={handleInputChange}
-            placeholder="Enter amount in USD"
+            placeholder="Enter amount in USD (e.g. 500k, 1.5M, 2B)"
             required
           />
         </div>
@@ -251,13 +283,11 @@ export const EditPortfolioAssetScreen: React.FC = () => {
           <input
             id="valuation"
             name="valuation"
-            type="number"
-            step="0.01"
-            min="0"
+            type="text"
             className={styles.input}
             value={formData.valuation === null || formData.valuation === undefined ? '' : formData.valuation}
             onChange={handleInputChange}
-            placeholder="Enter valuation in USD"
+            placeholder="Enter valuation in USD (e.g. 5M, 10B)"
           />
         </div>
 
