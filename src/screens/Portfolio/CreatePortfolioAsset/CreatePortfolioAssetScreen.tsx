@@ -154,7 +154,8 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
         ...formData,
         invested_amount: investedAmount,
         valuation: valuation,
-        equity_or_tokens_amount: equityAmount
+        equity_or_tokens_amount: equityAmount,
+        project_id: selectedProject?.project_id || formData.project_id
       };
       
       await apiService.createPortfolioAsset(portfolioId, apiData);
@@ -238,7 +239,7 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
                       className={styles.projectLogo}
                     />
                   )}
-                  <span>{project.project_name}</span>
+                  <span> {project.project_name}</span>
                 </div>
               ))}
             </div>
