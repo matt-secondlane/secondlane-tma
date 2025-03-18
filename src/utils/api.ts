@@ -313,7 +313,7 @@ export const apiService = {
       project_name: data.project_name,
       // Send date without timezone as required by API
       date: data.date ? data.date.split('T')[0] : undefined, // Format YYYY-MM-DD
-      tranche_size: data.invested_amount,
+      tranche_size: data.tranche_size,
       terms: data.terms || '',
       project_website: data.project_website || null,
       valuation: data.valuation ?? 0,

@@ -181,7 +181,7 @@ export const EditPortfolioAssetScreen: React.FC = () => {
       
       await apiService.updatePortfolioAsset(portfolioId, assetId, {
         ...formData,
-        invested_amount: investedAmount,
+        tranche_size: investedAmount,
         valuation: valuation,
         equity_or_tokens_amount: equityAmount
       });

@@ -414,7 +414,7 @@ export interface UpdatePortfolioAssetRequest {
   project_id?: string;
   project_name?: string;
   date?: string;
-  invested_amount?: number;
+  tranche_size?: number;
   terms?: string;
   project_website?: string;
   valuation?: number;
