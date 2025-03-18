@@ -18,6 +18,14 @@
   padding-bottom: 16px;
 }
 
+.projectLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .backButton {
   display: flex;
   align-items: center;
