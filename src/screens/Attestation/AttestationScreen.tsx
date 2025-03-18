@@ -24,6 +24,11 @@ interface AttestationFormData {
   email: string;
 }
 
+// Props for the AttestationScreen component
+interface AttestationScreenProps {
+  onAttestationComplete?: () => void;
+}
+
 // Custom country option type for react-select
 interface CountryOption {
   value: string;
@@ -47,7 +52,7 @@ const COUNTRY_OPTIONS: CountryOption[] = getCountryOptions();
 // Current year for attestation
 const CURRENT_YEAR = new Date().getFullYear();
 
-export const AttestationScreen: React.FC = () => {
+export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestationComplete }) => {
   const navigate = useNavigate();
   const { isReady, webApp } = useTelegram();
   const [loading, setLoading] = useState(true);
@@ -90,10 +95,6 @@ export const AttestationScreen: React.FC = () => {
       if (response.has_attestation) {
         if (response.is_accredited) {
           setAttestationStatus('attested_accredited');
-          // If user is attested and accredited, redirect to main screen
-          setTimeout(() => {
-            navigate('/');
-          }, 1500);
         } else {
           setAttestationStatus('attested_not_accredited');
           // If user is attested but not accredited, show appropriate message
@@ -114,7 +115,7 @@ export const AttestationScreen: React.FC = () => {
       setAttestationStatus('not_attested');
       setLoading(false);
     }
-  }, [navigate]);
+  }, []);
 
   // Check attestation status on load
   useEffect(() => {
@@ -389,6 +390,13 @@ export const AttestationScreen: React.FC = () => {
         if (statusResponse.has_attestation) {
           if (statusResponse.is_accredited) {
             setAttestationStatus('attested_accredited');
+            // Call the onAttestationComplete callback if provided
+            if (onAttestationComplete) {
+              // Wait a moment to show the success message before redirecting
+              setTimeout(() => {
+                onAttestationComplete();
+              }, 1500);
+            }
           } else {
             setAttestationStatus('attested_not_accredited');
             if (statusResponse.latest_attestation_year) {
