@@ -231,6 +231,13 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
                   className={styles.searchResultItem}
                   onClick={() => handleSelectProject(project)}
                 >
+                  {project.logo && (
+                    <img 
+                      src={project.logo} 
+                      alt=""
+                      className={styles.projectLogo}
+                    />
+                  )}
                   <span>{project.project_name}</span>
                 </div>
               ))}

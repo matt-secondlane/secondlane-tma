@@ -344,7 +344,12 @@ export const apiService = {
 
   // Search projects for portfolio assets
   searchProjects: async (query: string): Promise<ProjectSearchResult[]> => {
-    const response = await api.get<ProjectSearchResponse>('/projects/ids', { params: { search: query } });
+    const response = await api.get<ProjectSearchResponse>('/projects/ids', { 
+      params: { 
+        search: query,
+        include_logo: true 
+      } 
+    });
     return response.data.data || [];
   }
 }; 

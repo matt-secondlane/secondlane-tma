@@ -424,6 +424,7 @@ export interface UpdatePortfolioAssetRequest {
 export interface ProjectSearchResult {
   project_id: string;
   project_name: string;
+  logo?: string;
 }
 
 export interface ProjectSearchResponse {
