@@ -358,7 +358,7 @@ export interface PortfolioAsset {
   project_name: string;
   date?: string;
   invested_amount?: number;
-  tranche_size?: string | number;
+  tranche_size?: number;
   terms?: string;
   project_website?: string;
   valuation?: number;

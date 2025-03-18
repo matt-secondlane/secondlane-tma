@@ -6,6 +6,7 @@ import { apiService } from '../../../utils/api';
 import { Portfolio, PortfolioAsset } from '../../../types/api';
 import styles from './PortfolioDetailScreen.module.css';
 import { Loader } from '../../../components/Loader';
+import { formatMoney } from '../../../utils/money';
 
 export const PortfolioDetailScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -341,13 +342,13 @@ export const PortfolioDetailScreen: React.FC = () => {
                   <div className={styles.assetDetail}>
                     <span className={styles.detailLabel}>Invested Amount</span>
                     <span className={styles.detailValue}>
-                      {formatCurrency(asset.tranche_size || asset.invested_amount || 0)}
+                      {formatMoney(asset.tranche_size || asset.invested_amount || 0)}
                     </span>
                   </div>
                   {(asset.valuation || asset.valuation === 0) && (
                     <div className={styles.assetDetail}>
                       <span className={styles.detailLabel}>Valuation</span>
-                      <span className={styles.detailValue}>{formatCurrency(asset.valuation)}</span>
+                      <span className={styles.detailValue}>{formatMoney(asset.valuation)}</span>
                     </div>
                   )}
                   {(asset.equity_or_tokens_amount || asset.equity_or_tokens_amount === 0) && (
