@@ -342,7 +342,7 @@ export const PortfolioDetailScreen: React.FC = () => {
                   <div className={styles.assetDetail}>
                     <span className={styles.detailLabel}>Invested Amount</span>
                     <span className={styles.detailValue}>
-                      {formatMoney(asset.tranche_size || asset.invested_amount || 0)}
+                      {formatMoney(asset.invested_amount || 0)}
                     </span>
                   </div>
                   {(asset.valuation || asset.valuation === 0) && (
