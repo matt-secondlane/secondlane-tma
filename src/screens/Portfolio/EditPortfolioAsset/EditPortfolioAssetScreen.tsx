@@ -78,18 +78,11 @@ export const EditPortfolioAssetScreen: React.FC = () => {
         ? parseFloat(assetDetails.invested_amount) 
         : assetDetails.invested_amount;
       
-      // Convert tranche_size to number if it exists
-      const trancheSize = assetDetails.tranche_size 
-        ? (typeof assetDetails.tranche_size === 'string' 
-            ? parseFloat(assetDetails.tranche_size) 
-            : assetDetails.tranche_size) 
-        : 0;
-      
       // Initialize form data
       setFormData({
         project_name: assetDetails.project_name || assetDetails.project?.name || '',
         date: dateValue,
-        invested_amount: investedAmount || trancheSize || 0,
+        invested_amount: investedAmount || 0,
         terms: assetDetails.terms || '',
         project_website: assetDetails.project_website || '',
         valuation: assetDetails.valuation,
@@ -181,7 +174,7 @@ export const EditPortfolioAssetScreen: React.FC = () => {
       
       await apiService.updatePortfolioAsset(portfolioId, assetId, {
         ...formData,
-        tranche_size: investedAmount,
+        invested_amount: investedAmount,
         valuation: valuation,
         equity_or_tokens_amount: equityAmount
       });

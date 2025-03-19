@@ -270,7 +270,7 @@ export const apiService = {
       project_name: asset.project?.name || '',
       project: asset.project,
       project_website: asset.project_website || '',
-      tranche_size: asset.tranche_size,
+      invested_amount: asset.invested_amount,
       valuation: asset.valuation,
       terms: asset.terms || '',
       date: asset.date || asset.created_at || '',
@@ -293,12 +293,11 @@ export const apiService = {
       project_name: data.project_name,
       // Send date without timezone as required by API
       date: data.date.split('T')[0], // Format YYYY-MM-DD
-      // Use invested_amount as string since API expects a string
-      invested_amount: parseFloat(String(data.invested_amount)),
+      invested_amount: data.invested_amount,
       terms: data.terms || '',
       project_website: data.project_website || null,
-      valuation: data.valuation ? parseFloat(String(data.valuation)) : null,
-      equity_or_tokens_amount: data.equity_or_tokens_amount ? parseInt(String(data.equity_or_tokens_amount)) : null
+      valuation: data.valuation ? data.valuation : null,
+      equity_or_tokens_amount: data.equity_or_tokens_amount ? data.equity_or_tokens_amount : null
     };
     
     const response = await api.post(`/portfolio/${portfolioId}/assets`, formattedData);
@@ -313,7 +312,7 @@ export const apiService = {
       project_name: data.project_name,
       // Send date without timezone as required by API
       date: data.date ? data.date.split('T')[0] : undefined, // Format YYYY-MM-DD
-      tranche_size: data.tranche_size,
+      invested_amount: data.invested_amount,
       terms: data.terms || '',
       project_website: data.project_website || null,
       valuation: data.valuation ?? 0,
