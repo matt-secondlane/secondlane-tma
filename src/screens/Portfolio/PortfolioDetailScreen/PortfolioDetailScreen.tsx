@@ -35,8 +35,13 @@ export const PortfolioDetailScreen: React.FC = () => {
         apiService.getPortfolioAssets(portfolioId)
       ]);
       
+      // Сортируем активы по дате создания в обратном порядке (новые сверху)
+      const sortedAssets = [...assets].sort((a, b) => {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+      
       setPortfolio(portfolioDetails);
-      setPortfolioAssets(assets);
+      setPortfolioAssets(sortedAssets);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(`Failed to load portfolio details: ${errorMessage}. Please try again.`);
@@ -55,8 +60,16 @@ export const PortfolioDetailScreen: React.FC = () => {
 
   // Handle file upload for CSV
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !portfolioId) {
+    const fileInput = event.target;
+    const file = fileInput?.files?.[0];
+    if (!file || !portfolioId || !portfolio) {
+      return;
+    }
+    
+    // Проверяем только расширение файла
+    if (!file.name.endsWith('.csv')) {
+      WebApp.showAlert('Please select a CSV file');
+      fileInput.value = '';
       return;
     }
     
@@ -64,20 +77,45 @@ export const PortfolioDetailScreen: React.FC = () => {
     webApp?.HapticFeedback.impactOccurred('medium');
     
     try {
-      await apiService.uploadPortfolioAssetsCSV(portfolioId, file);
-      WebApp.showAlert('CSV uploaded successfully!');
+      // Используем прямой запрос к специальному эндпоинту для добавления активов
+      const formData = new FormData();
+      formData.append('csv_file', file, file.name);
+      
+      // Отправляем запрос к конкретному эндпоинту для добавления активов
+      const response = await fetch(`/api/v1/portfolio/${portfolioId}/assets/csv`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `tma ${window.Telegram?.WebApp?.initData || ''}`
+        }
+      });
+      
+      // Обрабатываем ошибки
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server responded with status: ${response.status}`);
+      }
+      
+      WebApp.showAlert('Assets from CSV successfully added to the current portfolio!');
       webApp?.HapticFeedback.notificationOccurred('success');
       
-      // Refresh assets
+      // Обновляем список активов
       fetchPortfolioDetails();
-    } catch {
-      WebApp.showAlert('Error uploading CSV. Please try again.');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      WebApp.showAlert(`Error adding assets from CSV: ${errorMessage}`);
       webApp?.HapticFeedback.notificationOccurred('error');
     } finally {
       setIsUploading(false);
-      // Reset file input
-      event.target.value = '';
+      fileInput.value = '';
     }
+  };
+
+  // Handle download CSV template
+  const handleDownloadCSVTemplate = () => {
+    const templateURL = apiService.getCSVTemplateURL();
+    window.open(templateURL, '_blank');
+    webApp?.HapticFeedback.impactOccurred('light');
   };
 
   // Handle create asset button click
@@ -106,7 +144,7 @@ export const PortfolioDetailScreen: React.FC = () => {
             setLoading(true);
             await apiService.deletePortfolioAsset(portfolioId, assetId);
             
-            // Update assets list
+            // Update assets list while maintaining sort order
             setPortfolioAssets(prev => prev.filter(a => a.asset_id !== assetId));
             webApp?.HapticFeedback.notificationOccurred('success');
           } catch {
@@ -233,8 +271,14 @@ export const PortfolioDetailScreen: React.FC = () => {
 
       <div className={styles.portfolioContent}>
         <div className={styles.assetsHeader}>
-          <h2>Portfolio Assets</h2>
+          <h2>Portfolio Assets: {portfolioAssets.length}</h2>
           <div className={styles.assetsActions}>
+            <button 
+              className={styles.downloadTemplateBtn}
+              onClick={handleDownloadCSVTemplate}
+            >
+              Get Template
+            </button>
             <label className={styles.fileUpload}>
               <input
                 type="file"
@@ -249,7 +293,7 @@ export const PortfolioDetailScreen: React.FC = () => {
                 </>
               ) : (
                 <>
-                  Upload CSV
+                  Import CSV
                 </>
               )}
             </label>
