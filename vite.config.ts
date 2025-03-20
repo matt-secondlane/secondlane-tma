@@ -24,6 +24,14 @@ export default defineConfig({
     watch: {
       usePolling: true,
       interval: 50,
+    },
+    proxy: {
+      '/api': {
+        target: 'https://nonprod.secondlane.io',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api')
+      }
     }
   },
   base: './',

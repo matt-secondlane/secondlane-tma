@@ -5,7 +5,8 @@ import { MainLayout } from './layouts/MainLayout';
 import { DealsScreen } from './screens/Deals';
 import { DatabaseScreen } from './screens/Database';
 import { ProjectDetailsScreen } from './screens/Database/ProjectDetailsScreen';
-import PortfolioScreen from './screens/Portfolio';
+import PortfolioScreen, { CreatePortfolioAssetScreen, EditPortfolioAssetScreen } from './screens/Portfolio';
+import PortfolioDetailScreen from './screens/Portfolio/PortfolioDetailScreen';
 import { PlaceInquiryScreen } from './screens/PlaceInquiry/PlaceInquiryScreen';
 import { PlaceRFQScreen } from './screens/PlaceRFQ/PlaceRFQScreen';
 import { AttestationScreen } from './screens/Attestation/AttestationScreen';
@@ -47,7 +48,7 @@ function App() {
       setIsCheckingAttestation(true);
       const response = await apiService.getAttestationStatus();
       setIsAttested(response.is_attested);
-      
+
       // If the user is now attested, navigate them away from the attestation screen
       if (response.is_attested) {
         // We'll let the route handling in the return statement handle the navigation
@@ -90,6 +91,7 @@ function App() {
             ? <Navigate to="/" replace /> 
             : <AttestationScreen onAttestationComplete={refreshAttestationStatus} />
         } />
+        {/* <Route path="/attestation" element={<AttestationScreen />} /> */}
         
         <Route element={<MainLayout />}>
           {/* Redirect to attestation if not attested */}
@@ -134,6 +136,38 @@ function App() {
             } 
           />
           <Route 
+            path="/portfolio/:portfolioId" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/attestation" replace /> 
+                : <PortfolioDetailScreen />
+            } 
+          />
+          <Route 
+            path="/portfolio/:portfolioId/create-asset" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/attestation" replace /> 
+                : <CreatePortfolioAssetScreen />
+            } 
+          />
+          <Route 
+            path="/portfolio/:portfolioId/edit-asset/:assetId" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/attestation" replace /> 
+                : <EditPortfolioAssetScreen />
+            } 
+          />
+          <Route 
+            path="/place-inquiry" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/attestation" replace /> 
+                : <PlaceInquiryScreen />
+            } 
+          />
+          <Route 
             path="/place-inquiry/:orderId" 
             element={
               isAttested === false 
@@ -142,7 +176,7 @@ function App() {
             } 
           />
           <Route 
-            path="/place-rfq/:projectId" 
+            path="/place-rfq" 
             element={
               isAttested === false 
                 ? <Navigate to="/attestation" replace /> 

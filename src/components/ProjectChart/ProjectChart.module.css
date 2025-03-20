@@ -63,11 +63,6 @@
   margin: 0;
 }
 
-/* Удаляем стили для моковых данных */
-.mockDataNote {
-  display: none;
-}
-
 .chartControls {
   display: flex;
   justify-content: center;
@@ -138,7 +133,7 @@
   flex-shrink: 0;
 }
 
-/* Адаптивные стили для разных устройств */
+/* Responsive styles for different devices */
 @media (max-width: 768px) {
   .chartContainer {
     padding: 10px 6px;
@@ -187,7 +182,7 @@
   }
 }
 
-/* Настройки для печати */
+/* Print settings */
 @media print {
   .chartContainer {
     box-shadow: none;

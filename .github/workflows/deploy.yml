@@ -9,6 +9,9 @@ on:
   # Trigger on push to main
   push:
     branches: [ master ]
+  # Trigger on pull requests
+  pull_request:
+    types: [opened, synchronize, reopened]
   # Manually trigger the workflow
   workflow_dispatch:
 

@@ -14,9 +14,6 @@ export const PlaceInquiryScreen: React.FC = () => {
   const location = useLocation();
   const logoFromState = location.state?.logo;
   const dealTypeFromState = location.state?.deal_type;
-  console.log('Location state:', location.state);
-  console.log('Deal type from state (raw):', dealTypeFromState);
-  console.log('Deal type includes LIQUID_TOKEN:', dealTypeFromState?.includes('LIQUID_TOKEN'));
   const { isReady } = useTelegram();
   
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
@@ -36,19 +33,7 @@ export const PlaceInquiryScreen: React.FC = () => {
 
   useEffect(() => {
     const loadOrderDetails = async () => {
-      console.log('Starting loadOrderDetails:', { 
-        orderId, 
-        isReady,
-        webAppState: {
-          initData: WebApp.initData?.substring(0, 50),
-          user: WebApp.initDataUnsafe?.user,
-          isExpanded: WebApp.isExpanded,
-          version: WebApp.version
-        }
-      });
-
       if (!orderId || !isReady) {
-        console.log('Cannot load details - prerequisites not met:', { orderId, isReady });
         return;
       }
       
@@ -56,40 +41,22 @@ export const PlaceInquiryScreen: React.FC = () => {
       setError(null);
 
       try {
-        console.log('Calling getOrderDetails with orderId:', orderId);
         const data = await apiService.getOrderDetails(orderId);
-        console.log('API Response:', data);
         
         if (!data) {
           throw new Error('No data received from API');
         }
 
-        console.log('Logo field from API:', {
-          logo: data.logo,
-          fullUrl: data.logo ? `https://nonprod.secondlane.io${data.logo}` : null
-        });
-
         setOrderDetails(data);
-        console.log('OrderDetails set:', data);
         
         // Set deal type based on received data
         if (data.type) {
-          console.log('Setting form type:', data.type);
           setFormData(prev => ({
             ...prev,
             type: data.type === 'BUY' ? 'Sell' : 'Buy'
           }));
         }
       } catch (err) {
-        console.error('Error loading order details:', {
-          error: err,
-          message: err instanceof Error ? err.message : String(err),
-          orderId,
-          webAppState: {
-            initData: WebApp.initData?.substring(0, 50),
-            user: WebApp.initDataUnsafe?.user
-          }
-        });
         setError(err instanceof Error ? err.message : 'Failed to load order details');
         WebApp.HapticFeedback.notificationOccurred('error');
       } finally {

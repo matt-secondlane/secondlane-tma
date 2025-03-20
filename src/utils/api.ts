@@ -21,7 +21,15 @@ import type {
   AttestationStatus,
   AttestationRequest,
   AttestationResponse,
-  Attestation
+  Attestation,
+  Portfolio,
+  CreatePortfolioRequest,
+  UpdatePortfolioRequest,
+  PortfolioAsset,
+  CreatePortfolioAssetRequest,
+  UpdatePortfolioAssetRequest,
+  ProjectSearchResult,
+  ProjectSearchResponse
 } from '../types/api';
 
 export const apiService = {
@@ -91,61 +99,36 @@ export const apiService = {
 
   // Get order details
   getOrderDetails: async (orderId: string): Promise<OrderDetails> => {
-    console.log('API: getOrderDetails called with:', { orderId });
-    try {
-      const response = await api.get(`/orderbook/${orderId}`);
-      console.log('API: getOrderDetails response:', response.data);
-      return response.data.data;
-    } catch (error) {
-      console.error('API: getOrderDetails error:', {
-        error,
-        message: error instanceof Error ? error.message : String(error),
-        orderId
-      });
-      throw error;
-    }
+    const response = await api.get(`/orderbook/${orderId}`);
+    return response.data.data;
   },
 
   // Get project graph data
   getProjectGraph: async (projectId: string): Promise<ProjectGraphResponse> => {
-    console.log('API: getProjectGraph called with:', { projectId });
-    try {
-      const response = await api.get(`/projects/${projectId}/graph`);
-      console.log('API: getProjectGraph response:', response.data);
-      
-      if (response.data && (response.data.data || Array.isArray(response.data))) {
-        return Array.isArray(response.data) 
-          ? { data: response.data, project_name: '', symbol: '' }
-          : response.data;
-      } else {
-        console.warn('API: getProjectGraph received unexpected data format:', response.data);
-        return {
-          data: {
-            project_id: projectId,
-            orders: [],
-            funding_rounds: [],
-            price_history: []
-          },
-          project_name: '',
-          symbol: ''
-        };
-      }
-    } catch (error) {
-      console.error('API: getProjectGraph error:', {
-        error,
-        message: error instanceof Error ? error.message : String(error),
-        projectId
-      });
-      throw error;
+    const response = await api.get(`/projects/${projectId}/graph`);
+    
+    if (response.data && (response.data.data || Array.isArray(response.data))) {
+      return Array.isArray(response.data) 
+        ? { data: response.data, project_name: '', symbol: '' }
+        : response.data;
+    } else {
+      return {
+        data: {
+          project_id: projectId,
+          orders: [],
+          funding_rounds: [],
+          price_history: []
+        },
+        project_name: '',
+        symbol: ''
+      };
     }
   },
 
   // Get attestation status
   getAttestationStatus: async (): Promise<AttestationStatus> => {
-    console.log('API: getAttestationStatus called');
     try {
       const response = await api.get('/attestations/status');
-      console.log('API: getAttestationStatus response:', response.data);
       
       // API returns an object with a data field containing the attestation status
       const data = response.data.data;
@@ -157,11 +140,7 @@ export const apiService = {
         attestation_date: undefined, // API does not return a date
         data: [] // API does not return an array of attestations
       };
-    } catch (error) {
-      console.error('API: getAttestationStatus error:', {
-        error,
-        message: error instanceof Error ? error.message : String(error)
-      });
+    } catch {
       // Return a default response for testing
       return {
         is_attested: false,
@@ -176,18 +155,12 @@ export const apiService = {
 
   // Get attestations list
   getAttestations: async (): Promise<Attestation[]> => {
-    console.log('API: getAttestations called');
     try {
       const response = await api.get('/attestations');
-      console.log('API: getAttestations response:', response.data);
       
       // API returns an array of attestations in the data field
       return response.data.data || [];
-    } catch (error) {
-      console.error('API: getAttestations error:', {
-        error,
-        message: error instanceof Error ? error.message : String(error)
-      });
+    } catch {
       // Return a default response for testing
       return [];
     }
@@ -195,29 +168,20 @@ export const apiService = {
 
   // Get attestation by ID
   getAttestationById: async (attestationId: string): Promise<Attestation | null> => {
-    console.log('API: getAttestationById called with:', { attestationId });
     try {
       const response = await api.get(`/attestations/${attestationId}`);
-      console.log('API: getAttestationById response:', response.data);
       
       // API returns the attestation in the data field
       return response.data.data || null;
-    } catch (error) {
-      console.error('API: getAttestationById error:', {
-        error,
-        message: error instanceof Error ? error.message : String(error),
-        attestationId
-      });
+    } catch {
       return null;
     }
   },
 
   // Submit attestation
   submitAttestation: async (data: AttestationRequest): Promise<AttestationResponse> => {
-    console.log('API: submitAttestation called with:', data);
     try {
       const response = await api.post('/attestations', data);
-      console.log('API: submitAttestation response:', response.data);
       
       // API returns an object with a data field containing the created attestation
       return {
@@ -227,10 +191,6 @@ export const apiService = {
         data: response.data.data
       };
     } catch (error) {
-      console.error('API: submitAttestation error:', {
-        error,
-        message: error instanceof Error ? error.message : String(error)
-      });
       // Return a default response for testing
       return {
         success: false,
@@ -241,17 +201,10 @@ export const apiService = {
 
   // Delete attestation
   deleteAttestation: async (attestationId: string): Promise<{ success: boolean; error?: string }> => {
-    console.log('API: deleteAttestation called with:', { attestationId });
     try {
-      const response = await api.delete(`/attestations/${attestationId}`);
-      console.log('API: deleteAttestation response:', response.data);
+      await api.delete(`/attestations/${attestationId}`);
       return { success: true };
     } catch (error) {
-      console.error('API: deleteAttestation error:', {
-        error,
-        message: error instanceof Error ? error.message : String(error),
-        attestationId
-      });
       
       // If API returned an error with a message
       if (error && typeof error === 'object' && 'response' in error) {
@@ -263,5 +216,138 @@ export const apiService = {
       
       return { success: false, error: "Failed to delete attestation" };
     }
+  },
+
+  // Portfolio API methods
+  
+  // Get all portfolios
+  getPortfolios: async (): Promise<Portfolio[]> => {
+    const response = await api.get('/portfolio');
+    return response.data.data || [];
+  },
+
+  // Get portfolio by ID
+  getPortfolioById: async (portfolioId: string): Promise<Portfolio> => {
+    const response = await api.get(`/portfolio/${portfolioId}`);
+    return response.data.data;
+  },
+
+  // Create portfolio
+  createPortfolio: async (data: CreatePortfolioRequest): Promise<Portfolio> => {
+    const response = await api.post('/portfolio', data);
+    return response.data.data;
+  },
+
+  // Update portfolio
+  updatePortfolio: async (portfolioId: string, data: UpdatePortfolioRequest): Promise<Portfolio> => {
+    const response = await api.put(`/portfolio/${portfolioId}`, data);
+    return response.data.data;
+  },
+
+  // Delete portfolio
+  deletePortfolio: async (portfolioId: string): Promise<void> => {
+    await api.delete(`/portfolio/${portfolioId}`);
+  },
+
+  // Get portfolio assets
+  getPortfolioAssets: async (portfolioId: string): Promise<PortfolioAsset[]> => {
+    const response = await api.get(`/portfolio/${portfolioId}`);
+    
+    // Return assets array from API response
+    const assets = response.data.data.assets || [];
+    
+    // Transform data to the correct format
+    return assets.map((asset: Partial<PortfolioAsset> & { 
+      project?: { 
+        project_id: string | null; 
+        name: string; 
+        logo: string | null; 
+      } 
+    }) => ({
+      asset_id: asset.asset_id || '',
+      portfolio_id: asset.portfolio_id || '',
+      logo: asset.project?.logo || '',
+      project_name: asset.project?.name || '',
+      project: asset.project,
+      project_website: asset.project_website || '',
+      invested_amount: asset.invested_amount,
+      valuation: asset.valuation,
+      terms: asset.terms || '',
+      date: asset.date || asset.created_at || '',
+      created_at: asset.created_at || '',
+      updated_at: asset.updated_at || ''
+    }));
+  },
+
+  // Get portfolio asset by ID
+  getPortfolioAssetById: async (_portfolioId: string, assetId: string): Promise<PortfolioAsset> => {
+    const response = await api.get(`/portfolio/assets/${assetId}`);
+    return response.data.data;
+  },
+
+  // Create portfolio asset
+  createPortfolioAsset: async (portfolioId: string, data: CreatePortfolioAssetRequest): Promise<PortfolioAsset> => {
+    // Transform data to the correct format
+    const formattedData = {
+      project_id: data.project_id || null,
+      project_name: data.project_name,
+      // Send date without timezone as required by API
+      date: data.date.split('T')[0], // Format YYYY-MM-DD
+      invested_amount: data.invested_amount,
+      terms: data.terms || '',
+      project_website: data.project_website || null,
+      valuation: data.valuation ? data.valuation : null,
+      equity_or_tokens_amount: data.equity_or_tokens_amount ? data.equity_or_tokens_amount : null
+    };
+    
+    const response = await api.post(`/portfolio/${portfolioId}/assets`, formattedData);
+    return response.data.data;
+  },
+
+  // Update portfolio asset
+  updatePortfolioAsset: async (_portfolioId: string, assetId: string, data: UpdatePortfolioAssetRequest): Promise<PortfolioAsset> => {
+    // Transform data to the correct format
+    const formattedData = {
+      project_id: data.project_id || null,
+      project_name: data.project_name,
+      // Send date without timezone as required by API
+      date: data.date ? data.date.split('T')[0] : undefined, // Format YYYY-MM-DD
+      invested_amount: data.invested_amount,
+      terms: data.terms || '',
+      project_website: data.project_website || null,
+      valuation: data.valuation ?? 0,
+      equity_or_tokens_amount: data.equity_or_tokens_amount
+    };
+    
+    const response = await api.put(`/portfolio/assets/${assetId}`, formattedData);
+    return response.data.data;
+  },
+
+  // Delete portfolio asset
+  deletePortfolioAsset: async (_portfolioId: string, assetId: string): Promise<void> => {
+    await api.delete(`/portfolio/assets/${assetId}`);
+  },
+
+  // Upload portfolio assets CSV
+  uploadPortfolioAssetsCSV: async (_portfolioId: string, file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    await api.post('/portfolio/csv', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
+  // Search projects for portfolio assets
+  searchProjects: async (query: string): Promise<ProjectSearchResult[]> => {
+    const response = await api.get<ProjectSearchResponse>('/projects/ids', { 
+      params: { 
+        search: query,
+        include_logo: true 
+      } 
+    });
+    return response.data.data || [];
   }
 }; 

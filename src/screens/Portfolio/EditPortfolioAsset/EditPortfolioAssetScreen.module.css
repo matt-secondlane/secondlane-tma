@@ -1,0 +1,377 @@
+.editAssetScreen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding-top: 16px;
+  padding-bottom: 72px;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  margin-top: 16px;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tg-theme-secondary-bg-color);
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--tg-theme-text-color);
+  font-weight: 500;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  width: 44px;
+  height: 44px;
+  z-index: 2;
+  margin-left: 16px;
+}
+
+.backButton:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+.screenTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--tg-theme-text-color);
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  margin: 0;
+  z-index: 1;
+  letter-spacing: -0.5px;
+}
+
+.error {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+  padding: 16px;
+  margin: 0 16px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  border-left: 4px solid #F44336;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideIn 0.3s ease-out;
+  flex-shrink: 0;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.editAssetForm {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--tg-theme-secondary-bg-color);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.input {
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(75, 79, 71, 0.3);
+}
+
+.input::placeholder {
+  color: var(--tg-theme-hint-color);
+  opacity: 0.7;
+}
+
+/* Styles for date field and calendar */
+input[type="date"].input {
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  -webkit-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+input[type="date"].input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+input[type="date"].input:focus::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+/* Adding blur effect when opening calendar */
+input[type="date"].input:focus {
+  backdrop-filter: none;
+}
+
+/* Adding blur to the entire screen when calendar is open */
+.formGroup:has(input[type="date"].input:focus)::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Styles for input type="number" */
+input[type="number"].input {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="number"].input::-webkit-inner-spin-button,
+input[type="number"].input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.textarea {
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 120px;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: rgba(75, 79, 71, 0.3);
+}
+
+.textarea::placeholder {
+  color: var(--tg-theme-hint-color);
+  opacity: 0.7;
+}
+
+.formActions {
+  display: flex;
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.cancelButton {
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(75, 79, 71, 0.2);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  flex: 1;
+}
+
+.cancelButton:active {
+  background-color: rgba(75, 79, 71, 0.05);
+  transform: scale(0.98);
+}
+
+.cancelButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submitButton {
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  background-color: #4B4F47;
+  color: #FFFFFF;
+  flex: 2;
+}
+
+.submitButton:active {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  gap: 20px;
+}
+
+.loaderContainer p {
+  color: var(--tg-theme-hint-color);
+  font-size: 16px;
+  margin: 0;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  gap: 16px;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+}
+
+.errorContainer h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--tg-theme-text-color);
+  letter-spacing: -0.5px;
+}
+
+.errorContainer p {
+  font-size: 16px;
+  color: var(--tg-theme-hint-color);
+  margin: 0 0 16px;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.requiredMark {
+  color: #F44336;
+  margin-left: 2px;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 480px) {
+  .formGroup {
+    padding: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .input, .textarea, .cancelButton, .submitButton {
+    padding: 14px;
+  }
+  
+  .label {
+    font-size: 14px;
+  }
+  
+  .screenTitle {
+    font-size: 20px;
+  }
+}
+
+/* Specific styles for dark theme */
+@media (prefers-color-scheme: dark) {
+  .input, .textarea {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .headerContainer {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .formActions {
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .formGroup:has(input[type="date"].input:focus)::after {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+} 

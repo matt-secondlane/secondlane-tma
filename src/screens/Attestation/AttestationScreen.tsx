@@ -95,7 +95,6 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
       if (response.has_attestation) {
         if (response.is_accredited) {
           setAttestationStatus('attested_accredited');
-          // Remove the automatic navigation - let App.tsx handle this
         } else {
           setAttestationStatus('attested_not_accredited');
           // If user is attested but not accredited, show appropriate message
@@ -391,7 +390,6 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
         if (statusResponse.has_attestation) {
           if (statusResponse.is_accredited) {
             setAttestationStatus('attested_accredited');
-            
             // Call the onAttestationComplete callback if provided
             if (onAttestationComplete) {
               // Wait a moment to show the success message before redirecting
@@ -411,6 +409,13 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
         }
         
         webApp?.HapticFeedback.notificationOccurred('success');
+        
+        // If user is accredited, redirect to main screen
+        if (statusResponse.has_attestation && statusResponse.is_accredited) {
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
+        }
       } else {
         setError(response.message || 'Failed to submit attestation. Please try again.');
         webApp?.HapticFeedback.notificationOccurred('error');
@@ -670,12 +675,7 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
           </p>
           <button 
             className={styles.continueButton}
-            onClick={() => {
-              if (onAttestationComplete) {
-                onAttestationComplete();
-              }
-              navigate('/');
-            }}
+            onClick={() => navigate('/')}
           >
             Continue
           </button>
