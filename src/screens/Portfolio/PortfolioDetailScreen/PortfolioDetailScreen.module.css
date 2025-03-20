@@ -1,24 +1,26 @@
 .portfolioDetailScreen {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   background-color: var(--tg-theme-bg-color);
   width: 100%;
-  overflow-y: auto;
-  padding-bottom: 24px;
+  overflow: hidden;
+  margin-bottom: -14px;
+
 }
 
 .portfolioDetailHeader {
-  padding: 16px;
+  padding: 12px 16px 4px 16px;
   background-color: var(--tg-theme-bg-color);
   z-index: 10;
+  position: relative;
 }
 
 .headerTop {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
-  margin-top: 16px;
+  margin-bottom: 6px;
+  margin-top: 12px;
   position: relative;
 }
 
@@ -59,7 +61,7 @@
 }
 
 .portfolioDescription {
-  margin: 8px 0 0;
+  margin: 0;
   font-size: 15px;
   color: var(--tg-theme-hint-color);
   line-height: 1.5;
@@ -141,16 +143,23 @@
 
 .portfolioContent {
   flex: 1;
-  padding: 16px;
+  padding: 4px 16px 0;
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .assetsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  margin-top: 0;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 .assetsHeader h2 {
@@ -162,22 +171,48 @@
 
 .assetsActions {
   display: flex;
-  gap: 14px;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.downloadTemplateBtn {
+  background-color: transparent;
+  color: #4B4F47;
+  border: 1px solid #4B4F47;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.downloadTemplateBtn:active {
+  background-color: rgba(75, 79, 71, 0.1);
+  transform: scale(0.98);
 }
 
 .fileUpload {
   position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   background-color: var(--tg-theme-secondary-bg-color);
   color: var(--tg-theme-text-color);
   border: none;
   border-radius: 10px;
   padding: 10px 16px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .fileUpload:active {
@@ -218,15 +253,16 @@
   border: none;
   border-radius: 10px;
   padding: 10px 16px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .addAssetBtn:active {
-  transform: scale(0.98);
   opacity: 0.85;
+  transform: scale(0.98);
 }
 
 .noAssets {
@@ -266,6 +302,13 @@
   flex-direction: column;
   gap: 16px;
   animation: fadeInUp 0.3s ease-out;
+  flex: 1;
+  padding-bottom: 40px;
+  position: relative;
+}
+
+.assetItem:last-child {
+  margin-bottom: 0;
 }
 
 @keyframes fadeInUp {
@@ -433,9 +476,25 @@
     padding: 14px;
   }
   
-  .fileUpload, .addAssetBtn {
-    padding: 10px 14px;
-    font-size: 14px;
+  .assetsActions {
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  .fileUpload, .addAssetBtn, .downloadTemplateBtn {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 12px;
+    font-size: 13px;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .assetsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
   }
 }
 

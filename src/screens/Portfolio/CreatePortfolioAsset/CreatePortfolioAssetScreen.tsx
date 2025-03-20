@@ -130,8 +130,8 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
       WebApp.HapticFeedback.notificationOccurred('success');
       WebApp.showAlert('Asset added successfully!');
       
-      // Navigate back to portfolio screen
-      navigate(`/portfolio`);
+      // Navigate back to portfolio detail screen instead of portfolio list
+      navigate(`/portfolio/${portfolioId}`);
     } catch {
       setError('Failed to create portfolio asset. Please try again.');
       WebApp.HapticFeedback.notificationOccurred('error');
@@ -142,7 +142,7 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
 
   // Handle cancel
   const handleCancel = () => {
-    navigate('/portfolio');
+    navigate(`/portfolio/${portfolioId}`);
   };
 
   // Handle back button click
