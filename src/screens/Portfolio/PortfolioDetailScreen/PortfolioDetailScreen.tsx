@@ -35,7 +35,7 @@ export const PortfolioDetailScreen: React.FC = () => {
         apiService.getPortfolioAssets(portfolioId)
       ]);
       
-      // Сортируем активы по дате создания в обратном порядке (новые сверху)
+      // Sort assets by creation date in reverse order (newest on top)
       const sortedAssets = [...assets].sort((a, b) => {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
@@ -66,7 +66,7 @@ export const PortfolioDetailScreen: React.FC = () => {
       return;
     }
     
-    // Проверяем только расширение файла
+    // Check only file extension
     if (!file.name.endsWith('.csv')) {
       WebApp.showAlert('Please select a CSV file');
       fileInput.value = '';
@@ -77,29 +77,14 @@ export const PortfolioDetailScreen: React.FC = () => {
     webApp?.HapticFeedback.impactOccurred('medium');
     
     try {
-      // Используем прямой запрос к специальному эндпоинту для добавления активов
-      const formData = new FormData();
-      formData.append('csv_file', file, file.name);
       
-      // Отправляем запрос к конкретному эндпоинту для добавления активов
-      const response = await fetch(`/api/v1/portfolio/${portfolioId}/assets/csv`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `tma ${window.Telegram?.WebApp?.initData || ''}`
-        }
-      });
-      
-      // Обрабатываем ошибки
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Server responded with status: ${response.status}`);
-      }
+      // Use apiService to add assets from CSV
+      await apiService.addAssetsToPortfolioFromCSV(portfolioId, file, portfolio.name);
       
       WebApp.showAlert('Assets from CSV successfully added to the current portfolio!');
       webApp?.HapticFeedback.notificationOccurred('success');
       
-      // Обновляем список активов
+      // Update assets list
       fetchPortfolioDetails();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

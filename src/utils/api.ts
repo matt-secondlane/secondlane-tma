@@ -425,7 +425,7 @@ export const apiService = {
     formData.append('append', 'true'); // Explicitly specify that we need to append, not replace
     
     // Use api instance for all requests
-    await api.post('/portfolio/csv', formData, {
+    await api.post(`/portfolio/${portfolioId}/assets/csv`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
