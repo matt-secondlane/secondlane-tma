@@ -353,7 +353,7 @@ export const apiService = {
 
   // Create new portfolio from CSV
   createPortfolioFromCSV: async (name: string, file: File): Promise<Portfolio> => {
-    // Проверка файла
+    // Check file
     if (!file || file.size === 0) {
       throw new Error('CSV file is required and cannot be empty');
     }
@@ -369,23 +369,13 @@ export const apiService = {
     formData.append('portfolio_name', name);
     
     // Send request
-    const response = await fetch('/api/v1/portfolio/csv', {
-      method: 'POST',
-      body: formData,
+    const response = await api.post('/portfolio/csv', formData, {
       headers: {
-        'Authorization': `tma ${window.Telegram?.WebApp?.initData || ''}`
+        'Content-Type': 'multipart/form-data'
       }
     });
     
-    // Handle errors
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Server responded with status: ${response.status}`);
-    }
-    
-    // Get the result
-    const csvResponse = await response.json();
-    let portfolioId = csvResponse?.data?.portfolio_id;
+    let portfolioId = response.data?.data?.portfolio_id;
     
     // If ID is not in the response, search by name
     if (!portfolioId) {
@@ -434,20 +424,12 @@ export const apiService = {
     formData.append('portfolio_id', portfolioId); // Add portfolio ID
     formData.append('append', 'true'); // Explicitly specify that we need to append, not replace
     
-    // Use main endpoint for working with CSV
-    const response = await fetch('/api/v1/portfolio/csv', {
-      method: 'POST',
-      body: formData,
+    // Use api instance for all requests
+    await api.post('/portfolio/csv', formData, {
       headers: {
-        'Authorization': `tma ${window.Telegram?.WebApp?.initData || ''}`
+        'Content-Type': 'multipart/form-data'
       }
     });
-    
-    // Handle errors
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Server responded with status: ${response.status}`);
-    }
   },
 
   // Get CSV template URL
@@ -468,17 +450,17 @@ export const apiService = {
 
   // Add assets from CSV one by one to existing portfolio (fallback method)
   addAssetsFromCSVOneByOne: async (portfolioId: string, file: File): Promise<void> => {
-    // Проверка файла
+    // Check file
     if (!file || file.size === 0) {
       throw new Error('CSV file is required and cannot be empty');
     }
     
-    // Проверка расширения файла
+    // Check file extension
     if (!file.name.endsWith('.csv')) {
       throw new Error('CSV file format is required');
     }
     
-    // Читаем CSV файл как текст
+    // Read CSV file as text
     const reader = new FileReader();
     
     const csvText = await new Promise<string>((resolve, reject) => {
@@ -493,11 +475,11 @@ export const apiService = {
       reader.readAsText(file);
     });
     
-    // Парсим CSV
+    // Parse CSV
     const rows = csvText.split('\n');
     const headers = rows[0].split(',').map(h => h.trim().replace(/^"(.*)"$/, '$1'));
     
-    // Проверяем, что есть необходимые заголовки
+    // Check for required headers
     const requiredHeaders = ['project_name', 'date', 'invested_amount'];
     const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
     
@@ -505,34 +487,34 @@ export const apiService = {
       throw new Error(`CSV file is missing required headers: ${missingHeaders.join(', ')}`);
     }
     
-    // Успешно добавленные активы
+    // Track success and error counts
     let successCount = 0;
     let errorCount = 0;
     
-    // Обрабатываем каждую строку, начиная со второй (индекс 1)
+    // Process each row, starting from the second one (index 1)
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i].trim();
-      if (!row) continue; // Пропускаем пустые строки
+      if (!row) continue; // Skip empty rows
       
       const values = row.split(',').map(v => v.trim().replace(/^"(.*)"$/, '$1'));
       
-      // Проверяем, что у нас достаточно значений
+      // Check if we have enough values
       if (values.length < headers.length) {
         errorCount++;
         continue;
       }
       
-      // Создаем объект с данными актива
+      // Create object with asset data
       const assetData: Record<string, string | null> = {};
       headers.forEach((header, index) => {
         assetData[header] = values[index] || null;
       });
       
       try {
-        // Преобразуем данные в формат, ожидаемый API
+        // Transform data to format expected by API
         const formattedData = {
           project_name: assetData.project_name,
-          date: assetData.date, // Формат YYYY-MM-DD
+          date: assetData.date, // Format YYYY-MM-DD
           invested_amount: assetData.invested_amount,
           terms: assetData.terms || '',
           project_website: assetData.project_website || null,
@@ -540,7 +522,7 @@ export const apiService = {
           equity_or_tokens_amount: assetData.equity_or_tokens_amount || null
         };
         
-        // Создаем актив с помощью стандартного API
+        // Create asset using standard API
         await api.post(`/portfolio/${portfolioId}/assets`, formattedData);
         successCount++;
       } catch {
@@ -548,12 +530,12 @@ export const apiService = {
       }
     }
     
-    // Если ни один актив не был добавлен успешно, выбрасываем ошибку
+    // If no assets were added successfully, throw an error
     if (successCount === 0) {
       throw new Error(`Failed to add any assets. Errors: ${errorCount}`);
     }
     
-    // Если были ошибки, но некоторые активы были добавлены успешно
+    // If there were errors but some assets were added successfully
     if (errorCount > 0) {
       console.warn(`Some assets (${errorCount}) failed to import. Successfully imported: ${successCount}`);
     }
