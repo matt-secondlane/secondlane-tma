@@ -275,7 +275,8 @@ export const apiService = {
       terms: asset.terms || '',
       date: asset.date || asset.created_at || '',
       created_at: asset.created_at || '',
-      updated_at: asset.updated_at || ''
+      updated_at: asset.updated_at || '',
+      equity_or_tokens_amount: asset.equity_or_tokens_amount
     }));
   },
 
@@ -330,6 +331,16 @@ export const apiService = {
 
   // Upload portfolio assets CSV
   uploadPortfolioAssetsCSV: async (_portfolioId: string, file: File): Promise<void> => {
+    // Check file
+    if (!file || file.size === 0) {
+      throw new Error('CSV file is required and cannot be empty');
+    }
+    
+    // Check file extension
+    if (!file.name.endsWith('.csv')) {
+      throw new Error('File must be in CSV format');
+    }
+    
     const formData = new FormData();
     formData.append('file', file);
     
@@ -338,6 +349,92 @@ export const apiService = {
         'Content-Type': 'multipart/form-data'
       }
     });
+  },
+
+  // Create new portfolio from CSV
+  createPortfolioFromCSV: async (name: string, file: File): Promise<Portfolio> => {
+    // Check file
+    if (!file || file.size === 0) {
+      throw new Error('CSV file is required and cannot be empty');
+    }
+    
+    // Check only file extension
+    if (!file.name.endsWith('.csv')) {
+      throw new Error('File must be in CSV format');
+    }
+    
+    // Create FormData
+    const formData = new FormData();
+    formData.append('csv_file', file, file.name);
+    formData.append('portfolio_name', name);
+    
+    // Send request
+    const response = await api.post('/portfolio/csv', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    let portfolioId = response.data?.data?.portfolio_id;
+    
+    // If ID is not in the response, search by name
+    if (!portfolioId) {
+      const portfolios = await api.get('/portfolio');
+      const createdPortfolio = portfolios.data.data.find((p: Portfolio) => p.name === name);
+      if (createdPortfolio) {
+        portfolioId = createdPortfolio.portfolio_id;
+      }
+    }
+    
+    if (portfolioId) {
+      const portfolioResponse = await api.get(`/portfolio/${portfolioId}`);
+      return portfolioResponse.data.data;
+    } else {
+      throw new Error('Failed to get created portfolio ID');
+    }
+  },
+
+  // Add assets to existing portfolio from CSV
+  addAssetsToPortfolioFromCSV: async (portfolioId: string, file: File, portfolioName?: string): Promise<void> => {
+    // Check file
+    if (!file || file.size === 0) {
+      throw new Error('CSV file is required and cannot be empty');
+    }
+    
+    // Check only file extension
+    if (!file.name.endsWith('.csv')) {
+      throw new Error('File must be in CSV format');
+    }
+    
+    // If portfolio name is not passed, get it by ID
+    let name = portfolioName;
+    if (!name) {
+      const portfolio = await apiService.getPortfolioById(portfolioId);
+      name = portfolio.name;
+    }
+    
+    if (!name) {
+      throw new Error('Portfolio name is required');
+    }
+    
+    // Create FormData with needed fields
+    const formData = new FormData();
+    formData.append('csv_file', file, file.name);
+    formData.append('portfolio_name', name);
+    formData.append('portfolio_id', portfolioId); // Add portfolio ID
+    formData.append('append', 'true'); // Explicitly specify that we need to append, not replace
+    
+    // Use api instance for all requests
+    await api.post(`/portfolio/${portfolioId}/assets/csv`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
+  // Get CSV template URL
+  getCSVTemplateURL: (): string => {
+    return 'https://d1yccqs7b7eo8o.cloudfront.net/28cb6313-ab56-4caf-a282-8aa8e1e2bb38';
   },
 
   // Search projects for portfolio assets
@@ -349,5 +446,98 @@ export const apiService = {
       } 
     });
     return response.data.data || [];
+  },
+
+  // Add assets from CSV one by one to existing portfolio (fallback method)
+  addAssetsFromCSVOneByOne: async (portfolioId: string, file: File): Promise<void> => {
+    // Check file
+    if (!file || file.size === 0) {
+      throw new Error('CSV file is required and cannot be empty');
+    }
+    
+    // Check file extension
+    if (!file.name.endsWith('.csv')) {
+      throw new Error('CSV file format is required');
+    }
+    
+    // Read CSV file as text
+    const reader = new FileReader();
+    
+    const csvText = await new Promise<string>((resolve, reject) => {
+      reader.onload = (e) => {
+        if (e.target && typeof e.target.result === 'string') {
+          resolve(e.target.result);
+        } else {
+          reject(new Error('Failed to read file'));
+        }
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(file);
+    });
+    
+    // Parse CSV
+    const rows = csvText.split('\n');
+    const headers = rows[0].split(',').map(h => h.trim().replace(/^"(.*)"$/, '$1'));
+    
+    // Check for required headers
+    const requiredHeaders = ['project_name', 'date', 'invested_amount'];
+    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+    
+    if (missingHeaders.length > 0) {
+      throw new Error(`CSV file is missing required headers: ${missingHeaders.join(', ')}`);
+    }
+    
+    // Track success and error counts
+    let successCount = 0;
+    let errorCount = 0;
+    
+    // Process each row, starting from the second one (index 1)
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i].trim();
+      if (!row) continue; // Skip empty rows
+      
+      const values = row.split(',').map(v => v.trim().replace(/^"(.*)"$/, '$1'));
+      
+      // Check if we have enough values
+      if (values.length < headers.length) {
+        errorCount++;
+        continue;
+      }
+      
+      // Create object with asset data
+      const assetData: Record<string, string | null> = {};
+      headers.forEach((header, index) => {
+        assetData[header] = values[index] || null;
+      });
+      
+      try {
+        // Transform data to format expected by API
+        const formattedData = {
+          project_name: assetData.project_name,
+          date: assetData.date, // Format YYYY-MM-DD
+          invested_amount: assetData.invested_amount,
+          terms: assetData.terms || '',
+          project_website: assetData.project_website || null,
+          valuation: assetData.valuation || null,
+          equity_or_tokens_amount: assetData.equity_or_tokens_amount || null
+        };
+        
+        // Create asset using standard API
+        await api.post(`/portfolio/${portfolioId}/assets`, formattedData);
+        successCount++;
+      } catch {
+        errorCount++;
+      }
+    }
+    
+    // If no assets were added successfully, throw an error
+    if (successCount === 0) {
+      throw new Error(`Failed to add any assets. Errors: ${errorCount}`);
+    }
+    
+    // If there were errors but some assets were added successfully
+    if (errorCount > 0) {
+      console.warn(`Some assets (${errorCount}) failed to import. Successfully imported: ${successCount}`);
+    }
   }
 }; 

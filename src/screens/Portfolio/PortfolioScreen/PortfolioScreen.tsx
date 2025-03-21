@@ -19,6 +19,7 @@ export const PortfolioScreen: React.FC = () => {
   const [portfolios, setPortfolios] = useState<EnhancedPortfolio[]>([]);
   const [isCreatingPortfolio, setIsCreatingPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   // Fetch portfolios
   const fetchPortfolios = useCallback(async () => {
@@ -148,6 +149,68 @@ export const PortfolioScreen: React.FC = () => {
     });
   };
 
+  // Handle create portfolio from CSV
+  const handleCreatePortfolioFromCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = event.target;
+    const file = fileInput?.files?.[0];
+    
+    if (!file) {
+      WebApp.showAlert('Please select a CSV file');
+      return;
+    }
+    
+    // Check file type
+    if (!file.name.endsWith('.csv')) {
+      WebApp.showAlert('Please select a CSV format file');
+      fileInput.value = '';
+      return;
+    }
+    
+    // Check portfolio name
+    const portfolioName = newPortfolioName.trim();
+    if (!portfolioName) {
+      WebApp.showAlert('Please enter a portfolio name in the field above');
+      fileInput.value = '';
+      return;
+    }
+    
+    // Load CSV file
+    setIsUploading(true);
+    webApp?.HapticFeedback.impactOccurred('medium');
+    
+    try {
+      const newPortfolio = await apiService.createPortfolioFromCSV(portfolioName, file);
+      
+      WebApp.showAlert('Portfolio created successfully!');
+      webApp?.HapticFeedback.notificationOccurred('success');
+      
+      // Update portfolios list and navigate
+      fetchPortfolios();
+      setIsCreatingPortfolio(false);
+      setNewPortfolioName('');
+      navigate(`/portfolio/${newPortfolio.portfolio_id}`);
+    } catch (error) {
+      let errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      if (errorMessage === 'Portfolio name is required') {
+        errorMessage = 'Portfolio name is required. Please enter it before uploading CSV.';
+      }
+      
+      WebApp.showAlert(`Error creating portfolio: ${errorMessage}`);
+      webApp?.HapticFeedback.notificationOccurred('error');
+    } finally {
+      setIsUploading(false);
+      fileInput.value = '';
+    }
+  };
+
+  // Handle download CSV template
+  const handleDownloadCSVTemplate = () => {
+    const templateURL = apiService.getCSVTemplateURL();
+    window.open(templateURL, '_blank');
+    webApp?.HapticFeedback.impactOccurred('light');
+  };
+
   if (loading && portfolios.length === 0) {
     return (
       <div className={styles.loaderContainer}>
@@ -203,6 +266,23 @@ export const PortfolioScreen: React.FC = () => {
                 className={styles.portfolioNameInput}
                 autoFocus
               />
+              <div className={styles.csvImportOptions}>
+                <button 
+                  className={styles.downloadTemplateBtn}
+                  onClick={handleDownloadCSVTemplate}
+                >
+                  Get CSV Template
+                </button>
+                <label className={styles.csvUploadBtn}>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleCreatePortfolioFromCSV}
+                    disabled={isUploading}
+                  />
+                  {isUploading ? 'Uploading...' : 'Import from CSV'}
+                </label>
+              </div>
               <div className={styles.createPortfolioActions}>
                 <button 
                   className={styles.cancelBtn}
