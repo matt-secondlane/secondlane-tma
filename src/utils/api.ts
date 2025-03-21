@@ -261,26 +261,15 @@ export const apiService = {
       project?: { 
         project_id: string | null; 
         name: string; 
-<<<<<<< HEAD
         logo: string | null; 
-=======
-        image_url: string | null;
-        logo: string | null;
->>>>>>> d48e45f (Add portfolio tracker CSV functionality)
       } 
     }) => ({
       asset_id: asset.asset_id || '',
       portfolio_id: asset.portfolio_id || '',
       logo: asset.project?.logo || '',
       project_name: asset.project?.name || '',
-      // Извлекаем logo из объекта project
-      logo: asset.project?.logo || asset.project?.image_url || null,
       project: asset.project,
       project_website: asset.project_website || '',
-<<<<<<< HEAD
-=======
-      tranche_size: asset.tranche_size,
->>>>>>> d48e45f (Add portfolio tracker CSV functionality)
       invested_amount: asset.invested_amount,
       valuation: asset.valuation,
       terms: asset.terms || '',
