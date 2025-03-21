@@ -155,48 +155,48 @@ export const PortfolioScreen: React.FC = () => {
     const file = fileInput?.files?.[0];
     
     if (!file) {
-      WebApp.showAlert('Пожалуйста, выберите CSV файл');
+      WebApp.showAlert('Please select a CSV file');
       return;
     }
     
-    // Проверяем тип файла
+    // Check file type
     if (!file.name.endsWith('.csv')) {
-      WebApp.showAlert('Пожалуйста, выберите файл в формате CSV');
+      WebApp.showAlert('Please select a CSV format file');
       fileInput.value = '';
       return;
     }
     
-    // Проверяем название портфолио
+    // Check portfolio name
     const portfolioName = newPortfolioName.trim();
     if (!portfolioName) {
-      WebApp.showAlert('Пожалуйста, введите название портфолио в поле выше');
+      WebApp.showAlert('Please enter a portfolio name in the field above');
       fileInput.value = '';
       return;
     }
     
-    // Загружаем CSV файл
+    // Load CSV file
     setIsUploading(true);
     webApp?.HapticFeedback.impactOccurred('medium');
     
     try {
       const newPortfolio = await apiService.createPortfolioFromCSV(portfolioName, file);
       
-      WebApp.showAlert('Портфолио успешно создано!');
+      WebApp.showAlert('Portfolio created successfully!');
       webApp?.HapticFeedback.notificationOccurred('success');
       
-      // Обновляем список портфолио и навигация
+      // Update portfolios list and navigate
       fetchPortfolios();
       setIsCreatingPortfolio(false);
       setNewPortfolioName('');
       navigate(`/portfolio/${newPortfolio.portfolio_id}`);
     } catch (error) {
-      let errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      let errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       if (errorMessage === 'Portfolio name is required') {
-        errorMessage = 'Имя портфолио обязательно. Пожалуйста, введите его перед загрузкой CSV.';
+        errorMessage = 'Portfolio name is required. Please enter it before uploading CSV.';
       }
       
-      WebApp.showAlert(`Ошибка создания портфолио: ${errorMessage}`);
+      WebApp.showAlert(`Error creating portfolio: ${errorMessage}`);
       webApp?.HapticFeedback.notificationOccurred('error');
     } finally {
       setIsUploading(false);
