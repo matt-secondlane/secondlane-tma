@@ -331,14 +331,14 @@ export const apiService = {
 
   // Upload portfolio assets CSV
   uploadPortfolioAssetsCSV: async (_portfolioId: string, file: File): Promise<void> => {
-    // Проверка файла
+    // Check file
     if (!file || file.size === 0) {
       throw new Error('CSV file is required and cannot be empty');
     }
     
-    // Проверка расширения файла
+    // Check file extension
     if (!file.name.endsWith('.csv')) {
-      throw new Error('Файл должен быть в формате CSV');
+      throw new Error('File must be in CSV format');
     }
     
     const formData = new FormData();
@@ -358,17 +358,17 @@ export const apiService = {
       throw new Error('CSV file is required and cannot be empty');
     }
     
-    // Проверка только расширения файла
+    // Check only file extension
     if (!file.name.endsWith('.csv')) {
-      throw new Error('Файл должен быть в формате CSV');
+      throw new Error('File must be in CSV format');
     }
     
-    // Создаем FormData
+    // Create FormData
     const formData = new FormData();
     formData.append('csv_file', file, file.name);
     formData.append('portfolio_name', name);
     
-    // Отправляем запрос
+    // Send request
     const response = await fetch('/api/v1/portfolio/csv', {
       method: 'POST',
       body: formData,
@@ -377,17 +377,17 @@ export const apiService = {
       }
     });
     
-    // Обрабатываем ошибки
+    // Handle errors
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.error || `Server responded with status: ${response.status}`);
     }
     
-    // Получаем результат
+    // Get the result
     const csvResponse = await response.json();
     let portfolioId = csvResponse?.data?.portfolio_id;
     
-    // Если ID нет в ответе, ищем по имени
+    // If ID is not in the response, search by name
     if (!portfolioId) {
       const portfolios = await api.get('/portfolio');
       const createdPortfolio = portfolios.data.data.find((p: Portfolio) => p.name === name);
@@ -400,23 +400,23 @@ export const apiService = {
       const portfolioResponse = await api.get(`/portfolio/${portfolioId}`);
       return portfolioResponse.data.data;
     } else {
-      throw new Error('Не удалось получить ID созданного портфолио');
+      throw new Error('Failed to get created portfolio ID');
     }
   },
 
   // Add assets to existing portfolio from CSV
   addAssetsToPortfolioFromCSV: async (portfolioId: string, file: File, portfolioName?: string): Promise<void> => {
-    // Проверка файла
+    // Check file
     if (!file || file.size === 0) {
       throw new Error('CSV file is required and cannot be empty');
     }
     
-    // Проверка только расширения файла
+    // Check only file extension
     if (!file.name.endsWith('.csv')) {
-      throw new Error('Файл должен быть в формате CSV');
+      throw new Error('File must be in CSV format');
     }
     
-    // Если имя портфолио не передано, получаем его по ID
+    // If portfolio name is not passed, get it by ID
     let name = portfolioName;
     if (!name) {
       const portfolio = await apiService.getPortfolioById(portfolioId);
@@ -427,14 +427,14 @@ export const apiService = {
       throw new Error('Portfolio name is required');
     }
     
-    // Создаем FormData с нужными полями
+    // Create FormData with needed fields
     const formData = new FormData();
     formData.append('csv_file', file, file.name);
     formData.append('portfolio_name', name);
-    formData.append('portfolio_id', portfolioId); // Добавляем ID портфолио
-    formData.append('append', 'true'); // Явно указываем, что нужно добавить, а не заменить
+    formData.append('portfolio_id', portfolioId); // Add portfolio ID
+    formData.append('append', 'true'); // Explicitly specify that we need to append, not replace
     
-    // Используем основной эндпоинт для работы с CSV
+    // Use main endpoint for working with CSV
     const response = await fetch('/api/v1/portfolio/csv', {
       method: 'POST',
       body: formData,
@@ -443,7 +443,7 @@ export const apiService = {
       }
     });
     
-    // Обрабатываем ошибки
+    // Handle errors
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.error || `Server responded with status: ${response.status}`);
