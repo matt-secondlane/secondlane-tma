@@ -21,9 +21,9 @@ export const DealsScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
-  const currentPageRef = useRef(1);
+  const observer = useRef<IntersectionObserver | null>(null);
 
-  const loadDeals = useCallback(async () => {
+  const loadDeals = useCallback(async (pageToLoad: number) => {
     if (loadingRef.current) return;
 
     try {
@@ -31,16 +31,16 @@ export const DealsScreen = () => {
       setLoading(true);
       setError(null);
       
-      const currentPage = currentPageRef.current;
+      console.log(`Loading deals page ${pageToLoad} with search: "${searchQuery}", tab: ${activeTab}`);
       
       const response = await apiService.getOrderbook({
-        offset: (currentPage - 1) * ITEMS_PER_PAGE,
+        offset: (pageToLoad - 1) * ITEMS_PER_PAGE,
         limit: ITEMS_PER_PAGE,
         search: searchQuery,
         type: activeTab === 'all' ? undefined : activeTab === 'buy' ? 'Buy' : 'Sell'
       });
 
-      if (currentPage === 1) {
+      if (pageToLoad === 1) {
         setDeals(response.data);
       } else {
         setDeals(prev => {
@@ -65,42 +65,41 @@ export const DealsScreen = () => {
   useEffect(() => {
     if (isReady) {
       WebApp.ready();
-      currentPageRef.current = 1;
       setPage(1);
-      loadDeals();
+      loadDeals(1);
     }
   }, [isReady, activeTab, searchQuery, loadDeals]);
 
-  // Run this effect when page changes
-  useEffect(() => {
-    if (page > 1) {
-      currentPageRef.current = page;
-      loadDeals();
-    }
-  }, [page, loadDeals]);
-
-  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (
-      scrollHeight - scrollTop <= clientHeight * 1.5 && 
-      !loadingRef.current && 
-      hasMore
-    ) {
-      setPage(prev => prev + 1);
-    }
-  }, [hasMore]);
+  // Setup intersection observer for infinite scrolling
+  const lastDealRef = useCallback((node: HTMLDivElement) => {
+    if (!node || loading || !hasMore || loadingRef.current) return;
+    
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loadingRef.current && !loading) {
+        setPage(prevPage => {
+          const nextPage = prevPage + 1;
+          loadDeals(nextPage);
+          return nextPage;
+        });
+      }
+    }, {
+      rootMargin: '100px' // Preload before reaching end of list
+    }); 
+    
+    observer.current.observe(node);
+  }, [hasMore, loading, loadDeals]);
 
   const handleTabChange = (tab: 'all' | 'buy' | 'sell') => {
     webApp?.HapticFeedback.impactOccurred('light');
     setActiveTab(tab);
-    currentPageRef.current = 1;
     setPage(1);
     setDeals([]);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    currentPageRef.current = 1;
     setPage(1);
   };
 
@@ -141,16 +140,17 @@ export const DealsScreen = () => {
         </div>
       </div>
 
-      <div className={styles.content} onScroll={handleScroll}>
+      <div className={styles.content}>
         {error ? (
           <div className={styles.error}>{error}</div>
         ) : (
           <>
             <div className={styles.dealsList}>
-              {deals.map((deal) => (
+              {deals.map((deal, index) => (
                 <div 
                   key={deal.order_id}
                   className={styles.dealCard}
+                  ref={deals.length === index + 1 ? lastDealRef : undefined}
                   onClick={() => {
                     webApp?.HapticFeedback.impactOccurred('light');
                     navigate(`/place-inquiry/${deal.order_id}`, {
