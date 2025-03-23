@@ -21,6 +21,7 @@ export const DealsScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
+  const currentPageRef = useRef(1);
 
   const loadDeals = useCallback(async () => {
     if (loadingRef.current) return;
@@ -30,14 +31,16 @@ export const DealsScreen = () => {
       setLoading(true);
       setError(null);
       
+      const currentPage = currentPageRef.current;
+      
       const response = await apiService.getOrderbook({
-        offset: (page - 1) * ITEMS_PER_PAGE,
+        offset: (currentPage - 1) * ITEMS_PER_PAGE,
         limit: ITEMS_PER_PAGE,
         search: searchQuery,
         type: activeTab === 'all' ? undefined : activeTab === 'buy' ? 'Buy' : 'Sell'
       });
 
-      if (page === 1) {
+      if (currentPage === 1) {
         setDeals(response.data);
       } else {
         setDeals(prev => {
@@ -57,15 +60,24 @@ export const DealsScreen = () => {
       setLoading(false);
       loadingRef.current = false;
     }
-  }, [activeTab, searchQuery, page]);
+  }, [activeTab, searchQuery]);
 
   useEffect(() => {
     if (isReady) {
       WebApp.ready();
+      currentPageRef.current = 1;
       setPage(1);
       loadDeals();
     }
   }, [isReady, activeTab, searchQuery, loadDeals]);
+
+  // Run this effect when page changes
+  useEffect(() => {
+    if (page > 1) {
+      currentPageRef.current = page;
+      loadDeals();
+    }
+  }, [page, loadDeals]);
 
   const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
@@ -81,12 +93,14 @@ export const DealsScreen = () => {
   const handleTabChange = (tab: 'all' | 'buy' | 'sell') => {
     webApp?.HapticFeedback.impactOccurred('light');
     setActiveTab(tab);
+    currentPageRef.current = 1;
     setPage(1);
     setDeals([]);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
+    currentPageRef.current = 1;
     setPage(1);
   };
 
