@@ -429,4 +429,56 @@ export interface ProjectSearchResult {
 export interface ProjectSearchResponse {
   total: number;
   data: ProjectSearchResult[];
+}
+
+// Notification types
+export interface NotificationSettings {
+  id: string;
+  telegram_notifications: boolean;
+  email_notifications: boolean;
+  email: string;
+}
+
+export interface NotificationEventType {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface NotificationPreference {
+  id: string;
+  event_type: {
+    id: string;
+    code: string;
+    name: string;
+  };
+  telegram_enabled: boolean;
+  email_enabled: boolean;
+}
+
+export interface Notification {
+  id: string;
+  notification_type: string;
+  message: string;
+  notification_data: {
+    [key: string]: string | number | boolean | null | undefined;
+  };
+  created_at: string;
+  read_at: string | null;
+}
+
+export interface NotificationSettingsResponse {
+  data: NotificationSettings;
+}
+
+export interface NotificationEventTypesResponse {
+  data: NotificationEventType[];
+}
+
+export interface NotificationPreferencesResponse {
+  data: NotificationPreference[];
+}
+
+export interface NotificationsResponse {
+  data: Notification[];
 } 
