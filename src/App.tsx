@@ -10,6 +10,7 @@ import PortfolioDetailScreen from './screens/Portfolio/PortfolioDetailScreen';
 import { PlaceInquiryScreen } from './screens/PlaceInquiry/PlaceInquiryScreen';
 import { PlaceRFQScreen } from './screens/PlaceRFQ/PlaceRFQScreen';
 import { AttestationScreen } from './screens/Attestation/AttestationScreen';
+import { NotificationsScreen, NotificationSettingsScreen } from './screens/Notifications';
 import { Loader } from './components/Loader';
 import { apiService } from './utils/api';
 
@@ -109,6 +110,22 @@ function App() {
               isAttested === false 
                 ? <Navigate to="/attestation" replace /> 
                 : <DealsScreen />
+            } 
+          />
+          <Route 
+            path="/notifications" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/attestation" replace /> 
+                : <NotificationsScreen />
+            } 
+          />
+          <Route 
+            path="/notification-settings" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/attestation" replace /> 
+                : <NotificationSettingsScreen />
             } 
           />
           <Route 

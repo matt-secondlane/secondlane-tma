@@ -29,7 +29,11 @@ import type {
   CreatePortfolioAssetRequest,
   UpdatePortfolioAssetRequest,
   ProjectSearchResult,
-  ProjectSearchResponse
+  ProjectSearchResponse,
+  NotificationSettings,
+  NotificationEventType,
+  NotificationPreference,
+  Notification
 } from '../types/api';
 
 export const apiService = {
@@ -564,5 +568,56 @@ export const apiService = {
     if (errorCount > 0) {
       console.warn(`Some assets (${errorCount}) failed to import. Successfully imported: ${successCount}`);
     }
+  },
+
+  // Notification methods
+  
+  // Get notification settings
+  getNotificationSettings: async (): Promise<NotificationSettings> => {
+    const response = await api.get('/notifications/settings');
+    return response.data.data;
+  },
+
+  // Update notification settings
+  updateNotificationSettings: async (settings: {
+    telegram_notifications: boolean;
+    email_notifications: boolean;
+    email?: string;
+  }): Promise<NotificationSettings> => {
+    const response = await api.put('/notifications/settings', settings);
+    return response.data.data;
+  },
+
+  // Get notification event types
+  getNotificationEventTypes: async (params?: { active_only?: boolean }): Promise<NotificationEventType[]> => {
+    const response = await api.get('/notifications/event-types', { params });
+    return response.data.data;
+  },
+
+  // Get notification preferences
+  getNotificationPreferences: async (): Promise<NotificationPreference[]> => {
+    const response = await api.get('/notifications/preferences');
+    return response.data.data;
+  },
+
+  // Update notification preference for specific event type
+  updateNotificationPreference: async (preferenceData: {
+    event_type_id: string;
+    telegram_enabled: boolean;
+    email_enabled: boolean;
+  }): Promise<NotificationPreference> => {
+    const response = await api.put('/notifications/preferences', preferenceData);
+    return response.data.data;
+  },
+
+  // Get user notifications
+  getNotifications: async (params?: { unread_only?: boolean; limit?: number; offset?: number }): Promise<Notification[]> => {
+    const response = await api.get('/notifications', { params });
+    return response.data.data;
+  },
+
+  // Mark notification as read
+  markNotificationAsRead: async (notificationId: string): Promise<void> => {
+    await api.post(`/notifications/${notificationId}/read`);
   }
 }; 
