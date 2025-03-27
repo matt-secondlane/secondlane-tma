@@ -293,12 +293,9 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
                   secondLaneSell: 'SecondLane Sell'
                 };
                 
-                // If this is a market value entry and we have market cap data, show both
-                if (name === 'marketValue' && entry?.payload?.marketCap) {
-                  return [
-                    `${formattedValue}\n\nMarket Cap: ${formatCurrency(entry.payload.marketCap)}`,
-                    labels[name as keyof typeof labels]
-                  ];
+                // If this is a market value entry, just show the value
+                if (name === 'marketValue') {
+                  return [formattedValue, labels[name as keyof typeof labels]];
                 }
                 
                 // If this is a buy or sell order, and there is an array of all orders, enhance the tooltip
@@ -383,7 +380,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               <div className={styles.legendColor} style={{ 
                 backgroundImage: 'repeating-linear-gradient(45deg, #888888, #888888 2px, var(--tg-theme-bg-color) 2px, var(--tg-theme-bg-color) 4px)' 
               }} />
-              <span>SecondLane Sell</span>
+              <span className={styles.legendText}>SecondLane Sell</span>
             </div>
           </div>
         </div>

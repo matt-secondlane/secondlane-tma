@@ -133,6 +133,10 @@
   flex-shrink: 0;
 }
 
+.legendText {
+  color: var(--tg-theme-text-color);
+}
+
 /* Responsive styles for different devices */
 @media (max-width: 768px) {
   .chartContainer {
