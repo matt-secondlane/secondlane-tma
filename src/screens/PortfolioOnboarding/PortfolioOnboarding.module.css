@@ -1,0 +1,489 @@
+.portfolioScreen {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--tg-theme-bg-color);
+    width: 100%;
+    overflow: hidden;
+    padding-top: 14px;
+    margin-bottom: -14px;
+  }
+  
+  .portfolioHeader {
+    padding: 16px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--tg-theme-bg-color);
+    margin-bottom: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .screenTitle {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--tg-theme-text-color);
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+  
+  .portfolioContent {
+    flex: 1;
+    overflow-y: auto;
+    padding-top: 26px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .onboardingBody {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .onboardingText {
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--tg-theme-hint-color);
+    margin: 0 0 20px;
+    text-align: center;
+  }
+  
+  .visualGuide {
+    margin: 15px 0 20px;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background-color: #FFFFFF;
+  }
+  
+  .interfacePreview {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    background-color: #FFFFFF;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+  }
+  
+  /* Mock interface elements */
+  .mockInterface {
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    position: relative;
+    background-color: #FFFFFF;
+  }
+  
+  .mockHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin-bottom: 15px;
+  }
+  
+  .mockTitle {
+    font-weight: 600;
+    font-size: 18px;
+  }
+  
+  .mockContent {
+    padding: 10px 0;
+    position: relative;
+  }
+  
+  .mockSectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  
+  .mockNewPortfolioBtn {
+    background-color: #4B4F47;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .mockFormContainer {
+    background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+  }
+  
+  .mockInput {
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: left;
+    color: #aaa;
+  }
+  
+  .mockButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+  }
+  
+  .mockTemplateBtn {
+    background-color: transparent;
+    border: 1px solid #4B4F47;
+    color: #4B4F47;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .mockImportBtn {
+    background-color: #4B4F47;
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .mockPortfolioDetail {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .mockDetailHeader {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .mockAssetsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .mockAddAssetBtn {
+    align-self: center;
+    background-color: #4B4F47;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .mockPortfolioList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 5px 0;
+  }
+  
+  .mockPortfolioCard {
+    background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-radius: 12px;
+    padding: 15px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mockCardHeader {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+  
+  .mockCardDetails {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #666;
+    text-align: left;
+  }
+  
+  .mockAssetItem {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    padding: 12px;
+    border-radius: 8px;
+    position: relative;
+  }
+  
+  .mockAssetInfo {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .mockAssetInfo div:first-child {
+    font-weight: 500;
+  }
+  
+  .mockAssetInfo div:last-child {
+    font-size: 13px;
+    color: #666;
+  }
+  
+  .mockAssetControls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .mockEditBtn {
+    background-color: #4B4F47;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  
+  .mockDeleteBtn {
+    background-color: rgba(255, 0, 0, 0.15);
+    color: darkred;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  
+  /* Pointer hand */
+  .pointerHand {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: none;
+    animation: pointPulse 1.5s infinite;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    font-size: 38px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  
+  .pointerHand::after {
+    content: "👆";
+    display: block;
+  }
+  
+  @keyframes pointPulse {
+    0% {
+      transform: scale(1) translate(0, 0);
+    }
+    50% {
+      transform: scale(1.2) translate(-2px, -2px);
+    }
+    100% {
+      transform: scale(1) translate(0, 0);
+    }
+  }
+  
+  /* Position hand for each slide */
+  .highlightNewPortfolioBtn .pointerHand {
+    top: 40%;
+    right: 50px;
+  }
+  
+  .highlightImportCSV .pointerHand {
+    bottom: 20px;
+    right: 25px;
+  }
+  
+  .highlightPortfolioItem .pointerHand {
+    top: 50%;
+    right: 30px;
+  }
+  
+  .highlightPortfolioCard .pointerHand {
+    bottom: 20px;
+    right: 30px;
+  }
+  
+  .highlightAssetControls .pointerHand {
+    top: 12px;
+    right: 15px;
+  }
+  
+  .onboardingProgress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+  }
+  
+  .onboardingProgressDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  .onboardingProgressDotActive {
+    width: 24px;
+    background-color: #4B4F47;
+    border-radius: 4px;
+  }
+  
+  .onboardingActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: 30px;
+    width: 100%;
+    background-color: var(--tg-theme-bg-color);
+    z-index: 20;
+  }
+  
+  .navigationButtons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .onboardingSkipBtn {
+    background-color: transparent;
+    color: var(--tg-theme-hint-color);
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .onboardingBackBtn {
+    background-color: transparent;
+    color: var(--tg-theme-text-color);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .onboardingBackBtn:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+  
+  .onboardingNextBtn {
+    background-color: #4B4F47;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .onboardingNextBtn:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+  
+  .onboardingStartBtn {
+    width: 100%;
+    background-color: #4B4F47;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 0;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .onboardingStartBtn:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+  
+  /* Dark mode adaptations */
+  @media (prefers-color-scheme: dark) {
+    .onboardingProgressDot {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .visualGuide,
+    .interfacePreview {
+      background-color: #1E1E1E;
+      color: var(--tg-theme-text-color);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .mockInterface {
+      background-color: #1E1E1E;
+      color: var(--tg-theme-text-color);
+    }
+    
+    .mockTitle,
+    .mockSectionHeader,
+    .mockCardHeader,
+    .mockAssetInfo div:first-child {
+      color: var(--tg-theme-text-color);
+    }
+    
+    .mockFormContainer,
+    .mockPortfolioCard,
+    .mockAssetItem {
+      background-color: #2C2C2C;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .mockInput {
+      background-color: #1E1E1E;
+      border-color: rgba(255, 255, 255, 0.1);
+      color: var(--tg-theme-hint-color);
+    }
+    
+    .mockCardDetails,
+    .mockAssetInfo div:last-child {
+      color: var(--tg-theme-hint-color);
+    }
+    
+    .mockHeader,
+    .mockDetailHeader {
+      border-color: rgba(255, 255, 255, 0.08);
+      color: var(--tg-theme-text-color);
+    }
+    
+    .mockDeleteBtn {
+      background-color: rgba(255, 50, 50, 0.2);
+      color: #ff6b6b;
+    }
+  } 

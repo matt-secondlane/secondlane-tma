@@ -1,75 +1,82 @@
 .header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px 16px;
-    background-color: var(--tg-theme-bg-color);
-    position: fixed;
-    top: var(--header-top-offset);
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.3);
-    height: var(--header-height);
-  }
-  
-  .centerContainer {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: -20px;
-  }
-  
-  .userInfo {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: var(--tg-theme-bg-color);
+  position: fixed;
+  top: var(--header-top-offset);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.3);
+  height: var(--header-height);
+}
+
+.centerContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: -20px;
+}
+
+.userInfo {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+}
+
+/* Dark mode - для Telegram нужно использовать медиа-запрос */
+@media (prefers-color-scheme: dark) {
   .logo {
-    height: 32px;
-    width: auto;
+    filter: invert(1);
   }
-  
-  .actions {
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-  
-  .iconButton {
-    background-color: rgba(0, 0, 0, 0.05);
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    position: relative;
-  }
-  
-  .iconButton:active {
-    background-color: rgba(0, 0, 0, 0.15);
-    transform: scale(0.95);
-  }
-  
-  .icon {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .notificationBadge {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 8px;
-    height: 8px;
-    background-color: #ff3b30;
-    border-radius: 50%;
-    border: 1px solid var(--tg-theme-bg-color);
-  }
-  
+}
+
+.actions {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.iconButton {
+  background-color: rgba(118, 118, 128, 0.12);
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+  color: var(--tg-theme-text-color);
+}
+
+.iconButton:active {
+  background-color: rgba(118, 118, 128, 0.24);
+  transform: scale(0.95);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background-color: #ff3b30;
+  border-radius: 50%;
+  border: 1px solid var(--tg-theme-bg-color);
+}
