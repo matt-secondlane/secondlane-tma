@@ -271,6 +271,7 @@ export interface ProjectGraphResponse {
     price_history?: Array<{
       date: string;
       price_usd: number;
+      spot_fdv_usd: number;
       market_cap_usd: number;
       total_volume_usd?: number;
     }>;
@@ -290,6 +291,7 @@ export interface GraphDataPoint {
   type?: string;
   allBuyOrders?: Array<OrderData>;
   allSellOrders?: Array<OrderData>;
+  marketCap?: number;
 }
 
 // Order data for tooltips

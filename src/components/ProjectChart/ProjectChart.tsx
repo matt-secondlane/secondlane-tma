@@ -53,11 +53,12 @@ const processPriceHistory = (
 ): Map<string, GraphDataPoint> => {
   if (priceHistory.length) {
     priceHistory.forEach(point => {
-      // Only add points with non-zero market cap values
-      if (point.market_cap_usd && point.market_cap_usd > 0) {
+      // Only add points with non-zero spot FDV values
+      if (point.spot_fdv_usd && point.spot_fdv_usd > 0) {
         dataMap.set(point.date, {
           date: point.date,
-          marketValue: point.market_cap_usd
+          marketValue: point.spot_fdv_usd,
+          marketCap: point.market_cap_usd // Store market cap for tooltip
         });
       }
     });
@@ -196,7 +197,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
         let hasNonZeroPriceHistory = false;
         if (hasPriceHistory) {
           hasNonZeroPriceHistory = response.data.price_history!.some(
-            item => item.market_cap_usd > 0
+            item => item.spot_fdv_usd > 0
           );
         }
 
@@ -286,11 +287,19 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               formatter={(value: number, name: string, entry: {payload?: GraphDataPoint}) => {
                 const formattedValue = formatCurrency(value);
                 const labels = {
-                  marketValue: 'Spot Market Cap',
+                  marketValue: 'Spot FDV',
                   fundingValue: 'Funding FDV',
                   secondLaneBuy: 'SecondLane Buy',
                   secondLaneSell: 'SecondLane Sell'
                 };
+                
+                // If this is a market value entry and we have market cap data, show both
+                if (name === 'marketValue' && entry?.payload?.marketCap) {
+                  return [
+                    `${formattedValue}\nMarket Cap: ${formatCurrency(entry.payload.marketCap)}`,
+                    labels[name as keyof typeof labels]
+                  ];
+                }
                 
                 // If this is a buy or sell order, and there is an array of all orders, enhance the tooltip
                 if (entry?.payload) {
@@ -356,7 +365,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
           <div className={styles.legendRow}>
             <div className={styles.legendItem}>
               <div className={styles.legendColor} style={{ backgroundColor: "var(--tg-theme-text-color, #000000)" }} />
-              <span>Spot Market Cap</span>
+              <span>Spot FDV</span>
             </div>
             {hasFundingValuation && (
               <div className={styles.legendItem}>
