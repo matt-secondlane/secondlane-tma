@@ -6,7 +6,7 @@ import { apiService } from '../../../utils/api';
 import { Portfolio } from '../../../types/api';
 import styles from './PortfolioScreen.module.css';
 import { Loader } from '../../../components/Loader';
-import { PortfolioOnboarding } from '../PortfolioOnboarding/PortfolioOnboarding';
+import { PortfolioOnboarding } from '../../PortfolioOnboarding/PortfolioOnboarding';
 
 interface EnhancedPortfolio extends Portfolio {
   assetsCount?: number;
