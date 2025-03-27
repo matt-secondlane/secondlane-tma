@@ -124,6 +124,12 @@
   color: var(--tg-theme-text-color);
 }
 
+@media (prefers-color-scheme: dark) {
+  .legendItem span {
+    color: #ffffff;
+  }
+}
+
 .legendColor {
   width: 16px;
   height: 16px;
