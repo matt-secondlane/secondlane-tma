@@ -272,8 +272,6 @@ export const apiService = {
       portfolio_id: asset.portfolio_id || '',
       logo: asset.project?.logo || '',
       project_name: asset.project?.name || '',
-      // Извлекаем logo из объекта project
-      logo: asset.project?.logo || asset.project?.image_url || null,
       project: asset.project,
       project_website: asset.project_website || '',
       invested_amount: asset.invested_amount,
