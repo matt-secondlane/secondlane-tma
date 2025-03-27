@@ -32,6 +32,13 @@
     width: auto;
   }
   
+  /* Dark mode - для Telegram нужно использовать медиа-запрос */
+  @media (prefers-color-scheme: dark) {
+    .logo {
+      filter: invert(1);
+    }
+  }
+  
   .actions {
     flex: 1;
     display: flex;
@@ -40,7 +47,7 @@
   }
   
   .iconButton {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(118, 118, 128, 0.12);
     border: none;
     cursor: pointer;
     padding: 8px;
@@ -50,10 +57,11 @@
     justify-content: center;
     transition: all 0.2s ease;
     position: relative;
+    color: var(--tg-theme-text-color);
   }
   
   .iconButton:active {
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(118, 118, 128, 0.24);
     transform: scale(0.95);
   }
   

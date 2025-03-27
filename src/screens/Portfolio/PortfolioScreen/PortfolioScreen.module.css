@@ -469,4 +469,31 @@
 
 .portfolioItem:last-child {
   margin-bottom: 0;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.infoButton {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--tg-theme-text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.infoButton:active {
+  transform: translateY(-50%) scale(0.95);
 } 

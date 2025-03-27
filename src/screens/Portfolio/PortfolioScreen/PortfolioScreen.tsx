@@ -6,6 +6,7 @@ import { apiService } from '../../../utils/api';
 import { Portfolio } from '../../../types/api';
 import styles from './PortfolioScreen.module.css';
 import { Loader } from '../../../components/Loader';
+import { PortfolioOnboarding } from '../PortfolioOnboarding/PortfolioOnboarding';
 
 interface EnhancedPortfolio extends Portfolio {
   assetsCount?: number;
@@ -20,6 +21,21 @@ export const PortfolioScreen: React.FC = () => {
   const [isCreatingPortfolio, setIsCreatingPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Onboarding state - show only for first visit
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Handle onboarding completion
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    webApp?.HapticFeedback.notificationOccurred('success');
+  };
+
+  // Handle info button click to show onboarding
+  const handleInfoButtonClick = () => {
+    setShowOnboarding(true);
+    webApp?.HapticFeedback.impactOccurred('light');
+  };
 
   // Fetch portfolios
   const fetchPortfolios = useCallback(async () => {
@@ -155,48 +171,48 @@ export const PortfolioScreen: React.FC = () => {
     const file = fileInput?.files?.[0];
     
     if (!file) {
-      WebApp.showAlert('Пожалуйста, выберите CSV файл');
+      WebApp.showAlert('Please select a CSV file');
       return;
     }
     
-    // Проверяем тип файла
+    // Check file type
     if (!file.name.endsWith('.csv')) {
-      WebApp.showAlert('Пожалуйста, выберите файл в формате CSV');
+      WebApp.showAlert('Please select a file in CSV format');
       fileInput.value = '';
       return;
     }
     
-    // Проверяем название портфолио
+    // Check portfolio name
     const portfolioName = newPortfolioName.trim();
     if (!portfolioName) {
-      WebApp.showAlert('Пожалуйста, введите название портфолио в поле выше');
+      WebApp.showAlert('Please enter a portfolio name in the field above');
       fileInput.value = '';
       return;
     }
     
-    // Загружаем CSV файл
+    // Upload CSV file
     setIsUploading(true);
     webApp?.HapticFeedback.impactOccurred('medium');
     
     try {
       const newPortfolio = await apiService.createPortfolioFromCSV(portfolioName, file);
       
-      WebApp.showAlert('Портфолио успешно создано!');
+      WebApp.showAlert('Portfolio successfully created!');
       webApp?.HapticFeedback.notificationOccurred('success');
       
-      // Обновляем список портфолио и навигация
+      // Update portfolios list and navigation
       fetchPortfolios();
       setIsCreatingPortfolio(false);
       setNewPortfolioName('');
       navigate(`/portfolio/${newPortfolio.portfolio_id}`);
     } catch (error) {
-      let errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      let errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       if (errorMessage === 'Portfolio name is required') {
-        errorMessage = 'Имя портфолио обязательно. Пожалуйста, введите его перед загрузкой CSV.';
+        errorMessage = 'Portfolio name is required. Please enter it before uploading CSV.';
       }
       
-      WebApp.showAlert(`Ошибка создания портфолио: ${errorMessage}`);
+      WebApp.showAlert(`Error creating portfolio: ${errorMessage}`);
       webApp?.HapticFeedback.notificationOccurred('error');
     } finally {
       setIsUploading(false);
@@ -220,10 +236,52 @@ export const PortfolioScreen: React.FC = () => {
     );
   }
 
+  // Show onboarding screen if needed
+  if (showOnboarding) {
+    return <PortfolioOnboarding onComplete={handleOnboardingComplete} />;
+  }
+
   return (
     <div className={styles.portfolioScreen}>
       <div className={styles.portfolioHeader}>
-        <h1 className={styles.screenTitle}>Portfolio Tracker</h1>
+        <div className={styles.titleContainer}>
+          <h1 className={styles.screenTitle}>Portfolio Tracker</h1>
+          <button 
+            className={styles.infoButton}
+            onClick={handleInfoButtonClick}
+            aria-label="Information"
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+              <path 
+                d="M12 16V12" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+              <path 
+                d="M12 8H12.01" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {error && (
