@@ -380,7 +380,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               <div className={styles.legendColor} style={{ 
                 backgroundImage: 'repeating-linear-gradient(45deg, #888888, #888888 2px, var(--tg-theme-bg-color) 2px, var(--tg-theme-bg-color) 4px)' 
               }} />
-              <span className={styles.legendText}>SecondLane Sell</span>
+              <span>SecondLane Sell</span>
             </div>
           </div>
         </div>
