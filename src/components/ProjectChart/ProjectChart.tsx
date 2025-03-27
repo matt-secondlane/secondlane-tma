@@ -296,7 +296,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
                 // If this is a market value entry and we have market cap data, show both
                 if (name === 'marketValue' && entry?.payload?.marketCap) {
                   return [
-                    `${formattedValue}\nMarket Cap: ${formatCurrency(entry.payload.marketCap)}`,
+                    `${formattedValue}\n\nMarket Cap: ${formatCurrency(entry.payload.marketCap)}`,
                     labels[name as keyof typeof labels]
                   ];
                 }
