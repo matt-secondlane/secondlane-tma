@@ -124,6 +124,12 @@
   color: var(--tg-theme-text-color);
 }
 
+@media (prefers-color-scheme: dark) {
+  .legendItem span {
+    color: #ffffff;
+  }
+}
+
 .legendColor {
   width: 16px;
   height: 16px;
@@ -131,6 +137,10 @@
   border-radius: 2px;
   display: inline-block;
   flex-shrink: 0;
+}
+
+.legendText {
+  color: var(--tg-theme-text-color);
 }
 
 /* Responsive styles for different devices */

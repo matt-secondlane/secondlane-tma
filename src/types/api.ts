@@ -271,6 +271,7 @@ export interface ProjectGraphResponse {
     price_history?: Array<{
       date: string;
       price_usd: number;
+      spot_fdv_usd: number;
       market_cap_usd: number;
       total_volume_usd?: number;
     }>;
@@ -290,6 +291,7 @@ export interface GraphDataPoint {
   type?: string;
   allBuyOrders?: Array<OrderData>;
   allSellOrders?: Array<OrderData>;
+  marketCap?: number;
 }
 
 // Order data for tooltips
@@ -429,4 +431,56 @@ export interface ProjectSearchResult {
 export interface ProjectSearchResponse {
   total: number;
   data: ProjectSearchResult[];
+}
+
+// Notification types
+export interface NotificationSettings {
+  id: string;
+  telegram_notifications: boolean;
+  email_notifications: boolean;
+  email: string;
+}
+
+export interface NotificationEventType {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface NotificationPreference {
+  id: string;
+  event_type: {
+    id: string;
+    code: string;
+    name: string;
+  };
+  telegram_enabled: boolean;
+  email_enabled: boolean;
+}
+
+export interface Notification {
+  id: string;
+  notification_type: string;
+  message: string;
+  notification_data: {
+    [key: string]: string | number | boolean | null | undefined;
+  };
+  created_at: string;
+  read_at: string | null;
+}
+
+export interface NotificationSettingsResponse {
+  data: NotificationSettings;
+}
+
+export interface NotificationEventTypesResponse {
+  data: NotificationEventType[];
+}
+
+export interface NotificationPreferencesResponse {
+  data: NotificationPreference[];
+}
+
+export interface NotificationsResponse {
+  data: Notification[];
 } 
