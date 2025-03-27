@@ -95,7 +95,7 @@ export const NotificationSettingsScreen: React.FC = () => {
 
   // Email change handler
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+    setEmail(e.target.value || '');
     // Reset success message when typing
     if (saveSuccess) setSaveSuccess(false);
   };
@@ -110,13 +110,13 @@ export const NotificationSettingsScreen: React.FC = () => {
     setEditingEmail(false);
     // Reset to original value
     if (settings) {
-      setEmail(settings.email);
+      setEmail(settings.email || '');
     }
   };
 
   // Save email handler
   const handleSaveEmail = async () => {
-    if (!settings || !email.trim()) return;
+    if (!settings) return;
     
     try {
       setIsUpdating(true);
@@ -124,7 +124,7 @@ export const NotificationSettingsScreen: React.FC = () => {
       const response = await apiService.updateNotificationSettings({
         telegram_notifications: settings.telegram_notifications,
         email_notifications: settings.email_notifications,
-        email
+        email: email || undefined
       });
       
       setSettings(response);
@@ -322,7 +322,7 @@ export const NotificationSettingsScreen: React.FC = () => {
                     <input
                       type="email"
                       className={styles.emailInput}
-                      value={email}
+                      value={email || ''}
                       onChange={handleEmailChange}
                       placeholder="Your email address"
                       disabled={isUpdating}
@@ -340,7 +340,7 @@ export const NotificationSettingsScreen: React.FC = () => {
                       <button 
                         className={styles.saveButton}
                         onClick={handleSaveEmail}
-                        disabled={isUpdating || (email === settings.email && editingEmail) || !email.trim()}
+                        disabled={isUpdating || (email === settings?.email && editingEmail) || !email?.trim()}
                       >
                         Save
                       </button>
