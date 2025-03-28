@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './WelcomeScreen.module.css';
-import logoImage from '../../assets/logoSecondLane.svg';
-import welcomeIllustration from '../../assets/welcome-illustration.svg';
+import logoSecondLane from '../../assets/logoSecondLane.svg';
+import welcomeIllustration from '../../assets/SLlogo.jpg';
 
 export const WelcomeScreen: React.FC = () => {
   const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleGetStarted = () => {
     navigate('/attestation');
@@ -13,43 +18,77 @@ export const WelcomeScreen: React.FC = () => {
 
   return (
     <div className={styles.welcomeContainer}>
+      <div className={styles.welcomeHeader}>
+        <div className={styles.headerLogoContainer}>
+          <img src={logoSecondLane} alt="SecondLane" className={styles.headerLogo} />
+        </div>
+        <h1 className={styles.screenTitle}>Welcome to SecondLane</h1>
+      </div>
+
       <div className={styles.welcomeContent}>
-        <img src={logoImage} alt="Second Lane Logo" className={styles.logo} />
-        
-        <img 
-          src={welcomeIllustration} 
-          alt="Welcome Illustration" 
-          className={styles.illustration} 
-        />
-        
-        <h1 className={styles.welcomeTitle}>Welcome to SecondLane</h1>
+        <div className={styles.illustrationContainer}>
+          <img 
+            src={welcomeIllustration} 
+            alt="Welcome Illustration" 
+            className={styles.illustration} 
+          />
+        </div>
         
         <div className={styles.welcomeMessage}>
           <p>
-            Please complete this short self-attestation questionnaire on the following 
-            two screens and enjoy searching the latest deals and information 
-            on top industry projects.
+            Complete this short questionnaire and explore the latest deals and information on top industry projects.
           </p>
         </div>
 
-        <div className={styles.features}>
+        <h2 className={styles.featuresTitle}>What you'll get access to:</h2>
+        
+        <div className={styles.featuresList}>
           <div className={styles.featureItem}>
-            <div className={styles.featureIcon}>🔍</div>
-            <div className={styles.featureText}>Explore exclusive deals</div>
+            <div className={styles.featureIcon}>
+              <span role="img" aria-label="Search">🔍</span>
+            </div>
+            <div className={styles.featureContent}>
+              <h3 className={styles.featureTitle}>Explore exclusive deals</h3>
+              <p className={styles.featureDescription}>
+                Find the best investment opportunities
+              </p>
+            </div>
           </div>
+          
           <div className={styles.featureItem}>
-            <div className={styles.featureIcon}>📊</div>
-            <div className={styles.featureText}>Get up-to-date project information</div>
+            <div className={styles.featureIcon}>
+              <span role="img" aria-label="Chart">📊</span>
+            </div>
+            <div className={styles.featureContent}>
+              <h3 className={styles.featureTitle}>Get project information</h3>
+              <p className={styles.featureDescription}>
+                Stay informed with latest industry data
+              </p>
+            </div>
           </div>
+          
           <div className={styles.featureItem}>
-            <div className={styles.featureIcon}>📱</div>
-            <div className={styles.featureText}>Manage your portfolio</div>
+            <div className={styles.featureIcon}>
+              <span role="img" aria-label="Mobile">📱</span>
+            </div>
+            <div className={styles.featureContent}>
+              <h3 className={styles.featureTitle}>Manage your portfolio</h3>
+              <p className={styles.featureDescription}>
+                Track investments in one place
+              </p>
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className={styles.actionButtonContainer}>
         <button 
           onClick={handleGetStarted} 
-          className={styles.getStartedButton}
+          className={styles.actionButton}
+          style={{ 
+            opacity: mounted ? 1 : 0, 
+            transform: mounted ? 'translateY(0)' : 'translateY(20px)'
+          }}
         >
           Get Started
         </button>
