@@ -10,6 +10,7 @@ import PortfolioDetailScreen from './screens/Portfolio/PortfolioDetailScreen';
 import { PlaceInquiryScreen } from './screens/PlaceInquiry/PlaceInquiryScreen';
 import { PlaceRFQScreen } from './screens/PlaceRFQ/PlaceRFQScreen';
 import { AttestationScreen } from './screens/Attestation/AttestationScreen';
+import { WelcomeScreen } from './screens/Welcome';
 import { NotificationsScreen, NotificationSettingsScreen } from './screens/Notifications';
 import { Loader } from './components/Loader';
 import { apiService } from './utils/api';
@@ -86,21 +87,23 @@ function App() {
   return (
     <HashRouter>
       <Routes>
+        {/* Welcome screen (outside of MainLayout) */}
+        <Route path="/welcome" element={<WelcomeScreen />} />
+        
         {/* Attestation screen (outside of MainLayout) */}
         <Route path="/attestation" element={
           isAttested 
             ? <Navigate to="/" replace /> 
             : <AttestationScreen onAttestationComplete={refreshAttestationStatus} />
         } />
-        {/* <Route path="/attestation" element={<AttestationScreen />} /> */}
         
         <Route element={<MainLayout />}>
-          {/* Redirect to attestation if not attested */}
+          {/* Redirect to welcome if not attested */}
           <Route 
             path="/" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <Navigate to="/deals" replace />
             } 
           />
@@ -108,7 +111,7 @@ function App() {
             path="/deals" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <DealsScreen />
             } 
           />
@@ -116,7 +119,7 @@ function App() {
             path="/notifications" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <NotificationsScreen />
             } 
           />
@@ -124,7 +127,7 @@ function App() {
             path="/notification-settings" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <NotificationSettingsScreen />
             } 
           />
@@ -132,7 +135,7 @@ function App() {
             path="/database" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <DatabaseScreen />
             } 
           />
@@ -140,7 +143,7 @@ function App() {
             path="/database/project/:projectId" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <ProjectDetailsScreen />
             } 
           />
@@ -148,7 +151,7 @@ function App() {
             path="/portfolio" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <PortfolioScreen />
             } 
           />
@@ -156,7 +159,7 @@ function App() {
             path="/portfolio/:portfolioId" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <PortfolioDetailScreen />
             } 
           />
@@ -164,7 +167,7 @@ function App() {
             path="/portfolio/:portfolioId/create-asset" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <CreatePortfolioAssetScreen />
             } 
           />
@@ -172,7 +175,7 @@ function App() {
             path="/portfolio/:portfolioId/edit-asset/:assetId" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <EditPortfolioAssetScreen />
             } 
           />
@@ -180,7 +183,7 @@ function App() {
             path="/place-inquiry" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <PlaceInquiryScreen />
             } 
           />
@@ -188,7 +191,7 @@ function App() {
             path="/place-inquiry/:orderId" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <PlaceInquiryScreen />
             } 
           />
@@ -196,7 +199,7 @@ function App() {
             path="/place-rfq" 
             element={
               isAttested === false 
-                ? <Navigate to="/attestation" replace /> 
+                ? <Navigate to="/welcome" replace /> 
                 : <PlaceRFQScreen />
             } 
           />

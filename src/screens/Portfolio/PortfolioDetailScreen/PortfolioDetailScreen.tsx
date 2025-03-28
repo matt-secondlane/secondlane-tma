@@ -143,27 +143,6 @@ export const PortfolioDetailScreen: React.FC = () => {
     );
   };
 
-  // Format currency
-  const formatCurrency = (value: number | string | undefined): string => {
-    if (value === undefined || value === null) {
-      return '$0.00';
-    }
-    
-    // Convert string to number if it's a string
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    
-    if (isNaN(numValue)) {
-      return '$0.00';
-    }
-    
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(numValue);
-  };
-
   // Format date
   const formatDate = (dateString: string | undefined): string => {
     if (!dateString) {
