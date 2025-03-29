@@ -25,7 +25,7 @@ export default defineConfig({
     },
     watch: {
       usePolling: true,
-      interval: 100, // Увеличиваем интервал для уменьшения нагрузки CPU
+      interval: 100, // Increase interval to reduce CPU load
     },
     proxy: {
       '/api': {
@@ -40,12 +40,12 @@ export default defineConfig({
   css: {
     devSourcemap: true,
   },
-  // Оптимизации для быстрого обновления
+  // Optimizations for fast updates
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
     exclude: []
   },
-  // Добавляем настройки для улучшения обновления
+  // Add settings to improve updates
   build: {
     sourcemap: true,
     commonjsOptions: {

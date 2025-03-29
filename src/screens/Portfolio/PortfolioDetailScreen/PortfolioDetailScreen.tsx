@@ -7,6 +7,9 @@ import { Portfolio, PortfolioAsset } from '../../../types/api';
 import styles from './PortfolioDetailScreen.module.css';
 import { Loader } from '../../../components/Loader';
 import { formatMoney } from '../../../utils/money';
+import { PortfolioTabs, PortfolioTab } from '../../../components/PortfolioTabs';
+import { PortfolioSummary } from '../../../components/PortfolioSummary';
+import { PortfolioGraph } from '../../../components/PortfolioGraph';
 
 export const PortfolioDetailScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +20,9 @@ export const PortfolioDetailScreen: React.FC = () => {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [portfolioAssets, setPortfolioAssets] = useState<PortfolioAsset[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<PortfolioTab>('manage');
 
   // Fetch portfolio details
   const fetchPortfolioDetails = useCallback(async () => {
@@ -57,6 +63,12 @@ export const PortfolioDetailScreen: React.FC = () => {
       fetchPortfolioDetails();
     }
   }, [isReady, fetchPortfolioDetails]);
+
+  // Handle tab change
+  const handleTabChange = (tab: PortfolioTab) => {
+    webApp?.HapticFeedback.impactOccurred('light');
+    setActiveTab(tab);
+  };
 
   // Handle file upload for CSV
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,6 +153,13 @@ export const PortfolioDetailScreen: React.FC = () => {
         }
       }
     );
+  };
+
+  // Handle view asset details
+  const handleViewAsset = (assetId: string) => {
+    if (!assetId) return;
+    webApp?.HapticFeedback.impactOccurred('light');
+    navigate(`/portfolio/asset/${assetId}`);
   };
 
   // Format date
@@ -233,164 +252,180 @@ export const PortfolioDetailScreen: React.FC = () => {
         </div>
       )}
 
-      <div className={styles.portfolioContent}>
-        <div className={styles.assetsHeader}>
-          <h2>Portfolio Assets: {portfolioAssets.length}</h2>
-          <div className={styles.assetsActions}>
-            <button 
-              className={styles.downloadTemplateBtn}
-              onClick={handleDownloadCSVTemplate}
-            >
-              Get Template
-            </button>
-            <label className={styles.fileUpload}>
-              <input
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                disabled={isUploading}
-              />
-              {isUploading ? (
-                <>
-                  <span className={styles.loadingSpinner} />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  Import CSV
-                </>
-              )}
-            </label>
-            <button 
-              className={styles.addAssetBtn}
-              onClick={() => {
-                webApp?.HapticFeedback.impactOccurred('light');
-                handleCreateAssetClick();
-              }}
-            >
-              Add Asset
-            </button>
-          </div>
-        </div>
+      <PortfolioTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
-        {portfolioAssets.length === 0 ? (
-          <div className={styles.noAssets}>
-            <p>No assets in this portfolio yet</p>
-            <button 
-              className={styles.addFirstAssetBtn}
-              onClick={() => {
-                webApp?.HapticFeedback.impactOccurred('light');
-                handleCreateAssetClick();
-              }}
-            >
-              Add Your First Asset
-            </button>
+      {activeTab === 'manage' && (
+        <div className={styles.portfolioContent}>
+          <div className={styles.assetsHeader}>
+            <h2>Portfolio Assets: {portfolioAssets.length}</h2>
+            <div className={styles.assetsActions}>
+              <button 
+                className={styles.downloadTemplateBtn}
+                onClick={handleDownloadCSVTemplate}
+              >
+                Get Template
+              </button>
+              <label className={styles.fileUpload}>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileUpload}
+                  disabled={isUploading}
+                />
+                {isUploading ? (
+                  <>
+                    <span className={styles.loadingSpinner} />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    Import CSV
+                  </>
+                )}
+              </label>
+              <button 
+                className={styles.addAssetBtn}
+                onClick={() => {
+                  webApp?.HapticFeedback.impactOccurred('light');
+                  handleCreateAssetClick();
+                }}
+              >
+                Add Asset
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className={styles.assetsList}>
-            {portfolioAssets.map((asset) => (
-              <div key={asset.asset_id} className={styles.assetItem}>
-                <div className={styles.assetHeader}>
-                  <div className={styles.assetInfo}>
-                    {asset.logo ? (
-                      <img 
-                        src={asset.logo} 
-                        alt={asset.project_name} 
-                        className={styles.assetLogo}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://via.placeholder.com/40?text=' + asset.project_name.charAt(0);
+
+          {portfolioAssets.length === 0 ? (
+            <div className={styles.noAssets}>
+              <p>No assets in this portfolio yet</p>
+              <button 
+                className={styles.addFirstAssetBtn}
+                onClick={() => {
+                  webApp?.HapticFeedback.impactOccurred('light');
+                  handleCreateAssetClick();
+                }}
+              >
+                Add Your First Asset
+              </button>
+            </div>
+          ) : (
+            <div className={styles.assetsList}>
+              {portfolioAssets.map((asset) => (
+                <div 
+                  key={asset.asset_id} 
+                  className={styles.assetItem}
+                  onClick={() => handleViewAsset(asset.asset_id)}
+                >
+                  <div className={styles.assetHeader}>
+                    <div className={styles.assetInfo}>
+                      {asset.logo ? (
+                        <img 
+                          src={asset.logo} 
+                          alt={asset.project_name} 
+                          className={styles.assetLogo}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'https://via.placeholder.com/40?text=' + asset.project_name.charAt(0);
+                          }}
+                        />
+                      ) : (
+                        <div className={styles.assetLogo} style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          backgroundColor: '#f0f0f0',
+                          color: '#333',
+                          fontSize: '20px',
+                          fontWeight: 'bold'
+                        }}>
+                          {asset.project_name.charAt(0)}
+                        </div>
+                      )}
+                      <h3>{asset.project_name}</h3>
+                    </div>
+                    <div className={styles.assetActions}>
+                      <button 
+                        className={styles.editAssetBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          webApp?.HapticFeedback.impactOccurred('light');
+                          handleEditAsset(asset.asset_id);
                         }}
-                      />
-                    ) : (
-                      <div className={styles.assetLogo} style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        backgroundColor: '#f0f0f0',
-                        color: '#333',
-                        fontSize: '20px',
-                        fontWeight: 'bold'
-                      }}>
-                        {asset.project_name.charAt(0)}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        className={styles.deleteAssetBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          webApp?.HapticFeedback.impactOccurred('medium');
+                          handleDeleteAsset(asset.asset_id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  <div className={styles.assetDetails}>
+                    <div className={styles.assetDetail}>
+                      <span className={styles.detailLabel}>Date</span>
+                      <span className={styles.detailValue}>
+                        {asset.date ? formatDate(asset.date) : formatDate(asset.created_at)}
+                      </span>
+                    </div>
+                    <div className={styles.assetDetail}>
+                      <span className={styles.detailLabel}>Invested Amount</span>
+                      <span className={styles.detailValue}>
+                        {formatMoney(asset.invested_amount || 0)}
+                      </span>
+                    </div>
+                    {(asset.valuation || asset.valuation === 0) && (
+                      <div className={styles.assetDetail}>
+                        <span className={styles.detailLabel}>Valuation</span>
+                        <span className={styles.detailValue}>{formatMoney(asset.valuation)}</span>
                       </div>
                     )}
-                    <h3>{asset.project_name}</h3>
-                  </div>
-                  <div className={styles.assetActions}>
-                    <button 
-                      className={styles.editAssetBtn}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        webApp?.HapticFeedback.impactOccurred('light');
-                        handleEditAsset(asset.asset_id);
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      className={styles.deleteAssetBtn}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        webApp?.HapticFeedback.impactOccurred('medium');
-                        handleDeleteAsset(asset.asset_id);
-                      }}
-                    >
-                      Delete
-                    </button>
+                    {(asset.equity_or_tokens_amount || asset.equity_or_tokens_amount === 0) && (
+                      <div className={styles.assetDetail}>
+                        <span className={styles.detailLabel}>Equity/Tokens</span>
+                        <span className={styles.detailValue}>{asset.equity_or_tokens_amount}</span>
+                      </div>
+                    )}
+                    {asset.terms && (
+                      <div className={styles.assetDetail}>
+                        <span className={styles.detailLabel}>Terms</span>
+                        <span className={styles.detailValue}>{asset.terms}</span>
+                      </div>
+                    )}
+                    {asset.project_website && (
+                      <div className={styles.assetDetail}>
+                        <span className={styles.detailLabel}>Website</span>
+                        <a 
+                          href={asset.project_website} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className={styles.websiteLink}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {asset.project_website}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className={styles.assetDetails}>
-                  <div className={styles.assetDetail}>
-                    <span className={styles.detailLabel}>Date</span>
-                    <span className={styles.detailValue}>
-                      {asset.date ? formatDate(asset.date) : formatDate(asset.created_at)}
-                    </span>
-                  </div>
-                  <div className={styles.assetDetail}>
-                    <span className={styles.detailLabel}>Invested Amount</span>
-                    <span className={styles.detailValue}>
-                      {formatMoney(asset.invested_amount || 0)}
-                    </span>
-                  </div>
-                  {(asset.valuation || asset.valuation === 0) && (
-                    <div className={styles.assetDetail}>
-                      <span className={styles.detailLabel}>Valuation</span>
-                      <span className={styles.detailValue}>{formatMoney(asset.valuation)}</span>
-                    </div>
-                  )}
-                  {(asset.equity_or_tokens_amount || asset.equity_or_tokens_amount === 0) && (
-                    <div className={styles.assetDetail}>
-                      <span className={styles.detailLabel}>Equity/Tokens</span>
-                      <span className={styles.detailValue}>{asset.equity_or_tokens_amount}</span>
-                    </div>
-                  )}
-                  {asset.terms && (
-                    <div className={styles.assetDetail}>
-                      <span className={styles.detailLabel}>Terms</span>
-                      <span className={styles.detailValue}>{asset.terms}</span>
-                    </div>
-                  )}
-                  {asset.project_website && (
-                    <div className={styles.assetDetail}>
-                      <span className={styles.detailLabel}>Website</span>
-                      <a 
-                        href={asset.project_website} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className={styles.websiteLink}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {asset.project_website}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'summary' && (
+        <PortfolioSummary portfolioId={portfolioId} />
+      )}
+
+      {activeTab === 'history' && (
+        <PortfolioGraph portfolioId={portfolioId} />
+      )}
     </div>
   );
 };

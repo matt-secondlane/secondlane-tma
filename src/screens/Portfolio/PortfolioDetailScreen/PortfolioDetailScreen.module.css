@@ -327,10 +327,31 @@
   border-radius: 12px;
   padding: 16px;
   transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.assetItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .assetItem:active {
   transform: scale(0.98);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Добавим стрелку вправо, чтобы было понятно, что это кликабельный элемент */
+.assetItem:after {
+  content: '→';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--tg-theme-hint-color);
+  opacity: 0.7;
 }
 
 .assetHeader {

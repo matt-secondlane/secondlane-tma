@@ -483,4 +483,63 @@ export interface NotificationPreferencesResponse {
 
 export interface NotificationsResponse {
   data: Notification[];
+}
+
+// Portfolio summary interfaces
+export interface PortfolioSummary {
+  total_invested_amount: number;
+  total_current_value: number;
+  total_gain_loss_usd: number;
+  total_gain_loss_percentage: number;
+  total_assets: number;
+  assets?: AssetSummary[];
+}
+
+export interface PortfolioGraphDataPoint {
+  date: string;
+  total_value: number;
+  total_invested: number;
+  gain_loss_usd: number;
+  gain_loss_percentage: number;
+}
+
+export interface PortfolioGraphResponse {
+  data: {
+    portfolio_id: string;
+    monthly_values: PortfolioGraphDataPoint[];
+  };
+}
+
+export interface AssetSummary {
+  asset_id: string;
+  project: {
+    project_id: string;
+    name: string;
+    logo?: string;
+  };
+  invested_amount: number;
+  current_value: number;
+  project_valuation: number;
+  previous_valuation: number;
+  gain_loss_usd: number;
+  gain_loss_percentage: number;
+  valuation_source: string;
+  date: string;
+  project_website?: string;
+}
+
+export interface PortfolioAssetSummaries {
+  assets: AssetSummary[];
+}
+
+export interface AssetGraphResponse {
+  data: {
+    asset_id: string;
+    project: {
+      project_id: string;
+      name: string;
+      logo?: string;
+    };
+    monthly_values: PortfolioGraphDataPoint[];
+  };
 } 

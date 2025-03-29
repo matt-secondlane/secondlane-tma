@@ -33,7 +33,11 @@ import type {
   NotificationSettings,
   NotificationEventType,
   NotificationPreference,
-  Notification
+  Notification,
+  PortfolioSummary,
+  PortfolioGraphResponse,
+  AssetSummary,
+  AssetGraphResponse
 } from '../types/api';
 
 export const apiService = {
@@ -594,5 +598,63 @@ export const apiService = {
   // Mark notification as read
   markNotificationAsRead: async (notificationId: string): Promise<void> => {
     await api.post(`/notifications/${notificationId}/read`);
-  }
+  },
+
+  // Get portfolio summary
+  getPortfolioSummary: async (): Promise<PortfolioSummary> => {
+    const response = await api.get('/portfolio/summary');
+    
+    // Transform API response to match our interface
+    const responseData = response.data.data;
+    
+    return {
+      total_invested_amount: responseData.total_invested_amount,
+      total_current_value: responseData.total_current_value,
+      total_gain_loss_usd: responseData.total_gain_loss_usd,
+      total_gain_loss_percentage: responseData.total_gain_loss_percentage,
+      total_assets: responseData.total_assets,
+      assets: responseData.assets || []
+    };
+  },
+
+  // Get portfolio summary for specific portfolio
+  getPortfolioSummaryById: async (portfolioId: string): Promise<PortfolioSummary> => {
+    const response = await api.get(`/portfolio/${portfolioId}/summary`);
+    
+    // Transform API response to match our interface
+    const responseData = response.data.data;
+    
+    return {
+      total_invested_amount: responseData.total_invested_amount,
+      total_current_value: responseData.total_current_value,
+      total_gain_loss_usd: responseData.total_gain_loss_usd,
+      total_gain_loss_percentage: responseData.total_gain_loss_percentage,
+      total_assets: responseData.total_assets,
+      assets: responseData.assets || []
+    };
+  },
+
+  // Get portfolio graph data
+  getPortfolioGraph: async (): Promise<PortfolioGraphResponse> => {
+    const response = await api.get('/portfolio/summary/graph');
+    return response.data;
+  },
+
+  // Get portfolio graph data for specific portfolio
+  getPortfolioGraphById: async (portfolioId: string): Promise<PortfolioGraphResponse> => {
+    const response = await api.get(`/portfolio/${portfolioId}/summary/graph`);
+    return response.data;
+  },
+
+  // Get asset summary
+  getAssetSummary: async (assetId: string): Promise<AssetSummary> => {
+    const response = await api.get(`/portfolio/assets/${assetId}/summary`);
+    return response.data.data;
+  },
+
+  // Get asset graph data
+  getAssetGraph: async (assetId: string): Promise<AssetGraphResponse> => {
+    const response = await api.get(`/portfolio/assets/${assetId}/summary/graph`);
+    return response.data;
+  },
 }; 

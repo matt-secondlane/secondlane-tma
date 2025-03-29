@@ -1,0 +1,167 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 16px;
+}
+
+.header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--tg-theme-bg-color);
+  z-index: 10;
+  margin-top: 10px;
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.projectInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.projectLogo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.projectName {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.content {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+}
+
+.summarySection,
+.graphSection,
+.infoSection,
+.actionsSection {
+  width: 100%;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+}
+
+.summaryCard,
+.infoCard {
+  background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.summaryRow,
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.summaryRow:last-child,
+.infoRow:last-child {
+  margin-bottom: 0;
+}
+
+.summaryLabel,
+.infoLabel {
+  color: var(--tg-theme-hint-color, #808080);
+}
+
+.summaryValue,
+.infoValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+  text-align: right;
+}
+
+.positive {
+  color: #4cd964;
+}
+
+.negative {
+  color: #ff3b30;
+}
+
+.infoLink {
+  color: var(--tg-theme-link-color, #007aff);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.errorContainer {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100vh;
+}
+
+.errorTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--tg-theme-text-color);
+}
+
+.errorMessage {
+  color: var(--tg-theme-hint-color, #808080);
+}
+
+.actionsSection {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tg-theme-secondary-bg-color);
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--tg-theme-text-color);
+  font-weight: 500;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  width: 44px;
+  height: 44px;
+  z-index: 2;
+}
+
+.backButton:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+} 
