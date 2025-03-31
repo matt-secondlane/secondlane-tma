@@ -19,7 +19,11 @@ export const parseNumberWithSuffix = (value: string): number | null => {
   }
 };
 
-export const formatMoney = (value: number): string => {
+export const formatMoney = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) {
+    return '$0';
+  }
+  
   const absValue = Math.abs(value);
   
   if (absValue >= 1000000000) {

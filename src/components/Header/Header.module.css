@@ -32,7 +32,7 @@
   width: auto;
 }
 
-/* Dark mode - для Telegram нужно использовать медиа-запрос */
+/* Dark mode - media query needed for Telegram */
 @media (prefers-color-scheme: dark) {
   .logo {
     filter: invert(1);

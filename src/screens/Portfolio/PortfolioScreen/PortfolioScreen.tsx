@@ -7,6 +7,9 @@ import { Portfolio } from '../../../types/api';
 import styles from './PortfolioScreen.module.css';
 import { Loader } from '../../../components/Loader';
 import { PortfolioOnboarding } from '../../PortfolioOnboarding/PortfolioOnboarding';
+import { PortfolioTabs, PortfolioTab } from '../../../components/PortfolioTabs';
+import { PortfolioSummary } from '../../../components/PortfolioSummary';
+import { PortfolioGraph } from '../../../components/PortfolioGraph';
 
 interface EnhancedPortfolio extends Portfolio {
   assetsCount?: number;
@@ -24,6 +27,9 @@ export const PortfolioScreen: React.FC = () => {
   
   // Onboarding state - show only for first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
+  
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<PortfolioTab>('manage');
 
   // Handle onboarding completion
   const handleOnboardingComplete = () => {
@@ -94,6 +100,12 @@ export const PortfolioScreen: React.FC = () => {
       });
     }
   }, [isReady, fetchPortfolios]);
+
+  // Handle tab change
+  const handleTabChange = (tab: PortfolioTab) => {
+    webApp?.HapticFeedback.impactOccurred('light');
+    setActiveTab(tab);
+  };
 
   // Handle create portfolio
   const handleCreatePortfolio = async (defaultName?: string) => {
@@ -299,126 +311,138 @@ export const PortfolioScreen: React.FC = () => {
         </div>
       )}
 
-      <div className={styles.portfolioContent}>
-        <div className={styles.portfolioSelector}>
-          <div className={styles.portfolioSelectorHeader}>
-            <h2>My Portfolios: {portfolios.length}</h2>
-            <button 
-              className={styles.createPortfolioBtn}
-              onClick={() => {
-                webApp?.HapticFeedback.impactOccurred('light');
-                setIsCreatingPortfolio(true);
-              }}
-            >
-              New Portfolio
-            </button>
-          </div>
-          
-          {isCreatingPortfolio && (
-            <div className={styles.createPortfolioForm}>
-              <input
-                type="text"
-                placeholder="Portfolio Name"
-                value={newPortfolioName}
-                onChange={(e) => setNewPortfolioName(e.target.value)}
-                className={styles.portfolioNameInput}
-                autoFocus
-              />
-              <div className={styles.csvImportOptions}>
-                <button 
-                  className={styles.downloadTemplateBtn}
-                  onClick={handleDownloadCSVTemplate}
-                >
-                  Get CSV Template
-                </button>
-                <label className={styles.csvUploadBtn}>
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleCreatePortfolioFromCSV}
-                    disabled={isUploading}
-                  />
-                  {isUploading ? 'Uploading...' : 'Import from CSV'}
-                </label>
-              </div>
-              <div className={styles.createPortfolioActions}>
-                <button 
-                  className={styles.cancelBtn}
-                  onClick={() => {
-                    webApp?.HapticFeedback.impactOccurred('light');
-                    setIsCreatingPortfolio(false);
-                    setNewPortfolioName('');
-                  }}
-                >
-                  Cancel
-                </button>
-                <button 
-                  className={styles.createBtn}
-                  onClick={() => {
-                    webApp?.HapticFeedback.impactOccurred('light');
-                    handleCreatePortfolio();
-                  }}
-                  disabled={!newPortfolioName.trim()}
-                >
-                  Create
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {portfolios.length === 0 ? (
-            <div className={styles.noAssets}>
-              <p>No portfolios found</p>
+      <PortfolioTabs activeTab={activeTab} onTabChange={handleTabChange} />
+
+      {activeTab === 'manage' && (
+        <div className={styles.portfolioContent}>
+          <div className={styles.portfolioSelector}>
+            <div className={styles.portfolioSelectorHeader}>
+              <h2>My Portfolios: {portfolios.length}</h2>
               <button 
-                className={styles.addFirstAssetBtn}
+                className={styles.createPortfolioBtn}
                 onClick={() => {
                   webApp?.HapticFeedback.impactOccurred('light');
-                  handleCreatePortfolio('My Portfolio');
+                  setIsCreatingPortfolio(true);
                 }}
               >
-                Create Default Portfolio
+                New Portfolio
               </button>
             </div>
-          ) : (
-            <div className={styles.portfolioList}>
-              {portfolios.map((portfolio) => (
-                <div 
-                  key={portfolio.portfolio_id}
-                  className={styles.portfolioItem}
-                  onClick={() => handleSelectPortfolio(portfolio)}
-                >
-                  <div className={styles.portfolioItemInfo}>
-                    <h3>{portfolio.name}</h3>
-                    <div className={styles.portfolioItemDetails}>
-                      <span className={styles.portfolioItemDate}>
-                        Created: {formatDate(portfolio.created_at)}
-                      </span>
-                    </div>
-                    <div className={styles.portfolioStats}>
-                      <span className={styles.assetsCount}>
-                        Assets: {portfolio.assetsCount || 0}
-                      </span>
-                      <span className={styles.lastUpdated}>
-                        Updated: {formatDate(portfolio.updated_at)}
-                      </span>
-                    </div>
-                  </div>
+            
+            {isCreatingPortfolio && (
+              <div className={styles.createPortfolioForm}>
+                <input
+                  type="text"
+                  placeholder="Portfolio Name"
+                  value={newPortfolioName}
+                  onChange={(e) => setNewPortfolioName(e.target.value)}
+                  className={styles.portfolioNameInput}
+                  autoFocus
+                />
+                <div className={styles.csvImportOptions}>
                   <button 
-                    className={styles.deletePortfolioBtn}
-                    onClick={(e) => {
-                      e.stopPropagation();
+                    className={styles.downloadTemplateBtn}
+                    onClick={handleDownloadCSVTemplate}
+                  >
+                    Get CSV Template
+                  </button>
+                  <label className={styles.csvUploadBtn}>
+                    <input
+                      type="file"
+                      accept=".csv"
+                      onChange={handleCreatePortfolioFromCSV}
+                      disabled={isUploading}
+                    />
+                    {isUploading ? 'Uploading...' : 'Import from CSV'}
+                  </label>
+                </div>
+                <div className={styles.createPortfolioActions}>
+                  <button 
+                    className={styles.cancelBtn}
+                    onClick={() => {
                       webApp?.HapticFeedback.impactOccurred('light');
-                      handleDeletePortfolio(portfolio.portfolio_id);
+                      setIsCreatingPortfolio(false);
+                      setNewPortfolioName('');
                     }}
                   >
-                    Delete
+                    Cancel
+                  </button>
+                  <button 
+                    className={styles.createBtn}
+                    onClick={() => {
+                      webApp?.HapticFeedback.impactOccurred('light');
+                      handleCreatePortfolio();
+                    }}
+                    disabled={!newPortfolioName.trim()}
+                  >
+                    Create
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            )}
+            
+            {portfolios.length === 0 ? (
+              <div className={styles.noAssets}>
+                <p>No portfolios found</p>
+                <button 
+                  className={styles.addFirstAssetBtn}
+                  onClick={() => {
+                    webApp?.HapticFeedback.impactOccurred('light');
+                    handleCreatePortfolio('My Portfolio');
+                  }}
+                >
+                  Create Default Portfolio
+                </button>
+              </div>
+            ) : (
+              <div className={styles.portfolioList}>
+                {portfolios.map((portfolio) => (
+                  <div 
+                    key={portfolio.portfolio_id}
+                    className={styles.portfolioItem}
+                    onClick={() => handleSelectPortfolio(portfolio)}
+                  >
+                    <div className={styles.portfolioItemInfo}>
+                      <h3>{portfolio.name}</h3>
+                      <div className={styles.portfolioItemDetails}>
+                        <span className={styles.portfolioItemDate}>
+                          Created: {formatDate(portfolio.created_at)}
+                        </span>
+                      </div>
+                      <div className={styles.portfolioStats}>
+                        <span className={styles.assetsCount}>
+                          Assets: {portfolio.assetsCount || 0}
+                        </span>
+                        <span className={styles.lastUpdated}>
+                          Updated: {formatDate(portfolio.updated_at)}
+                        </span>
+                      </div>
+                    </div>
+                    <button 
+                      className={styles.deletePortfolioBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        webApp?.HapticFeedback.impactOccurred('light');
+                        handleDeletePortfolio(portfolio.portfolio_id);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {activeTab === 'summary' && (
+        <PortfolioSummary />
+      )}
+
+      {activeTab === 'history' && (
+        <PortfolioGraph />
+      )}
     </div>
   );
 };

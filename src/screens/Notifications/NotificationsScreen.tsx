@@ -17,7 +17,7 @@ export const NotificationsScreen: React.FC = () => {
       try {
         setLoading(true);
         
-        // Загружаем уведомления и типы событий параллельно
+        // Load notifications and event types in parallel
         const [notificationsData, eventTypesData] = await Promise.all([
           apiService.getNotifications(),
           apiService.getNotificationEventTypes()
@@ -82,10 +82,10 @@ export const NotificationsScreen: React.FC = () => {
   };
 
   const getNotificationIcon = (type: string) => {
-    // Получаем базовый тип из notification_type (убираем возможный суффикс)
+    // Get the base type from notification_type (remove any possible suffix)
     const baseType = type.split('.')[0];
     
-    // Поиск по базовому типу среди загруженных типов событий
+    // Search for the base type among loaded event types
     switch (baseType) {
       case 'order_inquiry':
         return '📨';
@@ -101,13 +101,13 @@ export const NotificationsScreen: React.FC = () => {
   };
 
   const getNotificationTypeName = (type: string) => {
-    // Получаем базовый тип из notification_type
+    // Get the base type from notification_type
     const baseType = type.split('.')[0];
     
-    // Ищем соответствующий тип события
+    // Find the corresponding event type
     const eventType = eventTypes.find(et => et.code.startsWith(baseType));
     
-    // Возвращаем название типа или форматируем строку из notification_type
+    // Return the type name or format string from notification_type
     return eventType ? eventType.name : type.replace('_', ' ');
   };
 

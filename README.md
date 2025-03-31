@@ -48,3 +48,20 @@ export default tseslint.config({
   },
 })
 ```
+
+## New Portfolio Functionality
+
+The following functions have been added to the portfolio:
+
+### 1. Portfolio Tabs
+- **Management** - standard mode for managing portfolios and assets
+- **Summary** - shows the total portfolio value, investment amount, returns, and a list of assets with their current values
+- **History** - displays a graph of portfolio value changes over time
+
+### 2. API Endpoints
+- `/api/v1/portfolio/summary` - Get summary for all portfolios
+- `/api/v1/portfolio/summary/graph` - Get graph data for all portfolios
+- `/api/v1/portfolio/{portfolio_id}/summary` - Get summary for a specific portfolio
+- `/api/v1/portfolio/{portfolio_id}/summary/graph` - Get graph data for a specific portfolio
+- `/api/v1/portfolio/assets/{asset_id}/summary` - Get summary for a specific asset
+- `/api/v1/portfolio/assets/{asset_id}/summary/graph` - Get graph data for a specific asset

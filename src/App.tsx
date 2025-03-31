@@ -7,6 +7,7 @@ import { DatabaseScreen } from './screens/Database';
 import { ProjectDetailsScreen } from './screens/Database/ProjectDetailsScreen';
 import PortfolioScreen, { CreatePortfolioAssetScreen, EditPortfolioAssetScreen } from './screens/Portfolio';
 import PortfolioDetailScreen from './screens/Portfolio/PortfolioDetailScreen';
+import AssetDetailScreen from './screens/AssetDetailScreen/AssetDetailScreen';
 import { PlaceInquiryScreen } from './screens/PlaceInquiry/PlaceInquiryScreen';
 import { PlaceRFQScreen } from './screens/PlaceRFQ/PlaceRFQScreen';
 import { AttestationScreen } from './screens/Attestation/AttestationScreen';
@@ -177,6 +178,14 @@ function App() {
               isAttested === false 
                 ? <Navigate to="/welcome" replace /> 
                 : <EditPortfolioAssetScreen />
+            } 
+          />
+          <Route 
+            path="/portfolio/asset/:assetId" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/welcome" replace /> 
+                : <AssetDetailScreen />
             } 
           />
           <Route 
