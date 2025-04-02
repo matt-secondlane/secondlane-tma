@@ -372,4 +372,30 @@
   .headerContainer {
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
+}
+
+/* Styles for date field and calendar */
+input[type="date"].input {
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  -webkit-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+  font-size: 18px;
+  height: 58px;
+}
+
+input[type="date"].input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  width: 24px;
+  height: 24px;
 } 

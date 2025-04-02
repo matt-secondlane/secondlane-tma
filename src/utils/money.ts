@@ -19,6 +19,28 @@ export const parseNumberWithSuffix = (value: string): number | null => {
   }
 };
 
+export const formatNumberWithCommas = (value: number | string | undefined): string => {
+  if (value === undefined || value === null || value === '') {
+    return '';
+  }
+  
+  let numValue: number;
+  
+  if (typeof value === 'string') {
+    // Remove any existing commas or non-numeric characters except decimal points
+    const cleaned = value.replace(/[^\d.-]/g, '');
+    numValue = parseFloat(cleaned);
+    if (isNaN(numValue)) {
+      return '';
+    }
+  } else {
+    numValue = value;
+  }
+  
+  // Format with commas for thousands
+  return numValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
 export const formatMoney = (value: number | null | undefined): string => {
   if (value === null || value === undefined) {
     return '$0';

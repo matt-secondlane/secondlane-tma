@@ -107,14 +107,14 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId 
       
       <div className={styles.summaryCard}>
         <div className={styles.summaryRow}>
-          <span className={styles.summaryLabel}>Total Value:</span>
+          <span className={styles.summaryLabel}>Current Value:</span>
           <span className={styles.summaryValue}>{formatMoney(summary.total_current_value)}</span>
         </div>
         <div className={styles.summaryRow}>
           <span className={styles.summaryLabel}>Total Invested:</span>
           <span className={styles.summaryValue}>{formatMoney(summary.total_invested_amount)}</span>
         </div>
-        <div className={styles.summaryRow}>
+        <div className={`${styles.summaryRow} ${styles.noBorder}`}>
           <span className={styles.summaryLabel}>ROI:</span>
           <span className={`${styles.summaryValue} ${(summary.total_gain_loss_percentage || 0) >= 0 ? styles.positive : styles.negative}`}>
             {summary.total_gain_loss_percentage !== null && summary.total_gain_loss_percentage !== undefined ? 
@@ -123,6 +123,43 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId 
             }
           </span>
         </div>
+        
+        <div className={styles.disclaimerRow}>
+          <span className={styles.disclaimer}>
+            <svg 
+              width="16" 
+              height="16" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ display: 'inline-block', marginRight: '6px', verticalAlign: 'middle' }}
+            >
+              <path 
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+              <path 
+                d="M12 8V12" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+              <path 
+                d="M12 16H12.01" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+            Asset valuations are based on availability of user valuation, funding round valuation, and spot FDV
+          </span>
+        </div>
+        
         <div className={styles.summaryRow}>
           <span className={styles.summaryLabel}>Profit/Loss:</span>
           <span className={`${styles.summaryValue} ${summary.total_gain_loss_usd >= 0 ? styles.positive : styles.negative}`}>
@@ -144,7 +181,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId 
             <div className={styles.assetHeader}>
               <span>Name</span>
               <span style={{textAlign: 'right'}}>Invested</span>
-              <span style={{textAlign: 'right'}}>Value</span>
+              <span style={{textAlign: 'right'}}>Current Value</span>
               <span style={{textAlign: 'right'}}>ROI</span>
             </div>
             {assets.map(asset => (

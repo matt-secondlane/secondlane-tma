@@ -3,10 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import { useTelegram } from '../../../hooks/useTelegram';
 import { apiService } from '../../../utils/api';
-import { PortfolioAsset, UpdatePortfolioAssetRequest } from '../../../types/api';
+import { PortfolioAsset, UpdatePortfolioAssetRequest, ProjectSearchResult } from '../../../types/api';
 import styles from './EditPortfolioAssetScreen.module.css';
 import { Loader } from '../../../components/Loader';
-import { parseNumberWithSuffix, formatMoney } from '../../../utils/money';
+import { parseNumberWithSuffix, formatMoney, formatNumberWithCommas } from '../../../utils/money';
 
 // Format number with suffix without currency symbol
 const displayNumberWithSuffix = (value: number | undefined): string => {
@@ -25,6 +25,11 @@ export const EditPortfolioAssetScreen: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [asset, setAsset] = useState<PortfolioAsset | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<ProjectSearchResult[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<ProjectSearchResult | null>(null);
   
   const [formData, setFormData] = useState<UpdatePortfolioAssetRequest>({
     project_name: '',
@@ -35,6 +40,63 @@ export const EditPortfolioAssetScreen: React.FC = () => {
     valuation: undefined,
     equity_or_tokens_amount: undefined
   });
+
+  // Search for projects
+  const searchProjects = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+    
+    try {
+      setSearchLoading(true);
+      const results = await apiService.searchProjects(query);
+      setSearchResults(results);
+      setShowSearchResults(true);
+    } catch {
+      WebApp.showAlert('Error searching projects. Please try again.');
+    } finally {
+      setSearchLoading(false);
+    }
+  }, []);
+
+  // Handle project selection
+  const handleSelectProject = useCallback((project: ProjectSearchResult) => {
+    setSelectedProject(project);
+    setFormData(prev => ({
+      ...prev,
+      project_name: project.project_name,
+      project_id: project.project_id
+    }));
+    setShowSearchResults(false);
+    webApp?.HapticFeedback.impactOccurred('light');
+  }, [webApp]);
+
+  // Handle project selection change
+  const handleProjectNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // If user clears project name, clear selected project
+    if (!value) {
+      setSelectedProject(null);
+    }
+    
+    // Update form data
+    setFormData(prev => ({
+      ...prev,
+      project_name: value
+    }));
+    
+    // Search for projects
+    if (value) {
+      searchProjects(value);
+    } else {
+      setSearchResults([]);
+      setShowSearchResults(false);
+    }
+  };
 
   // Fetch asset details
   const fetchAssetDetails = useCallback(async () => {
@@ -86,8 +148,18 @@ export const EditPortfolioAssetScreen: React.FC = () => {
         terms: assetDetails.terms || '',
         project_website: assetDetails.project_website || '',
         valuation: assetDetails.valuation,
-        equity_or_tokens_amount: assetDetails.equity_or_tokens_amount
+        equity_or_tokens_amount: assetDetails.equity_or_tokens_amount,
+        project_id: assetDetails.project_id
       });
+      
+      // Set initial project if exists
+      if (assetDetails.project) {
+        setSelectedProject({
+          project_id: assetDetails.project.project_id || '',
+          project_name: assetDetails.project.name || '',
+          logo: assetDetails.project.logo || undefined
+        });
+      }
     } catch {
       setError('Failed to load asset details. Please try again.');
     } finally {
@@ -108,12 +180,47 @@ export const EditPortfolioAssetScreen: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount'
-        ? value === '' ? undefined : value
-        : value
-    }));
+    // Format input values with commas for money fields
+    if (name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount') {
+      // First, normalize input by replacing comma separators with dots for decimal
+      let processedValue = value;
+      
+      // If there's a comma that looks like a decimal separator (e.g. "1,5")
+      // only allow one decimal separator and convert comma to dot
+      if (processedValue.includes(',')) {
+        // Find position of last comma
+        const commaPos = processedValue.lastIndexOf(',');
+        // If it looks like a decimal separator (followed by digits only)
+        if (commaPos > 0 && /^\d+$/.test(processedValue.substring(commaPos + 1))) {
+          // Replace comma with dot for decimal part
+          processedValue = processedValue.substring(0, commaPos) + '.' + processedValue.substring(commaPos + 1);
+        }
+      }
+      
+      // Remove all commas to avoid confusion between thousand separators and decimal separators
+      const numericValue = processedValue.replace(/,/g, '');
+      
+      // Update state with the raw value (without commas)
+      setFormData(prev => ({
+        ...prev,
+        [name]: numericValue === '' ? undefined : numericValue
+      }));
+      
+      // Update display with commas by setting the input value directly
+      if (numericValue !== '') {
+        // Only format if it's a valid number
+        const isValid = /^-?\d*\.?\d*$/.test(numericValue);
+        if (isValid) {
+          e.target.value = formatNumberWithCommas(numericValue);
+        }
+      }
+    } else {
+      // For non-money fields, just update the state normally
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   // Validate and parse monetary input
@@ -176,7 +283,8 @@ export const EditPortfolioAssetScreen: React.FC = () => {
         ...formData,
         invested_amount: investedAmount,
         valuation: valuation,
-        equity_or_tokens_amount: equityAmount
+        equity_or_tokens_amount: equityAmount,
+        project_id: selectedProject?.project_id || formData.project_id
       });
       
       webApp?.HapticFeedback.notificationOccurred('success');
@@ -246,6 +354,9 @@ export const EditPortfolioAssetScreen: React.FC = () => {
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="project_name">
             Project Name<span className={styles.requiredMark}>*</span>
+            {!selectedProject && !asset?.project_id && (
+              <span className={styles.unpaired}>Unpaired</span>
+            )}
           </label>
           <input
             id="project_name"
@@ -253,10 +364,41 @@ export const EditPortfolioAssetScreen: React.FC = () => {
             type="text"
             className={styles.input}
             value={formData.project_name}
-            onChange={handleInputChange}
-            placeholder="Enter project name"
+            onChange={handleProjectNameChange}
+            placeholder="Search for a project or enter name"
             required
           />
+          {searchLoading && (
+            <div className={styles.searchLoading}>
+              <Loader />
+              <span>Searching projects...</span>
+            </div>
+          )}
+          {showSearchResults && searchResults.length > 0 && (
+            <div className={styles.searchResults}>
+              {searchResults.map(project => (
+                <div 
+                  key={project.project_id}
+                  className={styles.searchResultItem}
+                  onClick={() => handleSelectProject(project)}
+                >
+                  {project.logo && (
+                    <img 
+                      src={project.logo} 
+                      alt=""
+                      className={styles.projectLogo}
+                    />
+                  )}
+                  <span>{project.project_name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {showSearchResults && searchResults.length === 0 && searchQuery.trim() !== '' && !searchLoading && (
+            <div className={styles.noResults}>
+              No projects found. You can still use this name.
+            </div>
+          )}
         </div>
 
         <div className={styles.formGroup}>
@@ -348,7 +490,7 @@ export const EditPortfolioAssetScreen: React.FC = () => {
           <input
             id="project_website"
             name="project_website"
-            type="url"
+            type="text"
             className={styles.input}
             value={formData.project_website}
             onChange={handleInputChange}
