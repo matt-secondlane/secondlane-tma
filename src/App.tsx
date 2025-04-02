@@ -212,6 +212,14 @@ function App() {
                 : <PlaceRFQScreen />
             } 
           />
+          <Route 
+            path="/place-rfq/:projectId" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/welcome" replace /> 
+                : <PlaceRFQScreen />
+            } 
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
