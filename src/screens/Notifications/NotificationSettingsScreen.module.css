@@ -396,19 +396,24 @@ input:checked + .slider:before {
 }
 
 .notificationTypeHeader {
+  font-size: 16px;
   font-weight: 600;
-  font-size: 18px;
-  margin-bottom: 14px;
   color: var(--tg-theme-text-color);
-  padding: 6px 12px;
-  background-color: rgba(75, 79, 71, 0.05);
-  border-radius: 8px;
-  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.notificationTypeDescription {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 .preferenceItem {
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  padding: 14px;
 }
 
 .preferenceItem:last-child {

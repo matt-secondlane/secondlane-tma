@@ -24,6 +24,7 @@ export const PortfolioScreen: React.FC = () => {
   const [isCreatingPortfolio, setIsCreatingPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [showNotificationsPopup, setShowNotificationsPopup] = useState(false);
   
   // Onboarding state - show only for first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -47,45 +48,38 @@ export const PortfolioScreen: React.FC = () => {
   const fetchPortfolios = useCallback(async () => {
     try {
       setLoading(true);
+      const list = await apiService.getPortfolios();
+      
+      // Extend portfolios with assets count
+      const enhancedList = await Promise.all(
+        list.map(async (portfolio) => {
+          try {
+            const assets = await apiService.getPortfolioAssets(portfolio.portfolio_id);
+            return { ...portfolio, assetsCount: assets.length };
+          } catch {
+            return { ...portfolio, assetsCount: 0 };
+          }
+        })
+      );
+      
+      setPortfolios(enhancedList);
       setError(null);
       
-      const fetchedPortfolios = await apiService.getPortfolios();
-      
-      if (fetchedPortfolios.length === 0) {
-        // Create default portfolio if none exists
-        try {
-          const defaultPortfolio = await apiService.createPortfolio({
-            name: 'My Portfolio'
-          });
-          setPortfolios([defaultPortfolio]);
-        } catch (createError) {
-          const errorMessage = createError instanceof Error ? createError.message : 'Unknown error';
-          setError(`Failed to create default portfolio: ${errorMessage}. Please try again.`);
+      // Check if there are portfolios with assets and show notification popup
+      const hasAssets = enhancedList.some(portfolio => (portfolio.assetsCount || 0) > 0);
+      if (hasAssets) {
+        // Check if the notifications popup has already been shown
+        const notificationsPopupShown = localStorage.getItem('notificationsPopupShown');
+        if (!notificationsPopupShown) {
+          // Show the popup with a slight delay
+          setTimeout(() => {
+            setShowNotificationsPopup(true);
+          }, 1000);
         }
-      } else {
-        // Get the number of assets for each portfolio
-        const enhancedPortfolios = await Promise.all(
-          fetchedPortfolios.map(async (portfolio) => {
-            try {
-              const assets = await apiService.getPortfolioAssets(portfolio.portfolio_id);
-              return {
-                ...portfolio,
-                assetsCount: assets.length
-              };
-            } catch {
-              return {
-                ...portfolio,
-                assetsCount: 0
-              };
-            }
-          })
-        );
-        
-        setPortfolios(enhancedPortfolios);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(`Failed to load portfolios: ${errorMessage}. Please try again.`);
+      console.error('Error fetching portfolios:', err);
+      setError('Failed to load portfolios');
     } finally {
       setLoading(false);
     }
@@ -95,11 +89,23 @@ export const PortfolioScreen: React.FC = () => {
   useEffect(() => {
     if (isReady) {
       WebApp.ready();
-      fetchPortfolios().catch(err => {
-        setError(`Failed to initialize: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      });
+      WebApp.expand();
+      fetchPortfolios();
     }
   }, [isReady, fetchPortfolios]);
+
+  // Handle notifications popup response
+  const handleNotificationsResponse = (accept: boolean) => {
+    if (accept) {
+      // Navigate to notification settings
+      navigate('/notification-settings');
+    }
+    
+    // Mark the popup as shown in local storage
+    localStorage.setItem('notificationsPopupShown', 'true');
+    setShowNotificationsPopup(false);
+    webApp?.HapticFeedback.impactOccurred('light');
+  };
 
   // Handle tab change
   const handleTabChange = (tab: PortfolioTab) => {
@@ -442,6 +448,32 @@ export const PortfolioScreen: React.FC = () => {
 
       {activeTab === 'history' && (
         <PortfolioGraph />
+      )}
+
+      {showNotificationsPopup && (
+        <>
+          <div className={styles.notificationsPopupOverlay} />
+          <div className={styles.notificationsPopup}>
+            <div className={styles.notificationsPopupContent}>
+              <h3>Get Updates?</h3>
+              <p>Would you like to receive notifications about offers on your assets and portfolio updates?</p>
+              <div className={styles.notificationsPopupButtons}>
+                <button 
+                  className={styles.notificationsPopupButtonDecline}
+                  onClick={() => handleNotificationsResponse(false)}
+                >
+                  No
+                </button>
+                <button 
+                  className={styles.notificationsPopupButtonAccept}
+                  onClick={() => handleNotificationsResponse(true)}
+                >
+                  Enable Notifications
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -184,22 +184,42 @@ export const NotificationSettingsScreen: React.FC = () => {
     }
   };
 
-  // Group notifications by type for display
-  const getNotificationTypeLabel = (code: string) => {
-    const eventType = eventTypes.find(et => et.code === code);
-    return eventType ? eventType.name : code.replace('_', ' ');
+  // Helper for grouping notification types by category
+  const getUniqueNotificationTypes = (): string[] => {
+    const types = eventTypes.map(type => type.name || '');
+    return [...new Set(types)];
   };
 
-  // Get unique notification types from the received event types
-  const getUniqueNotificationTypes = (): string[] => {
-    if (!eventTypes.length) return [];
-    
-    // Extract unique event type codes
-    return [...new Set(eventTypes.map(et => {
-      // Extract base type from the event code (e.g., "order_inquiry.new" -> "order_inquiry")
-      const baseType = et.code.split('.')[0];
-      return baseType;
-    }))];
+  // Get translated name for notification type
+  const getNotificationTypeName = (typeName: string): string => {
+    switch (typeName) {
+      case 'in_app':
+        return 'General Notifications';
+      case 'new_deals':
+        return 'New Deals';
+      case 'portfolio_offers':
+        return 'Asset Offers';
+      case 'portfolio_updates':
+        return 'Portfolio Updates';
+      default:
+        return typeName;
+    }
+  };
+
+  // Get description for notification type
+  const getNotificationTypeDescription = (typeName: string): string => {
+    switch (typeName) {
+      case 'in_app':
+        return 'General in-app notifications';
+      case 'new_deals':
+        return 'Information about new deals and market offers';
+      case 'portfolio_offers':
+        return 'Offers to buy assets in your portfolio';
+      case 'portfolio_updates':
+        return 'Important updates and changes to assets in your portfolio';
+      default:
+        return '';
+    }
   };
 
   if (loading) {
@@ -366,7 +386,10 @@ export const NotificationSettingsScreen: React.FC = () => {
               return (
                 <div key={type} className={styles.notificationTypeGroup}>
                   <div className={styles.notificationTypeHeader}>
-                    {getNotificationTypeLabel(type)}
+                    {getNotificationTypeName(type)}
+                  </div>
+                  <div className={styles.notificationTypeDescription}>
+                    {getNotificationTypeDescription(type)}
                   </div>
                   
                   {typePreferences.map(preference => (

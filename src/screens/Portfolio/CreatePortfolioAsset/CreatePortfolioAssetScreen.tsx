@@ -5,7 +5,7 @@ import { apiService } from '../../../utils/api';
 import { CreatePortfolioAssetRequest, ProjectSearchResult } from '../../../types/api';
 import styles from './CreatePortfolioAssetScreen.module.css';
 import { Loader } from '../../../components/Loader';
-import { parseNumberWithSuffix } from '../../../utils/money';
+import { parseNumberWithSuffix, formatNumberWithCommas } from '../../../utils/money';
 
 export const CreatePortfolioAssetScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -76,16 +76,52 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'project_name' && !selectedProject) {
-      setSearchQuery(value);
+    // Format input values with commas for money fields
+    if (name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount') {
+      // First, normalize input by replacing comma separators with dots for decimal
+      let processedValue = value;
+      
+      // If there's a comma that looks like a decimal separator (e.g. "1,5")
+      // only allow one decimal separator and convert comma to dot
+      if (processedValue.includes(',')) {
+        // Find position of last comma
+        const commaPos = processedValue.lastIndexOf(',');
+        // If it looks like a decimal separator (followed by digits only)
+        if (commaPos > 0 && /^\d+$/.test(processedValue.substring(commaPos + 1))) {
+          // Replace comma with dot for decimal part
+          processedValue = processedValue.substring(0, commaPos) + '.' + processedValue.substring(commaPos + 1);
+        }
+      }
+      
+      // Remove all commas to avoid confusion between thousand separators and decimal separators
+      const numericValue = processedValue.replace(/,/g, '');
+      
+      // Update state with the raw value (without commas)
+      setFormData(prev => ({
+        ...prev,
+        [name]: numericValue === '' ? undefined : numericValue
+      }));
+      
+      // Update display with commas by setting the input value directly
+      if (numericValue !== '') {
+        // Only format if it's a valid number
+        const isValid = /^-?\d*\.?\d*$/.test(numericValue);
+        if (isValid) {
+          e.target.value = formatNumberWithCommas(numericValue);
+        }
+      }
+    } else {
+      // For non-money fields, just update the state normally
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+      
+      // Update search query if project_name is changed and no project is selected
+      if (name === 'project_name' && !selectedProject) {
+        setSearchQuery(value);
+      }
     }
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount'
-        ? value === '' ? undefined : value
-        : value
-    }));
   };
 
   // Validate and parse monetary input
@@ -329,7 +365,7 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
           <input
             id="project_website"
             name="project_website"
-            type="url"
+            type="text"
             className={styles.input}
             value={formData.project_website || ''}
             onChange={handleInputChange}

@@ -62,7 +62,12 @@ export const NotificationsScreen: React.FC = () => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    
+    // Ensure both dates are in UTC for comparison
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+    
+    const diffMs = utcNow.getTime() - utcDate.getTime();
     const diffMins = Math.round(diffMs / 60000);
     const diffHours = Math.round(diffMs / 3600000);
     const diffDays = Math.round(diffMs / 86400000);
