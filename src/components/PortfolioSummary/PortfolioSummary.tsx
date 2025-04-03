@@ -4,12 +4,14 @@ import { PortfolioSummary as PortfolioSummaryType, AssetSummary } from '../../ty
 import { Loader } from '../Loader';
 import { formatMoney } from '../../utils/money';
 import styles from './PortfolioSummary.module.css';
+import { useNavigate } from 'react-router-dom';
 
 interface PortfolioSummaryProps {
   portfolioId?: string; // If provided, shows summary for a specific portfolio
 }
 
 export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<PortfolioSummaryType | null>(null);
@@ -188,6 +190,8 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId 
               <div 
                 key={asset.asset_id} 
                 className={styles.assetItem}
+                onClick={() => navigate(`/portfolio/asset/${asset.asset_id}`)}
+                style={{cursor: 'pointer'}}
               >
                 <div className={styles.assetInfo}>
                   {asset.project.logo && (
