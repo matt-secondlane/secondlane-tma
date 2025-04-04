@@ -600,6 +600,12 @@ export const apiService = {
     await api.post(`/notifications/${notificationId}/read`);
   },
 
+  // Get unread notifications count
+  getUnreadNotificationsCount: async (): Promise<number> => {
+    const response = await api.get('/notifications/unread-count');
+    return response.data.data.count;
+  },
+
   // Get portfolio summary
   getPortfolioSummary: async (): Promise<PortfolioSummary> => {
     const response = await api.get('/portfolio/summary');

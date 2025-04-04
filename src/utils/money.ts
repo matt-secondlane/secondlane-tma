@@ -38,7 +38,9 @@ export const formatNumberWithCommas = (value: number | string | undefined): stri
   }
   
   // Format with commas for thousands
-  return numValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const parts = numValue.toString().split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
 };
 
 export const formatMoney = (value: number | null | undefined): string => {
