@@ -294,6 +294,14 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
             value={formData.date}
             onChange={handleInputChange}
             required
+            style={{
+              colorScheme: 'light',
+              WebkitAppearance: 'none',
+              appearance: 'none',
+              backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'gray\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 10px center'
+            }}
           />
         </div>
 
@@ -306,7 +314,9 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
             name="invested_amount"
             type="text"
             className={styles.input}
-            value={formData.invested_amount || ''}
+            value={typeof formData.invested_amount === 'number' 
+              ? formatNumberWithCommas(formData.invested_amount) 
+              : formData.invested_amount || ''}
             onChange={handleInputChange}
             placeholder="Enter amount in USD (e.g. 500k, 1.5M, 2B)"
             required
@@ -322,7 +332,9 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
             name="valuation"
             type="text"
             className={styles.input}
-            value={formData.valuation || ''}
+            value={typeof formData.valuation === 'number'
+              ? formatNumberWithCommas(formData.valuation)
+              : formData.valuation || ''}
             onChange={handleInputChange}
             placeholder="Enter valuation in USD (e.g. 5M, 10B)"
           />
@@ -337,7 +349,9 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
             name="equity_or_tokens_amount"
             type="text"
             className={styles.input}
-            value={formData.equity_or_tokens_amount || ''}
+            value={typeof formData.equity_or_tokens_amount === 'number'
+              ? formatNumberWithCommas(formData.equity_or_tokens_amount)
+              : formData.equity_or_tokens_amount || ''}
             onChange={handleInputChange}
             placeholder="Enter amount of equity or tokens"
           />

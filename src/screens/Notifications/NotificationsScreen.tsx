@@ -54,6 +54,9 @@ export const NotificationsScreen: React.FC = () => {
             : notification
         )
       );
+      
+      // Dispatch a custom event to notify other components about the read status change
+      window.dispatchEvent(new CustomEvent('notification-read'));
     } catch (err) {
       console.error('Error marking notification as read:', err);
     }
