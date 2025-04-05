@@ -59,13 +59,14 @@ export const NotificationsScreen: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    // en: Create a Date object from UTC string (dateString is assumed to be in UTC)
-    // ru: Создаем объект Date из UTC строки (dateString предполагается в UTC)
+    // Create a Date object from UTC string (dateString is assumed to be in UTC)
     const date = new Date(dateString);
     const now = new Date();
     
-    // en: Simple time difference calculation
-    // ru: Simple time difference calculation
+    // Get user's timezone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    // Simple time difference calculation
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.round(diffMs / 60000);
     const diffHours = Math.round(diffMs / 3600000);
@@ -93,14 +94,15 @@ export const NotificationsScreen: React.FC = () => {
       }
     }
 
-    // For older dates, use localized date format
+    // For older dates, use localized date format with user's timezone
     return date.toLocaleString('en-US', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: userTimeZone
     });
   };
 
