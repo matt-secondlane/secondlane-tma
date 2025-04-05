@@ -26,6 +26,23 @@ export const NotificationsScreen: React.FC = () => {
         setNotifications(notificationsData);
         setEventTypes(eventTypesData);
         setError(null);
+        
+        // Send IDs of all unread notifications to server
+        const unreadNotifications = notificationsData.filter(notification => notification.read_at === null);
+        if (unreadNotifications.length > 0) {
+          const unreadIds = unreadNotifications.map(notification => notification.id);
+          await apiService.readNotificationsBatch(unreadIds);
+          
+          // Update notifications state locally, marking them as read
+          setNotifications(notificationsData.map(notification => 
+            unreadIds.includes(notification.id) 
+              ? { ...notification, read_at: new Date().toISOString() } 
+              : notification
+          ));
+        }
+        
+        // Update notification counter to refresh badge
+        window.dispatchEvent(new CustomEvent('notification-read'));
       } catch (err) {
         setError('Failed to load notifications');
         console.error('Error fetching notifications:', err);
@@ -41,49 +58,16 @@ export const NotificationsScreen: React.FC = () => {
     navigate('/notification-settings');
   };
 
-  const handleMarkAsRead = async (notificationId: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    try {
-      await apiService.markNotificationAsRead(notificationId);
-      
-      // Update local notifications list
-      setNotifications(prev => 
-        prev.map(notification => 
-          notification.id === notificationId 
-            ? { ...notification, read_at: new Date().toISOString() } 
-            : notification
-        )
-      );
-    } catch (err) {
-      console.error('Error marking notification as read:', err);
-    }
-  };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const now = new Date();
     
-    // Ensure both dates are in UTC for comparison
-    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-    const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+    // Get user's timezone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     
-    const diffMs = utcNow.getTime() - utcDate.getTime();
-    const diffMins = Math.round(diffMs / 60000);
-    const diffHours = Math.round(diffMs / 3600000);
-    const diffDays = Math.round(diffMs / 86400000);
-
-    if (diffMins < 60) {
-      return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
-    } else if (diffHours < 24) {
-      return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-    } else if (diffDays < 7) {
-      return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
-    } else {
-      return new Intl.DateTimeFormat('en-US', {
-        day: '2-digit',
-        month: 'short',
-      }).format(date);
-    }
+    // Format the date as "MMM-DD"
+    const month = date.toLocaleString('en-US', { month: 'short', timeZone: userTimeZone });
+    const day = date.toLocaleString('en-US', { day: '2-digit', timeZone: userTimeZone });
+    return `${month}-${day}`;
   };
 
   const getNotificationIcon = (type: string) => {
@@ -116,9 +100,24 @@ export const NotificationsScreen: React.FC = () => {
     return eventType ? eventType.name : type.replace('_', ' ');
   };
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     // Add navigation or action when notification is clicked
     console.log('Notification clicked:', notification);
+    
+    // Если уведомление не прочитано, просто обновим UI локально
+    if (!notification.read_at) {
+      // Обновляем UI, чтобы показать, что уведомление прочитано
+      setNotifications(prev => 
+        prev.map(item => 
+          item.id === notification.id 
+            ? { ...item, read_at: new Date().toISOString() } 
+            : item
+        )
+      );
+      
+      // Уведомляем header об изменении для обновления счетчика
+      window.dispatchEvent(new CustomEvent('notification-read'));
+    }
   };
 
   return (
@@ -177,16 +176,6 @@ export const NotificationsScreen: React.FC = () => {
                     {notification.message}
                   </div>
                 </div>
-                {!notification.read_at && (
-                  <div className={styles.notificationActions}>
-                    <button 
-                      className={styles.markAsReadButton}
-                      onClick={(e) => handleMarkAsRead(notification.id, e)}
-                    >
-                      Read
-                    </button>
-                  </div>
-                )}
               </div>
             ))}
           </div>

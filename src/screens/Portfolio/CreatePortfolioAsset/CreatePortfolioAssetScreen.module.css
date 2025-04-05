@@ -398,4 +398,18 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   transition: all 0.2s ease;
   width: 24px;
   height: 24px;
+}
+
+@media (min-width: 768px) {
+  input[type="date"].input {
+    height: 56px;
+    font-size: 18px;
+    padding: 0 24px;
+  }
+  
+  input[type="date"].input::-webkit-calendar-picker-indicator {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
 } 

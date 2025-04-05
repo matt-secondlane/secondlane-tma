@@ -600,6 +600,12 @@ export const apiService = {
     await api.post(`/notifications/${notificationId}/read`);
   },
 
+  // Get unread notifications count
+  getUnreadNotificationsCount: async (): Promise<number> => {
+    const response = await api.get('/notifications/unread-count');
+    return response.data.data.count;
+  },
+
   // Get portfolio summary
   getPortfolioSummary: async (): Promise<PortfolioSummary> => {
     const response = await api.get('/portfolio/summary');
@@ -656,5 +662,10 @@ export const apiService = {
   getAssetGraph: async (assetId: string): Promise<AssetGraphResponse> => {
     const response = await api.get(`/portfolio/assets/${assetId}/summary/graph`);
     return response.data;
+  },
+
+  // Mark multiple notifications as read
+  readNotificationsBatch: async (notificationIds: string[]): Promise<void> => {
+    await api.post('/notifications/read-batch', { notification_ids: notificationIds });
   },
 }; 
