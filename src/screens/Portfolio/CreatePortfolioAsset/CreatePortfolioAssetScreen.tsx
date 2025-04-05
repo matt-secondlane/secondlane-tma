@@ -5,7 +5,7 @@ import { apiService } from '../../../utils/api';
 import { CreatePortfolioAssetRequest, ProjectSearchResult } from '../../../types/api';
 import styles from './CreatePortfolioAssetScreen.module.css';
 import { Loader } from '../../../components/Loader';
-import { parseNumberWithSuffix, formatNumberWithCommas } from '../../../utils/money';
+import { parseNumberWithSuffix } from '../../../utils/money';
 
 export const CreatePortfolioAssetScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -76,42 +76,24 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    // Format input values with commas for money fields
+    // Обрабатываем числовые поля
     if (name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount') {
-      // First, normalize input by replacing comma separators with dots for decimal
-      let processedValue = value;
-      
-      // If there's a comma that looks like a decimal separator (e.g. "1,5")
-      // only allow one decimal separator and convert comma to dot
-      if (processedValue.includes(',')) {
-        // Find position of last comma
-        const commaPos = processedValue.lastIndexOf(',');
-        // If it looks like a decimal separator (followed by digits only)
-        if (commaPos > 0 && /^\d+$/.test(processedValue.substring(commaPos + 1))) {
-          // Replace comma with dot for decimal part
-          processedValue = processedValue.substring(0, commaPos) + '.' + processedValue.substring(commaPos + 1);
-        }
+      // Если значение пустое, устанавливаем undefined
+      if (value === '') {
+        setFormData(prev => ({
+          ...prev,
+          [name]: undefined
+        }));
+        return;
       }
       
-      // Remove all commas to avoid confusion between thousand separators and decimal separators
-      const numericValue = processedValue.replace(/,/g, '');
-      
-      // Update state with the raw value (without commas)
+      // Обновляем значение как есть, parseNumberWithSuffix обработает суффиксы k, m, b потом
       setFormData(prev => ({
         ...prev,
-        [name]: numericValue === '' ? undefined : numericValue
+        [name]: value
       }));
-      
-      // Update display with commas by setting the input value directly
-      if (numericValue !== '') {
-        // Only format if it's a valid number
-        const isValid = /^-?\d*\.?\d*$/.test(numericValue);
-        if (isValid) {
-          e.target.value = formatNumberWithCommas(numericValue);
-        }
-      }
     } else {
-      // For non-money fields, just update the state normally
+      // Для не-числовых полей просто обновляем состояние
       setFormData(prev => ({
         ...prev,
         [name]: value
@@ -289,19 +271,12 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
           <input
             id="date"
             name="date"
-            type="date"
+            type="text"
             className={styles.input}
             value={formData.date}
             onChange={handleInputChange}
+            placeholder="YYYY-MM-DD"
             required
-            style={{
-              colorScheme: 'light',
-              WebkitAppearance: 'none',
-              appearance: 'none',
-              backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'gray\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 10px center'
-            }}
           />
         </div>
 
@@ -314,9 +289,7 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
             name="invested_amount"
             type="text"
             className={styles.input}
-            value={typeof formData.invested_amount === 'number' 
-              ? formatNumberWithCommas(formData.invested_amount) 
-              : formData.invested_amount || ''}
+            value={formData.invested_amount || ''}
             onChange={handleInputChange}
             placeholder="Enter amount in USD (e.g. 500k, 1.5M, 2B)"
             required
@@ -332,9 +305,7 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
             name="valuation"
             type="text"
             className={styles.input}
-            value={typeof formData.valuation === 'number'
-              ? formatNumberWithCommas(formData.valuation)
-              : formData.valuation || ''}
+            value={formData.valuation || ''}
             onChange={handleInputChange}
             placeholder="Enter valuation in USD (e.g. 5M, 10B)"
           />
@@ -349,9 +320,7 @@ export const CreatePortfolioAssetScreen: React.FC = () => {
             name="equity_or_tokens_amount"
             type="text"
             className={styles.input}
-            value={typeof formData.equity_or_tokens_amount === 'number'
-              ? formatNumberWithCommas(formData.equity_or_tokens_amount)
-              : formData.equity_or_tokens_amount || ''}
+            value={formData.equity_or_tokens_amount || ''}
             onChange={handleInputChange}
             placeholder="Enter amount of equity or tokens"
           />

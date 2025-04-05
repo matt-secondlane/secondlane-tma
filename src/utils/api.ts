@@ -663,4 +663,9 @@ export const apiService = {
     const response = await api.get(`/portfolio/assets/${assetId}/summary/graph`);
     return response.data;
   },
+
+  // Mark multiple notifications as read
+  readNotificationsBatch: async (notificationIds: string[]): Promise<void> => {
+    await api.post('/notifications/read-batch', { notification_ids: notificationIds });
+  },
 }; 
