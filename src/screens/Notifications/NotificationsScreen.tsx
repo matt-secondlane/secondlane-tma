@@ -59,51 +59,15 @@ export const NotificationsScreen: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    // Create Date objects and ensure proper UTC to local conversion
     const date = new Date(dateString);
-    const now = new Date();
     
     // Get user's timezone
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     
-    // Calculate time difference (positive for past, negative for future)
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.round(diffMs / 60000);
-    const diffHours = Math.round(diffMs / 3600000);
-    const diffDays = Math.round(diffMs / 86400000);
-
-    // Format relative time using RelativeTimeFormat if available
-    if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
-      const rtf = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
-      
-      if (Math.abs(diffMins) < 60) {
-        return rtf.format(-diffMins, 'minute');
-      } else if (Math.abs(diffHours) < 24) {
-        return rtf.format(-diffHours, 'hour');
-      } else if (Math.abs(diffDays) < 7) {
-        return rtf.format(-diffDays, 'day');
-      }
-    } else {
-      // Fallback for browsers without RelativeTimeFormat
-      if (Math.abs(diffMins) < 60) {
-        return `${Math.abs(diffMins)} ${Math.abs(diffMins) === 1 ? 'min' : 'mins'} ago`;
-      } else if (Math.abs(diffHours) < 24) {
-        return `${Math.abs(diffHours)} ${Math.abs(diffHours) === 1 ? 'hour' : 'hours'} ago`;
-      } else if (Math.abs(diffDays) < 7) {
-        return `${Math.abs(diffDays)} ${Math.abs(diffDays) === 1 ? 'day' : 'days'} ago`;
-      }
-    }
-
-    // For older dates, use localized date format with user's timezone
-    return date.toLocaleString('en-US', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-      timeZone: userTimeZone
-    });
+    // Format the date as "MMM-DD"
+    const month = date.toLocaleString('en-US', { month: 'short', timeZone: userTimeZone });
+    const day = date.toLocaleString('en-US', { day: '2-digit', timeZone: userTimeZone });
+    return `${month}-${day}`;
   };
 
   const getNotificationIcon = (type: string) => {
