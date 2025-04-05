@@ -67,21 +67,21 @@ export const NotificationsScreen: React.FC = () => {
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     
     // Simple time difference calculation
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.round(diffMs / 60000);
-    const diffHours = Math.round(diffMs / 3600000);
-    const diffDays = Math.round(diffMs / 86400000);
+    const diffMs = date.getTime() - now.getTime();
+    const diffMins = Math.round(Math.abs(diffMs) / 60000);
+    const diffHours = Math.round(Math.abs(diffMs) / 3600000);
+    const diffDays = Math.round(Math.abs(diffMs) / 86400000);
 
     // Format relative time using RelativeTimeFormat if available
     if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
       const rtf = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
       
       if (diffMins < 60) {
-        return rtf.format(-diffMins, 'minute');
+        return rtf.format(-Math.abs(diffMins), 'minute');
       } else if (diffHours < 24) {
-        return rtf.format(-diffHours, 'hour');
+        return rtf.format(-Math.abs(diffHours), 'hour');
       } else if (diffDays < 7) {
-        return rtf.format(-diffDays, 'day');
+        return rtf.format(-Math.abs(diffDays), 'day');
       }
     } else {
       // Fallback for browsers without RelativeTimeFormat
