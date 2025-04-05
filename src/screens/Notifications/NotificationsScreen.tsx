@@ -59,38 +59,38 @@ export const NotificationsScreen: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    // Create a Date object from UTC string (dateString is assumed to be in UTC)
+    // Create Date objects and ensure proper UTC to local conversion
     const date = new Date(dateString);
     const now = new Date();
     
     // Get user's timezone
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     
-    // Simple time difference calculation
-    const diffMs = date.getTime() - now.getTime();
-    const diffMins = Math.round(Math.abs(diffMs) / 60000);
-    const diffHours = Math.round(Math.abs(diffMs) / 3600000);
-    const diffDays = Math.round(Math.abs(diffMs) / 86400000);
+    // Calculate time difference (positive for past, negative for future)
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.round(diffMs / 60000);
+    const diffHours = Math.round(diffMs / 3600000);
+    const diffDays = Math.round(diffMs / 86400000);
 
     // Format relative time using RelativeTimeFormat if available
     if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
       const rtf = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
       
-      if (diffMins < 60) {
-        return rtf.format(-Math.abs(diffMins), 'minute');
-      } else if (diffHours < 24) {
-        return rtf.format(-Math.abs(diffHours), 'hour');
-      } else if (diffDays < 7) {
-        return rtf.format(-Math.abs(diffDays), 'day');
+      if (Math.abs(diffMins) < 60) {
+        return rtf.format(-diffMins, 'minute');
+      } else if (Math.abs(diffHours) < 24) {
+        return rtf.format(-diffHours, 'hour');
+      } else if (Math.abs(diffDays) < 7) {
+        return rtf.format(-diffDays, 'day');
       }
     } else {
       // Fallback for browsers without RelativeTimeFormat
-      if (diffMins < 60) {
-        return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
-      } else if (diffHours < 24) {
-        return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-      } else if (diffDays < 7) {
-        return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+      if (Math.abs(diffMins) < 60) {
+        return `${Math.abs(diffMins)} ${Math.abs(diffMins) === 1 ? 'min' : 'mins'} ago`;
+      } else if (Math.abs(diffHours) < 24) {
+        return `${Math.abs(diffHours)} ${Math.abs(diffHours) === 1 ? 'hour' : 'hours'} ago`;
+      } else if (Math.abs(diffDays) < 7) {
+        return `${Math.abs(diffDays)} ${Math.abs(diffDays) === 1 ? 'day' : 'days'} ago`;
       }
     }
 
