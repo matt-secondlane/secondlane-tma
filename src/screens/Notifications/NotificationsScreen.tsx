@@ -27,13 +27,13 @@ export const NotificationsScreen: React.FC = () => {
         setEventTypes(eventTypesData);
         setError(null);
         
-        // Отправляем ID всех непрочитанных уведомлений на сервер
+        // Send IDs of all unread notifications to server
         const unreadNotifications = notificationsData.filter(notification => notification.read_at === null);
         if (unreadNotifications.length > 0) {
           const unreadIds = unreadNotifications.map(notification => notification.id);
           await apiService.readNotificationsBatch(unreadIds);
           
-          // Обновляем состояние уведомлений локально, помечая их как прочитанные
+          // Update notifications state locally, marking them as read
           setNotifications(notificationsData.map(notification => 
             unreadIds.includes(notification.id) 
               ? { ...notification, read_at: new Date().toISOString() } 
@@ -41,7 +41,7 @@ export const NotificationsScreen: React.FC = () => {
           ));
         }
         
-        // Обновить счетчик уведомлений, чтобы бейдж обновился
+        // Update notification counter to refresh badge
         window.dispatchEvent(new CustomEvent('notification-read'));
       } catch (err) {
         setError('Failed to load notifications');
@@ -59,33 +59,49 @@ export const NotificationsScreen: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    // Создаем объект Date из UTC строки (dateString предполагается в UTC)
+    // en: Create a Date object from UTC string (dateString is assumed to be in UTC)
+    // ru: Создаем объект Date из UTC строки (dateString предполагается в UTC)
     const date = new Date(dateString);
     const now = new Date();
     
-    // Simple time difference calculation
+    // en: Simple time difference calculation
+    // ru: Simple time difference calculation
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.round(diffMs / 60000);
     const diffHours = Math.round(diffMs / 3600000);
     const diffDays = Math.round(diffMs / 86400000);
 
-    if (diffMins < 60) {
-      return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
-    } else if (diffHours < 24) {
-      return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-    } else if (diffDays < 7) {
-      return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+    // Format relative time using RelativeTimeFormat if available
+    if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
+      const rtf = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
+      
+      if (diffMins < 60) {
+        return rtf.format(-diffMins, 'minute');
+      } else if (diffHours < 24) {
+        return rtf.format(-diffHours, 'hour');
+      } else if (diffDays < 7) {
+        return rtf.format(-diffDays, 'day');
+      }
     } else {
-      // Использование toLocaleString с опциями для форматирования в локальном часовом поясе
-      return date.toLocaleString('en-US', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
+      // Fallback for browsers without RelativeTimeFormat
+      if (diffMins < 60) {
+        return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
+      } else if (diffHours < 24) {
+        return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+      } else if (diffDays < 7) {
+        return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+      }
     }
+
+    // For older dates, use localized date format
+    return date.toLocaleString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   };
 
   const getNotificationIcon = (type: string) => {
