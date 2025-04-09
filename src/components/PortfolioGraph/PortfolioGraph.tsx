@@ -89,8 +89,8 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
           response.data.monthly_values.forEach(dataPoint => {
             if (dataPoint.assets && dataPoint.assets.length > 0) {
               dataPoint.assets.forEach(asset => {
-                if (asset.asset_id && !assetNamesMap[asset.asset_id] && asset.project_name) {
-                  assetNamesMap[asset.asset_id] = asset.project_name;
+                if (asset.asset_id && !assetNamesMap[asset.asset_id] && asset.name) {
+                  assetNamesMap[asset.asset_id] = asset.name;
                 }
               });
             }

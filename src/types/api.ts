@@ -505,7 +505,7 @@ export interface PortfolioGraphDataPoint {
   gain_loss_percentage: number;
   assets: {
     asset_id: string;
-    project_name: string;
+    name: string;
     value: number;
     gain_loss_usd: number;
     gain_loss_percentage: number;
