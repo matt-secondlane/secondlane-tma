@@ -156,43 +156,6 @@ export const AssetGraph: React.FC<AssetGraphProps> = ({ assetId }) => {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      
-      <div className={styles.summaryCard}>
-        <div className={styles.summaryTitle}>Latest Valuation</div>
-        {chartData.length > 0 && (
-          <>
-            <div className={styles.summaryRow}>
-              <span className={styles.summaryLabel}>Current Value:</span>
-              <span className={styles.summaryValue}>
-                {formatMoney(chartData[chartData.length - 1].total_value)}
-              </span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.summaryLabel}>Total Invested:</span>
-              <span className={styles.summaryValue}>
-                {formatMoney(chartData[chartData.length - 1].total_invested)}
-              </span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.summaryLabel}>Profit/Loss:</span>
-              <span className={`${styles.summaryValue} ${chartData[chartData.length - 1].gain_loss_usd >= 0 ? styles.positive : styles.negative}`}>
-                {chartData[chartData.length - 1].gain_loss_usd >= 0 ? '+' : ''}
-                {formatMoney(chartData[chartData.length - 1].gain_loss_usd)}
-              </span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.summaryLabel}>ROI:</span>
-              <span className={`${styles.summaryValue} ${(chartData[chartData.length - 1].gain_loss_percentage || 0) >= 0 ? styles.positive : styles.negative}`}>
-                {chartData[chartData.length - 1].gain_loss_percentage !== null && 
-                 chartData[chartData.length - 1].gain_loss_percentage !== undefined ?
-                  `${chartData[chartData.length - 1].gain_loss_percentage >= 0 ? '+' : ''}${chartData[chartData.length - 1].gain_loss_percentage.toFixed(2)}%` :
-                  '0.00%'
-                }
-              </span>
-            </div>
-          </>
-        )}
-      </div>
     </div>
   );
 };

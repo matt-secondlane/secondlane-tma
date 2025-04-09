@@ -180,9 +180,9 @@ export const EditPortfolioAssetScreen: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    // Обрабатываем числовые поля
+    // Process numeric fields
     if (name === 'invested_amount' || name === 'valuation' || name === 'equity_or_tokens_amount') {
-      // Если значение пустое, устанавливаем undefined
+      // If value is empty, set to undefined
       if (value === '') {
         setFormData(prev => ({
           ...prev,
@@ -191,13 +191,13 @@ export const EditPortfolioAssetScreen: React.FC = () => {
         return;
       }
       
-      // Обновляем значение как есть, parseNumberWithSuffix обработает суффиксы k, m, b потом
+      // Update value as is, parseNumberWithSuffix will handle k, m, b suffixes later
       setFormData(prev => ({
         ...prev,
         [name]: value
       }));
     } else {
-      // Для не-числовых полей просто обновляем состояние
+      // For non-numeric fields just update state
       setFormData(prev => ({
         ...prev,
         [name]: value
@@ -216,6 +216,21 @@ export const EditPortfolioAssetScreen: React.FC = () => {
     }
     
     // Otherwise try to parse as regular number
+    const numValue = parseFloat(value);
+    return !isNaN(numValue) ? numValue : undefined;
+  };
+
+  // Validate and parse equity or tokens amount
+  const validateEquityOrTokensAmount = (value: string): number | undefined => {
+    if (!value) return undefined;
+    
+    // Check if the value has suffixes like k, m, b
+    if (value.match(/^(-?\d*\.?\d+)(k|m|b)$/i)) {
+      const parsedValue = parseNumberWithSuffix(value);
+      return parsedValue !== null ? parsedValue : undefined;
+    }
+    
+    // Otherwise try to parse as regular number (including decimals for percentages)
     const numValue = parseFloat(value);
     return !isNaN(numValue) ? numValue : undefined;
   };
@@ -249,7 +264,7 @@ export const EditPortfolioAssetScreen: React.FC = () => {
       : formData.valuation;
       
     const equityAmount = typeof formData.equity_or_tokens_amount === 'string'
-      ? validateMonetaryInput(formData.equity_or_tokens_amount)
+      ? validateEquityOrTokensAmount(formData.equity_or_tokens_amount)
       : formData.equity_or_tokens_amount;
     
     if (!investedAmount || investedAmount <= 0) {
@@ -385,16 +400,15 @@ export const EditPortfolioAssetScreen: React.FC = () => {
 
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="date">
-            Date<span className={styles.requiredMark}>*</span>
+            Date (mm/dd/yyyy) *
           </label>
           <input
             id="date"
             name="date"
-            type="text"
+            type="date"
             className={styles.input}
             value={formData.date}
             onChange={handleInputChange}
-            placeholder="YYYY-MM-DD"
             required
           />
         </div>

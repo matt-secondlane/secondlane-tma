@@ -333,6 +333,7 @@ export interface AttestationRequest {
   affirmation: boolean;
   country: string;
   email: string;
+  subscribe_to_newsletter?: boolean;
 }
 
 // Attestation response
@@ -351,6 +352,7 @@ export interface Portfolio {
   created_at: string;
   updated_at: string;
   is_default: boolean;
+  assets?: PortfolioAsset[];
 }
 
 export interface PortfolioAsset {
@@ -363,7 +365,7 @@ export interface PortfolioAsset {
   terms?: string;
   project_website?: string;
   valuation?: number;
-  equity_or_tokens_amount?: number;
+  equity_or_tokens_amount?: number | string;
   created_at: string;
   updated_at: string;
   logo?: string;
@@ -408,7 +410,7 @@ export interface CreatePortfolioAssetRequest {
   terms?: string;
   project_website?: string;
   valuation?: number;
-  equity_or_tokens_amount?: number;
+  equity_or_tokens_amount?: number | string;
 }
 
 export interface UpdatePortfolioAssetRequest {
@@ -419,7 +421,7 @@ export interface UpdatePortfolioAssetRequest {
   terms?: string;
   project_website?: string;
   valuation?: number;
-  equity_or_tokens_amount?: number;
+  equity_or_tokens_amount?: number | string;
 }
 
 export interface ProjectSearchResult {
@@ -501,6 +503,13 @@ export interface PortfolioGraphDataPoint {
   total_invested: number;
   gain_loss_usd: number;
   gain_loss_percentage: number;
+  assets: {
+    asset_id: string;
+    name: string;
+    value: number;
+    gain_loss_usd: number;
+    gain_loss_percentage: number;
+  }[];
 }
 
 export interface PortfolioGraphResponse {
@@ -526,6 +535,7 @@ export interface AssetSummary {
   valuation_source: string;
   date: string;
   project_website?: string;
+  equity_or_tokens_amount?: number | string;
 }
 
 export interface PortfolioAssetSummaries {
@@ -542,4 +552,10 @@ export interface AssetGraphResponse {
     };
     monthly_values: PortfolioGraphDataPoint[];
   };
+}
+
+export interface CSVPortfolioResponse {
+  portfolio_id: string;
+  matched_assets: number;
+  total_assets: number;
 } 

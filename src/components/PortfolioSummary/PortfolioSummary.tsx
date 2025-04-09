@@ -197,6 +197,9 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId 
                   {asset.project.logo && (
                     <img src={asset.project.logo} alt={asset.project.name} className={styles.assetLogo} />
                   )}
+                  {(!asset.project.project_id || asset.project.project_id === '') && (
+                    <span className={styles.unpairedLabel}>Unpaired</span>
+                  )}
                   <span className={styles.assetName}>{asset.project.name}</span>
                 </div>
                 <span className={styles.assetAmount}>{formatMoney(asset.invested_amount)}</span>

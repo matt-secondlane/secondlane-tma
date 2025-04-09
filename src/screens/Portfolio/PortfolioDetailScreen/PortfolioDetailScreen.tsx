@@ -89,11 +89,19 @@ export const PortfolioDetailScreen: React.FC = () => {
     webApp?.HapticFeedback.impactOccurred('medium');
     
     try {
-      
       // Use apiService to add assets from CSV
-      await apiService.addAssetsToPortfolioFromCSV(portfolioId, file, portfolio.name);
+      const response = await apiService.addAssetsToPortfolioFromCSV(portfolioId, file, portfolio.name);
       
-      WebApp.showAlert('Assets from CSV successfully added to the current portfolio!');
+      // Show success message with matched assets count
+      if (response.matched_assets < response.total_assets) {
+        WebApp.showAlert(
+          `${response.matched_assets} out of ${response.total_assets} assets matched to projects. ` +
+          'Please edit remaining assets to match to projects.'
+        );
+      } else {
+        WebApp.showAlert('Assets from CSV successfully added to the current portfolio!');
+      }
+      
       webApp?.HapticFeedback.notificationOccurred('success');
       
       // Update assets list
@@ -341,6 +349,9 @@ export const PortfolioDetailScreen: React.FC = () => {
                           {asset.project_name.charAt(0)}
                         </div>
                       )}
+                      {!asset.project?.project_id && (
+                        <span className={styles.unpairedLabel}>Unpaired</span>
+                      )}
                       <h3>{asset.project_name}</h3>
                     </div>
                     <div className={styles.assetActions}>
@@ -388,7 +399,13 @@ export const PortfolioDetailScreen: React.FC = () => {
                     {(asset.equity_or_tokens_amount || asset.equity_or_tokens_amount === 0) && (
                       <div className={styles.assetDetail}>
                         <span className={styles.detailLabel}>Equity/Tokens</span>
-                        <span className={styles.detailValue}>{asset.equity_or_tokens_amount}</span>
+                        <span className={styles.detailValue}>
+                          {typeof asset.equity_or_tokens_amount === 'number' && asset.equity_or_tokens_amount < 1 
+                            ? `${(asset.equity_or_tokens_amount * 100).toFixed(2)}%` 
+                            : typeof asset.equity_or_tokens_amount === 'number' && asset.equity_or_tokens_amount > 1
+                              ? asset.equity_or_tokens_amount.toLocaleString('en-US')
+                              : asset.equity_or_tokens_amount}
+                        </span>
                       </div>
                     )}
                     {asset.terms && (
@@ -424,7 +441,9 @@ export const PortfolioDetailScreen: React.FC = () => {
       )}
 
       {activeTab === 'history' && (
-        <PortfolioGraph portfolioId={portfolioId} />
+        <div className={styles.historyContainer}>
+          <PortfolioGraph portfolioId={portfolioId} />
+        </div>
       )}
     </div>
   );

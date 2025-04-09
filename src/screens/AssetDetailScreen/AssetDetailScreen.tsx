@@ -110,6 +110,16 @@ const AssetDetailScreen: React.FC = () => {
                 {formatMoney(assetData.gain_loss_usd)}
               </span>
             </div>
+            {assetData.equity_or_tokens_amount !== undefined && (
+              <div className={styles.summaryRow}>
+                <span className={styles.summaryLabel}>Equity/Tokens:</span>
+                <span className={styles.summaryValue}>
+                  {typeof assetData.equity_or_tokens_amount === 'number' && assetData.equity_or_tokens_amount < 1 
+                    ? `${(assetData.equity_or_tokens_amount * 100).toFixed(2)}%` 
+                    : assetData.equity_or_tokens_amount}
+                </span>
+              </div>
+            )}
             <div className={styles.summaryRow}>
               <span className={styles.summaryLabel}>ROI:</span>
               <span className={`${styles.summaryValue} ${(assetData.gain_loss_percentage || 0) >= 0 ? styles.positive : styles.negative}`}>
