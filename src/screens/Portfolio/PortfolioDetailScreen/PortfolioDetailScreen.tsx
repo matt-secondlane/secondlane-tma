@@ -349,7 +349,7 @@ export const PortfolioDetailScreen: React.FC = () => {
                           {asset.project_name.charAt(0)}
                         </div>
                       )}
-                      {!asset.project_id && (
+                      {!asset.project?.project_id && (
                         <span className={styles.unpairedLabel}>Unpaired</span>
                       )}
                       <h3>{asset.project_name}</h3>
