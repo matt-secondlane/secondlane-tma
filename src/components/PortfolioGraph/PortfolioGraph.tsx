@@ -66,12 +66,11 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
         if (response.data && response.data.monthly_values) {
           setChartData(response.data.monthly_values);
           
-          // Собираем имена активов только если нужно отображать нижний график (portfolioId задан)
+          // Собираем все уникальные имена активов для использования в графике
+          const assetNamesMap: Record<string, string> = {};
+          
+          // If we have a specific portfolioId, try to get more detailed names
           if (portfolioId) {
-            // Собираем все уникальные имена активов для использования в графике
-            const assetNamesMap: Record<string, string> = {};
-            
-            // Дополнительный запрос для получения деталей портфолио с именами активов
             try {
               const portfolioDetails = await apiService.getPortfolioSummaryById(portfolioId);
               if (portfolioDetails.assets && portfolioDetails.assets.length > 0) {
@@ -84,27 +83,20 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
             } catch (error) {
               console.warn('Could not fetch detailed portfolio information:', error);
             }
-            
-            // Собираем имена из данных графика (для случаев, когда имена есть в данных графика)
-            response.data.monthly_values.forEach(dataPoint => {
-              if (dataPoint.assets && dataPoint.assets.length > 0) {
-                dataPoint.assets.forEach(asset => {
-                  if (asset.asset_id && !assetNamesMap[asset.asset_id]) {
-                    // Используем имя проекта из актива, если оно есть
-                    if (asset.project_name) {
-                      assetNamesMap[asset.asset_id] = asset.project_name;
-                    } else {
-                      // Генерируем имя на основе индекса
-                      const nameIndex = Object.keys(assetNamesMap).length + 1;
-                      assetNamesMap[asset.asset_id] = `Project ${nameIndex}`;
-                    }
-                  }
-                });
-              }
-            });
-            
-            setAssetNames(assetNamesMap);
           }
+          
+          // Always collect names from the graph data
+          response.data.monthly_values.forEach(dataPoint => {
+            if (dataPoint.assets && dataPoint.assets.length > 0) {
+              dataPoint.assets.forEach(asset => {
+                if (asset.asset_id && !assetNamesMap[asset.asset_id] && asset.project_name) {
+                  assetNamesMap[asset.asset_id] = asset.project_name;
+                }
+              });
+            }
+          });
+          
+          setAssetNames(assetNamesMap);
         } else {
           setError('Invalid data format from API');
         }
