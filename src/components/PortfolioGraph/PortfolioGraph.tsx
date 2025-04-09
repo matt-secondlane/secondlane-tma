@@ -289,8 +289,8 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
         </ResponsiveContainer>
       </div>
 
-      {/* Отображаем нижний график только если просматривается конкретный портфолио */}
-      {portfolioId && hasAssets && (
+      {/* Отображаем нижний график только если есть активы */}
+      {hasAssets && (
         <>
           <div className={styles.graphHeader} style={{ marginTop: '12px' }}>
             <h2 className={styles.graphTitle}>Asset Composition Over Time</h2>
