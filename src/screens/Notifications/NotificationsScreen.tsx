@@ -104,9 +104,9 @@ export const NotificationsScreen: React.FC = () => {
     // Add navigation or action when notification is clicked
     console.log('Notification clicked:', notification);
     
-    // Если уведомление не прочитано, просто обновим UI локально
+    // If notification is not read, just update UI locally
     if (!notification.read_at) {
-      // Обновляем UI, чтобы показать, что уведомление прочитано
+      // Update UI to show that notification is read
       setNotifications(prev => 
         prev.map(item => 
           item.id === notification.id 
@@ -115,7 +115,7 @@ export const NotificationsScreen: React.FC = () => {
         )
       );
       
-      // Уведомляем header об изменении для обновления счетчика
+      // Notify header about changes to update counter
       window.dispatchEvent(new CustomEvent('notification-read'));
     }
   };

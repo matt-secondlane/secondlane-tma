@@ -54,38 +54,6 @@
   padding: 20px;
 }
 
-.summaryCard {
-  background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.summaryTitle {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--tg-theme-text-color);
-}
-
-.summaryRow {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.summaryRow:last-child {
-  margin-bottom: 0;
-}
-
-.summaryLabel {
-  color: var(--tg-theme-hint-color, #808080);
-}
-
-.summaryValue {
-  font-weight: 600;
-  color: var(--tg-theme-text-color);
-}
-
 .positive {
   color: #4cd964;
 }

@@ -213,16 +213,25 @@ export const PortfolioScreen: React.FC = () => {
     webApp?.HapticFeedback.impactOccurred('medium');
     
     try {
-      const newPortfolio = await apiService.createPortfolioFromCSV(portfolioName, file);
+      const response = await apiService.createPortfolioFromCSV(portfolioName, file);
       
-      WebApp.showAlert('Portfolio successfully created!');
+      // Show success message with matched assets count
+      if (response.matched_assets < response.total_assets) {
+        WebApp.showAlert(
+          `${response.matched_assets} out of ${response.total_assets} assets matched to projects. ` +
+          'Please edit remaining assets to match to projects.'
+        );
+      } else {
+        WebApp.showAlert('Portfolio successfully created!');
+      }
+      
       webApp?.HapticFeedback.notificationOccurred('success');
       
       // Update portfolios list and navigation
       fetchPortfolios();
       setIsCreatingPortfolio(false);
       setNewPortfolioName('');
-      navigate(`/portfolio/${newPortfolio.portfolio_id}`);
+      navigate(`/portfolio/${response.portfolio_id}`);
     } catch (error) {
       let errorMessage = error instanceof Error ? error.message : 'Unknown error';
       

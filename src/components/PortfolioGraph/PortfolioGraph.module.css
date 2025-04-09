@@ -2,6 +2,9 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+  margin-bottom: 0;
 }
 
 .loaderContainer {
@@ -38,8 +41,6 @@
 
 .graphHeader {
   margin-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding-bottom: 8px;
 }
 
 .graphTitle {
@@ -55,4 +56,40 @@
   padding: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   height: 300px;
+  margin-bottom: 8px;
+}
+
+.tooltipContent {
+  background-color: var(--tg-theme-bg-color);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.tooltipDate {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--tg-theme-text-color);
+}
+
+.topPerformers {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.topPerformersTitle {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--tg-theme-text-color);
+}
+
+.topPerformerItem {
+  margin: 4px 0;
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+}
+
+.graphContainer > div:nth-child(4) {
+  margin-bottom: 0;
 } 

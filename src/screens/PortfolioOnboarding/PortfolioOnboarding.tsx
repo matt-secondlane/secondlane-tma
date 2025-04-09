@@ -43,6 +43,11 @@ export const PortfolioOnboarding: React.FC<PortfolioOnboardingProps> = ({ onComp
       title: 'Manage Your Assets',
       content: 'Use "Edit" and "Delete" buttons next to each asset to update your portfolio as investments change.',
       highlight: styles.highlightAssetControls
+    },
+    {
+      title: 'Unpaired Assets',
+      content: 'Assets without matched projects will be marked with an "Unpaired" red label. Edit them to link to specific projects.',
+      highlight: styles.highlightUnpairedAsset
     }
   ];
 
@@ -151,6 +156,23 @@ export const PortfolioOnboarding: React.FC<PortfolioOnboardingProps> = ({ onComp
                       <div className={styles.mockAssetControls}>
                         <div className={styles.mockEditBtn}>Edit</div>
                         <div className={styles.mockDeleteBtn}>Delete</div>
+                        <div className={styles.pointerHand}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {currentSlide === 5 && (
+                <div className={styles.mockInterface}>
+                  <div className={styles.mockAssetsList}>
+                    <div className={styles.mockAssetItem}>
+                      <div className={styles.mockAssetInfo}>
+                        <div>Example Project <span className={styles.mockUnpairedLabel}>Unpaired</span></div>
+                        <div>$100.0K</div>
+                      </div>
+                      <div className={styles.mockAssetControls}>
+                        <div className={styles.mockEditBtn}>Edit</div>
                         <div className={styles.pointerHand}></div>
                       </div>
                     </div>
