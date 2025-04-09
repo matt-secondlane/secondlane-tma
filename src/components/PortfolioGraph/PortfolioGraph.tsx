@@ -66,26 +66,9 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
         if (response.data && response.data.monthly_values) {
           setChartData(response.data.monthly_values);
           
-          // Собираем все уникальные имена активов для использования в графике
+          // Collect asset names from the graph data
           const assetNamesMap: Record<string, string> = {};
           
-          // If we have a specific portfolioId, try to get more detailed names
-          if (portfolioId) {
-            try {
-              const portfolioDetails = await apiService.getPortfolioSummaryById(portfolioId);
-              if (portfolioDetails.assets && portfolioDetails.assets.length > 0) {
-                portfolioDetails.assets.forEach(asset => {
-                  if (asset.asset_id && asset.project && asset.project.name) {
-                    assetNamesMap[asset.asset_id] = asset.project.name;
-                  }
-                });
-              }
-            } catch (error) {
-              console.warn('Could not fetch detailed portfolio information:', error);
-            }
-          }
-          
-          // Always collect names from the graph data
           response.data.monthly_values.forEach(dataPoint => {
             if (dataPoint.assets && dataPoint.assets.length > 0) {
               dataPoint.assets.forEach(asset => {
