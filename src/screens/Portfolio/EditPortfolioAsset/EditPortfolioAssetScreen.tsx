@@ -400,7 +400,7 @@ export const EditPortfolioAssetScreen: React.FC = () => {
 
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="date">
-            Date (dd-mm-yyyy) *
+            Date (mm/dd/yyyy) *
           </label>
           <input
             id="date"
