@@ -253,6 +253,17 @@
     color: #666;
   }
   
+  .mockUnpairedLabel {
+    background-color: #e63946;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+    display: inline-block;
+  }
+  
   .mockAssetControls {
     display: flex;
     gap: 8px;
@@ -330,8 +341,13 @@
   }
   
   .highlightAssetControls .pointerHand {
-    top: 12px;
-    right: 15px;
+    top: 45px;
+    right: 35px;
+  }
+  
+  .highlightUnpairedAsset .pointerHand {
+    top: 25px;
+    right: 110px;
   }
   
   .onboardingProgress {

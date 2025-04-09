@@ -22,6 +22,7 @@ interface AttestationFormData {
   affirmation: AffirmationOption;
   country: string;
   email: string;
+  subscribeToNewsletter: boolean;
 }
 
 // Props for the AttestationScreen component
@@ -70,7 +71,8 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
     netWorth: '',
     affirmation: false,
     country: '',
-    email: ''
+    email: '',
+    subscribeToNewsletter: false
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -153,6 +155,10 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, email: e.target.value }));
     setFormErrors(prev => ({ ...prev, email: false }));
+  };
+
+  const handleSubscribeToNewsletterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, subscribeToNewsletter: e.target.checked }));
   };
 
   // Styles for the country select component
@@ -304,42 +310,6 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
     }
   };
 
-  // Function to get detailed email error message
-  const getEmailErrorMessage = (email: string): string => {
-    if (!email) {
-      return 'Email address is required';
-    }
-    
-    if (!email.includes('@')) {
-      return 'Email must contain @ symbol';
-    }
-    
-    const [localPart, domainPart] = email.split('@');
-    
-    if (!localPart || localPart.length === 0) {
-      return 'Email must have a username before @';
-    }
-    
-    if (!domainPart || domainPart.length === 0) {
-      return 'Email must have a domain after @';
-    }
-    
-    if (!domainPart.includes('.')) {
-      return 'Email domain must include a dot (example.com)';
-    }
-    
-    const domainExtension = domainPart.split('.').pop();
-    if (!domainExtension || domainExtension.length < 2) {
-      return 'Email must have a valid domain extension (.com, .org, etc.)';
-    }
-    
-    if (/[^\w.%+-]/.test(localPart)) {
-      return 'Email username contains invalid characters';
-    }
-    
-    return 'Please enter a valid email address';
-  };
-
   // Updated form validation function
   const validateForm = (): boolean => {
     const errors = {
@@ -377,7 +347,8 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
         net_worth_test: formData.netWorth === 'yes',
         affirmation: formData.affirmation,
         country: formData.country,
-        email: formData.email
+        email: formData.email,
+        subscribe_to_newsletter: formData.subscribeToNewsletter
       });
       
       console.log('Attestation submitted:', response);
@@ -588,19 +559,34 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
         
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="email">
-            Email Address
+            Email *
           </label>
           <input
             id="email"
             type="email"
+            name="email"
             className={`${styles.input} ${formErrors.email ? styles.inputError : ''}`}
             value={formData.email}
             onChange={handleEmailChange}
-            placeholder="Enter your email address"
+            placeholder="Enter your email"
+            required
           />
-          {formErrors.email && <div className={styles.fieldError}>
-            {getEmailErrorMessage(formData.email)}
-          </div>}
+          {formErrors.email && <div className={styles.fieldError}>Please enter a valid email address</div>}
+        </div>
+        
+        <div className={styles.formGroup}>
+          <div className={styles.checkboxContainer}>
+            <input
+              type="checkbox"
+              id="subscribeToNewsletter"
+              className={styles.checkbox}
+              checked={formData.subscribeToNewsletter}
+              onChange={handleSubscribeToNewsletterChange}
+            />
+            <label htmlFor="subscribeToNewsletter" className={styles.checkboxLabel}>
+              Subscribe to receive monthly market reports
+            </label>
+          </div>
         </div>
         
         <div className={styles.formGroup}>

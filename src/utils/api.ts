@@ -37,7 +37,8 @@ import type {
   PortfolioSummary,
   PortfolioGraphResponse,
   AssetSummary,
-  AssetGraphResponse
+  AssetGraphResponse,
+  CSVPortfolioResponse
 } from '../types/api';
 
 export const apiService = {
@@ -360,7 +361,7 @@ export const apiService = {
   },
 
   // Create new portfolio from CSV
-  createPortfolioFromCSV: async (name: string, file: File): Promise<Portfolio> => {
+  createPortfolioFromCSV: async (name: string, file: File): Promise<CSVPortfolioResponse> => {
     // Check file
     if (!file || file.size === 0) {
       throw new Error('CSV file is required and cannot be empty');
@@ -383,27 +384,11 @@ export const apiService = {
       }
     });
     
-    let portfolioId = response.data?.data?.portfolio_id;
-    
-    // If ID is not in the response, search by name
-    if (!portfolioId) {
-      const portfolios = await api.get('/portfolio');
-      const createdPortfolio = portfolios.data.data.find((p: Portfolio) => p.name === name);
-      if (createdPortfolio) {
-        portfolioId = createdPortfolio.portfolio_id;
-      }
-    }
-    
-    if (portfolioId) {
-      const portfolioResponse = await api.get(`/portfolio/${portfolioId}`);
-      return portfolioResponse.data.data;
-    } else {
-      throw new Error('Failed to get created portfolio ID');
-    }
+    return response.data.data;
   },
 
   // Add assets to existing portfolio from CSV
-  addAssetsToPortfolioFromCSV: async (portfolioId: string, file: File, portfolioName?: string): Promise<void> => {
+  addAssetsToPortfolioFromCSV: async (portfolioId: string, file: File, portfolioName?: string): Promise<CSVPortfolioResponse> => {
     // Check file
     if (!file || file.size === 0) {
       throw new Error('CSV file is required and cannot be empty');
@@ -433,11 +418,13 @@ export const apiService = {
     formData.append('append', 'true'); // Explicitly specify that we need to append, not replace
     
     // Use api instance for all requests
-    await api.post(`/portfolio/${portfolioId}/assets/csv`, formData, {
+    const response = await api.post(`/portfolio/${portfolioId}/csv`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
+    
+    return response.data.data;
   },
 
   // Get CSV template URL

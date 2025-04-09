@@ -37,10 +37,8 @@ export const formatNumberWithCommas = (value: number | string | undefined): stri
     numValue = value;
   }
   
-  // Format with commas for thousands
-  const parts = numValue.toString().split('.');
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return parts.join('.');
+  // Format with commas for thousands - ensure it works with all numbers including zeros
+  return numValue.toLocaleString('en-US');
 };
 
 export const formatMoney = (value: number | null | undefined): string => {
@@ -56,6 +54,9 @@ export const formatMoney = (value: number | null | undefined): string => {
     return `$${(value / 1000000).toFixed(1)}M`;
   } else if (absValue >= 1000) {
     return `$${(value / 1000).toFixed(1)}K`;
+  } else if (absValue >= 1) {
+    return `$${value.toLocaleString('en-US')}`;
   }
+  
   return `$${value.toFixed(0)}`;
 };
