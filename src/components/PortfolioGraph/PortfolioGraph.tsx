@@ -276,7 +276,7 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
               dot={false}
               activeDot={{ r: 6 }}
             />
-            <Line 
+            {/* <Line 
               type="monotone" 
               dataKey="gain_loss_percentage" 
               name="ROI, %"
@@ -284,7 +284,7 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 6 }}
-            />
+            /> */}
           </LineChart>
         </ResponsiveContainer>
       </div>
