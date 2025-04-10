@@ -401,7 +401,7 @@ export const PortfolioDetailScreen: React.FC = () => {
                         <span className={styles.detailLabel}>Equity/Tokens</span>
                         <span className={styles.detailValue}>
                           {typeof asset.equity_or_tokens_amount === 'number' && asset.equity_or_tokens_amount < 1 
-                            ? `${(asset.equity_or_tokens_amount * 100).toFixed(2)}%` 
+                            ? `${asset.equity_or_tokens_amount.toFixed(2)}%` 
                             : typeof asset.equity_or_tokens_amount === 'number' && asset.equity_or_tokens_amount > 1
                               ? asset.equity_or_tokens_amount.toLocaleString('en-US')
                               : asset.equity_or_tokens_amount}

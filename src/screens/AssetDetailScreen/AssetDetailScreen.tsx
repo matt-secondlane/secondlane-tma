@@ -115,7 +115,7 @@ const AssetDetailScreen: React.FC = () => {
                 <span className={styles.summaryLabel}>Equity/Tokens:</span>
                 <span className={styles.summaryValue}>
                   {typeof assetData.equity_or_tokens_amount === 'number' && assetData.equity_or_tokens_amount < 1 
-                    ? `${(assetData.equity_or_tokens_amount * 100).toFixed(2)}%` 
+                    ? `${assetData.equity_or_tokens_amount.toFixed(2)}%` 
                     : assetData.equity_or_tokens_amount}
                 </span>
               </div>
