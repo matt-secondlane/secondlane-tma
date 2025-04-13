@@ -182,34 +182,45 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId 
           <div className={styles.assetsList}>
             <div className={styles.assetHeader}>
               <span>Name</span>
-              <span style={{textAlign: 'right'}}>Invested</span>
-              <span style={{textAlign: 'right'}}>Current Value</span>
-              <span style={{textAlign: 'right'}}>ROI</span>
+              <span>Invested</span>
+              <span>Current Value</span>
+              <span>ROI</span>
             </div>
             {assets.map(asset => (
               <div 
                 key={asset.asset_id} 
                 className={styles.assetItem}
                 onClick={() => navigate(`/portfolio/asset/${asset.asset_id}`)}
-                style={{cursor: 'pointer'}}
               >
                 <div className={styles.assetInfo}>
                   {asset.project.logo && (
                     <img src={asset.project.logo} alt={asset.project.name} className={styles.assetLogo} />
                   )}
+                  <span className={styles.assetName}>{asset.project.name}</span>
                   {(!asset.project.project_id || asset.project.project_id === '') && (
                     <span className={styles.unpairedLabel}>Unpaired</span>
                   )}
-                  <span className={styles.assetName}>{asset.project.name}</span>
                 </div>
-                <span className={styles.assetAmount}>{formatMoney(asset.invested_amount)}</span>
-                <span className={styles.assetValue}>{formatMoney(asset.current_value)}</span>
-                <span className={`${styles.assetRoi} ${(asset.gain_loss_percentage || 0) >= 0 ? styles.positive : styles.negative}`}>
-                  {asset.gain_loss_percentage !== null && asset.gain_loss_percentage !== undefined ? 
-                    `${asset.gain_loss_percentage >= 0 ? '+' : ''}${asset.gain_loss_percentage.toFixed(2)}%` : 
-                    '0.00%'
-                  }
-                </span>
+                
+                <div className={styles.assetMetric}>
+                  <span>Invested:</span>
+                  <span className={styles.assetMetricValue}>{formatMoney(asset.invested_amount)}</span>
+                </div>
+                
+                <div className={styles.assetMetric}>
+                  <span>Current:</span>
+                  <span className={styles.assetMetricValue}>{formatMoney(asset.current_value)}</span>
+                </div>
+                
+                <div className={styles.assetMetric}>
+                  <span>ROI:</span>
+                  <span className={`${styles.assetMetricValue} ${(asset.gain_loss_percentage || 0) >= 0 ? styles.positive : styles.negative}`}>
+                    {asset.gain_loss_percentage !== null && asset.gain_loss_percentage !== undefined ? 
+                      `${asset.gain_loss_percentage >= 0 ? '+' : ''}${asset.gain_loss_percentage.toFixed(2)}%` : 
+                      '0.00%'
+                    }
+                  </span>
+                </div>
               </div>
             ))}
           </div>
