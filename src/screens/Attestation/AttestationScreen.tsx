@@ -584,7 +584,7 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
               onChange={handleSubscribeToNewsletterChange}
             />
             <label htmlFor="subscribeToNewsletter" className={styles.checkboxLabel}>
-              Subscribe to receive monthly market reports
+              Receive monthly market insights
             </label>
           </div>
         </div>
