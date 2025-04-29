@@ -72,7 +72,7 @@ export const AttestationScreen: React.FC<AttestationScreenProps> = ({ onAttestat
     affirmation: false,
     country: '',
     email: '',
-    subscribeToNewsletter: false
+    subscribeToNewsletter: true
   });
 
   const [formErrors, setFormErrors] = useState({
