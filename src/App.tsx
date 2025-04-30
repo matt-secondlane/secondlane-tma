@@ -15,6 +15,8 @@ import { WelcomeScreen } from './screens/Welcome';
 import { NotificationsScreen, NotificationSettingsScreen } from './screens/Notifications';
 import { Loader } from './components/Loader';
 import { apiService } from './utils/api';
+import PortfolioUnlockSummaryScreen from './screens/Portfolio/PortfolioUnlockSummaryScreen/PortfolioUnlockSummaryScreen';
+import PortfolioUnlocksScreen from './screens/Portfolio/PortfolioUnlocksScreen';
 
 // Global flag for App.tsx
 let isAppInitialized = false;
@@ -218,6 +220,22 @@ function App() {
               isAttested === false 
                 ? <Navigate to="/welcome" replace /> 
                 : <PlaceRFQScreen />
+            } 
+          />
+          <Route 
+            path="/portfolio/:portfolioId/unlocks" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/welcome" replace /> 
+                : <PortfolioUnlocksScreen />
+            } 
+          />
+          <Route 
+            path="/portfolio/unlocks/summary" 
+            element={
+              isAttested === false 
+                ? <Navigate to="/welcome" replace /> 
+                : <PortfolioUnlockSummaryScreen />
             } 
           />
           <Route path="*" element={<Navigate to="/" replace />} />

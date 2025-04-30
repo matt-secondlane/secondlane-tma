@@ -164,4 +164,151 @@
 .backButton:active {
   transform: scale(0.96);
   opacity: 0.85;
+}
+
+/* Unlock Section Styles */
+.unlockSection {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.unlockCard {
+  background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.unlockHeader {
+  margin-bottom: 20px;
+}
+
+.unlockRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.unlockRow:last-child {
+  margin-bottom: 0;
+}
+
+.unlockLabel {
+  color: var(--tg-theme-hint-color, #808080);
+}
+
+.unlockValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+  text-align: right;
+}
+
+.unlockSubtitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+}
+
+.unlockTimeline {
+  position: relative;
+  padding-left: 16px;
+}
+
+.unlockTimeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--tg-theme-button-color, #007aff) 10%,
+    var(--tg-theme-button-color, #007aff) 90%,
+    transparent
+  );
+  opacity: 0.3;
+}
+
+.allocationItem {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.allocationItem:last-child {
+  margin-bottom: 0;
+}
+
+.allocationMarker {
+  position: absolute;
+  left: -10px;
+  top: 12px;
+  width: 10px;
+  height: 10px;
+  background: var(--tg-theme-button-color, #007aff);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.allocationCard {
+  background-color: var(--tg-theme-bg-color, #ffffff);
+  border-radius: 8px;
+  padding: 12px;
+  margin-left: 8px;
+}
+
+.allocationHeader {
+  margin-bottom: 8px;
+}
+
+.allocationTitle {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cliffBadge, .tgeBadge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.cliffBadge {
+  background-color: var(--tg-theme-button-color, #007aff);
+  color: white;
+}
+
+.tgeBadge {
+  background-color: #34c759;
+  color: white;
+}
+
+.allocationDetails {
+  margin-top: 8px;
+}
+
+.allocationRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.allocationRow:last-child {
+  margin-bottom: 0;
+}
+
+.allocationLabel {
+  color: var(--tg-theme-hint-color, #808080);
+}
+
+.allocationValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
 } 
