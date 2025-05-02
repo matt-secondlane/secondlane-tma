@@ -10,6 +10,7 @@ import { formatMoney } from '../../../utils/money';
 import { PortfolioTabs, PortfolioTab } from '../../../components/PortfolioTabs';
 import { PortfolioSummary } from '../../../components/PortfolioSummary';
 import { PortfolioGraph } from '../../../components/PortfolioGraph';
+import { PortfolioUnlocks } from '../../../components/PortfolioUnlocks';
 
 export const PortfolioDetailScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -260,7 +261,7 @@ export const PortfolioDetailScreen: React.FC = () => {
         </div>
       )}
 
-      <PortfolioTabs activeTab={activeTab} onTabChange={handleTabChange} />
+      <PortfolioTabs activeTab={activeTab} onTabChange={handleTabChange} showUnlocksTab={true} />
 
       {activeTab === 'manage' && (
         <div className={styles.portfolioContent}>
@@ -443,6 +444,12 @@ export const PortfolioDetailScreen: React.FC = () => {
       {activeTab === 'history' && (
         <div className={styles.historyContainer}>
           <PortfolioGraph portfolioId={portfolioId} />
+        </div>
+      )}
+
+      {activeTab === 'unlocks' && (
+        <div className={styles.unlocksContainer}>
+          <PortfolioUnlocks portfolioId={portfolioId} />
         </div>
       )}
     </div>

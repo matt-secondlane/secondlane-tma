@@ -1,0 +1,323 @@
+.unlocksContainer {
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--tg-theme-text-color);
+}
+
+.description {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 24px;
+}
+
+.noUnlockData {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.noUnlockData p {
+  margin: 0 0 10px;
+  color: var(--tg-theme-text-color);
+}
+
+.noUnlockData .smallText {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+}
+
+.unlocksList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.unlockItem {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.unlockItem:hover {
+  transform: translateY(-2px);
+}
+
+.unlockItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+}
+
+.assetInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.assetLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.assetLogoPlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-button-color);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.assetName {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--tg-theme-text-color);
+}
+
+.unlockType {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unlockTypeLabel {
+  font-size: 14px;
+  padding: 4px 10px;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 12px;
+  color: var(--tg-theme-hint-color);
+}
+
+.pendingBadge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
+  font-weight: 500;
+}
+
+.expandIcon {
+  transition: transform 0.3s ease;
+  color: var(--tg-theme-hint-color);
+}
+
+.expanded .unlockItemHeader .expandIcon {
+  transform: rotate(180deg);
+}
+
+.unlockDetails {
+  padding: 0 16px 16px;
+  animation: slideDown 0.3s ease;
+}
+
+.noDataMessage {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.noDataMessage p {
+  margin: 0 0 8px;
+  color: var(--tg-theme-hint-color);
+  font-size: 14px;
+}
+
+.noDataMessage p:last-child {
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.unlockSummary {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.unlockSummaryItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.unlockSummaryItem:last-child {
+  margin-bottom: 0;
+}
+
+.itemLabel {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color);
+}
+
+.itemValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.allocationsTitle {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--tg-theme-text-color);
+}
+
+.unlockTimeline {
+  position: relative;
+  padding-left: 16px;
+}
+
+.unlockTimeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--tg-theme-button-color) 10%,
+    var(--tg-theme-button-color) 90%,
+    transparent
+  );
+  opacity: 0.3;
+}
+
+.allocationItem {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.allocationItem:last-child {
+  margin-bottom: 0;
+}
+
+.timelineMarker {
+  position: absolute;
+  left: -10px;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  background: var(--tg-theme-button-color);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.allocationCard {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin-left: 8px;
+}
+
+.allocationHeader {
+  margin-bottom: 8px;
+}
+
+.allocationDate {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cliffBadge, .tgeBadge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.cliffBadge {
+  background-color: var(--tg-theme-button-color);
+  color: white;
+}
+
+.tgeBadge {
+  background-color: #4CD964;
+  color: white;
+}
+
+.allocationDetails {
+  margin-top: 8px;
+}
+
+.allocationRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.allocationRow:last-child {
+  margin-bottom: 0;
+}
+
+.allocationLabel {
+  color: var(--tg-theme-hint-color);
+}
+
+.allocationValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  text-align: center;
+  color: var(--tg-theme-hint-color);
+}
+
+.errorContainer {
+  padding: 16px;
+  text-align: center;
+  color: #FF3B30;
+}
+
+.noUnlocks {
+  padding: 24px;
+  text-align: center;
+  color: var(--tg-theme-hint-color);
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  margin-top: 16px;
+} 

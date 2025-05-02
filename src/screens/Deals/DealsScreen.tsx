@@ -15,7 +15,7 @@ export const DealsScreen = () => {
   const { isReady, webApp } = useTelegram();
   const [activeTab, setActiveTab] = useState<'all' | 'buy' | 'sell'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(1);
+  const pageRef = useRef(1);
   const [deals, setDeals] = useState<OrderbookItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export const DealsScreen = () => {
   useEffect(() => {
     if (isReady) {
       WebApp.ready();
-      setPage(1);
+      pageRef.current = 1;
       loadDeals(1);
     }
   }, [isReady, activeTab, searchQuery, loadDeals]);
@@ -78,11 +78,8 @@ export const DealsScreen = () => {
     
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore && !loadingRef.current && !loading) {
-        setPage(prevPage => {
-          const nextPage = prevPage + 1;
-          loadDeals(nextPage);
-          return nextPage;
-        });
+        pageRef.current += 1;
+        loadDeals(pageRef.current);
       }
     }, {
       rootMargin: '100px' // Preload before reaching end of list
@@ -94,13 +91,13 @@ export const DealsScreen = () => {
   const handleTabChange = (tab: 'all' | 'buy' | 'sell') => {
     webApp?.HapticFeedback.impactOccurred('light');
     setActiveTab(tab);
-    setPage(1);
+    pageRef.current = 1;
     setDeals([]);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setPage(1);
+    pageRef.current = 1;
   };
 
   return (

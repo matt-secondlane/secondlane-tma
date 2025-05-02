@@ -1,0 +1,37 @@
+.container {
+  padding: 16px;
+  max-width: 100%;
+  color: var(--tg-theme-text-color);
+  background-color: var(--tg-theme-bg-color);
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--tg-theme-button-color);
+  padding: 8px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.content {
+  padding-bottom: 60px;
+} 
