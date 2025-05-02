@@ -396,14 +396,18 @@ export const ProjectDetailsScreen: React.FC = () => {
                       {formatUnlockDate(unlockData.vesting_start_date)} - {formatUnlockDate(unlockData.vesting_end_date)}
                     </span>
                   </div>
-                  <div className={styles.summaryItem}>
-                    <span className={styles.summaryLabel}>Next Unlock</span>
-                    <span className={styles.summaryValue}>{formatUnlockDate(unlockData.next_unlock_date)}</span>
-                  </div>
-                  <div className={styles.summaryItem}>
-                    <span className={styles.summaryLabel}>Next Unlock Tokens</span>
-                    <span className={styles.summaryValue}>{formatNumber(unlockData.next_unlock_tokens)}</span>
-                  </div>
+                  {unlockData.next_unlock_date && (
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Next Unlock</span>
+                      <span className={styles.summaryValue}>{formatUnlockDate(unlockData.next_unlock_date)}</span>
+                    </div>
+                  )}
+                  {unlockData.next_unlock_tokens && (
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Next Unlock Tokens</span>
+                      <span className={styles.summaryValue}>{formatNumber(unlockData.next_unlock_tokens)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               
