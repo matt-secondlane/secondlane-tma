@@ -173,14 +173,14 @@ export const PortfolioUnlocks: React.FC<PortfolioUnlocksProps> = ({ portfolioId 
                     </div>
                   )}
                   
-                  {item.unlock.tge_percent !== undefined && (
+                  {item.unlock.tge_percent && (
                     <div className={styles.unlockSummaryItem}>
                       <span className={styles.itemLabel}>TGE Unlock</span>
                       <span className={styles.itemValue}>{formatPercent(item.unlock.tge_percent)}</span>
                     </div>
                   )}
                   
-                  {item.unlock.total_amount !== undefined && (
+                  {item.unlock.total_amount && (
                     <div className={styles.unlockSummaryItem}>
                       <span className={styles.itemLabel}>Total Amount</span>
                       <span className={styles.itemValue}>{formatNumber(item.unlock.total_amount)}</span>

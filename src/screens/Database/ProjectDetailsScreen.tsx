@@ -443,20 +443,26 @@ export const ProjectDetailsScreen: React.FC = () => {
                           </div>
                           <div className={styles.roundInfo}>
                             <span className={styles.infoLabel}>Allocation of Supply</span>
-                            <span className={styles.infoValue}>{formatPercent(allocation.allocation_of_supply)}</span>
+                            <span className={styles.infoValue}>{allocation.allocation_of_supply}%</span>
                           </div>
-                          <div className={styles.roundInfo}>
-                            <span className={styles.infoLabel}>TGE Unlock</span>
-                            <span className={styles.infoValue}>{formatNumber(allocation.tge_unlock)} ({formatPercent(allocation.tge_unlock_percent)})</span>
-                          </div>
-                          <div className={styles.roundInfo}>
-                            <span className={styles.infoLabel}>Next Unlock Date</span>
-                            <span className={styles.infoValue}>{formatUnlockDate(allocation.next_unlock_date)}</span>
-                          </div>
-                          <div className={styles.roundInfo}>
-                            <span className={styles.infoLabel}>Next Unlock Tokens</span>
-                            <span className={styles.infoValue}>{formatNumber(allocation.next_unlock_tokens)}</span>
-                          </div>
+                          {(allocation.tge_unlock !== 0 || allocation.tge_unlock_percent !== 0) && (
+                            <div className={styles.roundInfo}>
+                              <span className={styles.infoLabel}>TGE Unlock</span>
+                              <span className={styles.infoValue}>{formatNumber(allocation.tge_unlock)} ({allocation.tge_unlock_percent}%)</span>
+                            </div>
+                          )}
+                          {allocation.next_unlock_date && (
+                            <div className={styles.roundInfo}>
+                              <span className={styles.infoLabel}>Next Unlock Date</span>
+                              <span className={styles.infoValue}>{formatUnlockDate(allocation.next_unlock_date)}</span>
+                            </div>
+                          )}
+                          {allocation.next_unlock_tokens !== null && (
+                            <div className={styles.roundInfo}>
+                              <span className={styles.infoLabel}>Next Unlock Tokens</span>
+                              <span className={styles.infoValue}>{formatNumber(allocation.next_unlock_tokens)}</span>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
