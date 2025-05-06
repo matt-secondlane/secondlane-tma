@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import WebApp from '@twa-dev/sdk';
 import styles from './ProjectDetailsScreen.module.css';
-import { Project, ProjectUnlock } from '../../types/api';
-import api from '../../services/api';
+import { useTelegram } from '../../hooks/useTelegram';
 import { apiService } from '../../utils/api';
-import { Loader } from '../../components/Loader';
+import { Project, ProjectUnlock } from '../../types/api';
+import { Loader } from '../../components/Loader/Loader';
 import ProjectChart from '../../components/ProjectChart/ProjectChart';
+import TabsComponent, { TabItem } from '../../components/TabsComponent/TabsComponent';
+
+// Define interfaces for missing types
+interface ProjectRound {
+  date?: string;
+  round_name: string;
+  amount_raised?: number;
+  fully_diluted_valuation?: number;
+  investors?: string[];
+}
+
+interface ProjectAllocation {
+  name: string;
+  unlock_type?: string;
+  tokens: number;
+  allocation_of_supply: number;
+  tge_unlock?: number;
+  tge_unlock_percent?: number;
+  next_unlock_date?: string;
+  next_unlock_tokens?: number;
+}
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -68,10 +88,15 @@ export const ProjectDetailsScreen: React.FC = () => {
   // State for active tab
   const [activeTab, setActiveTab] = useState<'funding' | 'unlocks'>('funding');
   
+  // State for unlocks tab
+  const [unlockTab, setUnlockTab] = useState<'allocations' | 'pieChart'>('allocations');
+  
   // State for unlocks data
   const [unlockData, setUnlockData] = useState<ProjectUnlock | null>(null);
   const [isLoadingUnlocks, setIsLoadingUnlocks] = useState(false);
   const [unlockError, setUnlockError] = useState<string | null>(null);
+
+  const { webApp } = useTelegram();
 
   useEffect(() => {
     const loadProject = async () => {
@@ -83,14 +108,9 @@ export const ProjectDetailsScreen: React.FC = () => {
           throw new Error('Project ID is required');
         }
         
-        const response = await api.get(`/projects/${projectId}`, {
-          params: {
-            with_rounds: true,
-            include: 'rounds'
-          }
-        });
-
-        setProject(response.data.data);
+        const response = await apiService.getProjectById(projectId);
+        
+        setProject(response);
       } catch (err) {
         console.error('Error loading project:', err);
         setError(err instanceof Error ? err.message : 'Failed to load project details');
@@ -139,27 +159,33 @@ export const ProjectDetailsScreen: React.FC = () => {
   }, [projectId, activeTab, unlockData, isLoadingUnlocks]);
 
   const handleBack = () => {
-    WebApp.HapticFeedback.impactOccurred('light');
+    webApp?.HapticFeedback.impactOccurred('light');
     navigate('/database');
   };
 
   const handleRoundClick = (index: number) => {
-    WebApp.HapticFeedback.notificationOccurred('success');
+    webApp?.HapticFeedback.notificationOccurred('success');
     
     setExpandedRoundIndex(prevIndex => prevIndex === index ? null : index);
   };
 
   // Handler for allocation unlock click
   const handleAllocationClick = (index: number) => {
-    WebApp.HapticFeedback.notificationOccurred('success');
+    webApp?.HapticFeedback.notificationOccurred('success');
     
     setExpandedAllocationIndex(prevIndex => prevIndex === index ? null : index);
   };
   
   // Tab switching handler
-  const handleTabChange = (tab: 'funding' | 'unlocks') => {
-    WebApp.HapticFeedback.impactOccurred('light');
-    setActiveTab(tab);
+  const handleTabChange = (tabId: string) => {
+    webApp?.HapticFeedback.impactOccurred('light');
+    setActiveTab(tabId as 'funding' | 'unlocks');
+  };
+  
+  // Unlocks tab switching handler
+  const handleUnlockTabChange = (tabId: string) => {
+    webApp?.HapticFeedback.impactOccurred('light');
+    setUnlockTab(tabId as 'allocations' | 'pieChart');
   };
   
   // Number formatting function
@@ -168,11 +194,6 @@ export const ProjectDetailsScreen: React.FC = () => {
     return value.toLocaleString();
   };
   
-  // Percentage formatting function
-  const formatPercent = (value: number | null | undefined): string => {
-    if (value === null || value === undefined) return '0%';
-    return `${(value * 100).toFixed(2)}%`;
-  };
   
   // Function to format unlock type for readable display
   const formatUnlockType = (unlockType: string | null | undefined): string => {
@@ -203,7 +224,7 @@ export const ProjectDetailsScreen: React.FC = () => {
     return '';
   };
   
-  // Функция форматирования даты для отображения разблокировок
+  // Date formatting function for displaying unlocks
   const formatUnlockDate = (dateString: string | null | undefined): string => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
@@ -213,6 +234,27 @@ export const ProjectDetailsScreen: React.FC = () => {
       day: 'numeric'
     });
   };
+
+  // Define project tabs
+  const getProjectTabs = (): TabItem[] => {
+    const tabs: TabItem[] = [];
+    
+    if (project?.rounds && project.rounds.length > 0) {
+      tabs.push({ id: 'funding', label: 'Funding' });
+    }
+    
+    if (unlockData) {
+      tabs.push({ id: 'unlocks', label: 'Unlocks' });
+    }
+    
+    return tabs;
+  };
+
+  // Definition of tabs inside the Unlocks section
+  const unlockTabsItems: TabItem[] = [
+    { id: 'allocations', label: 'Allocations' },
+    { id: 'pieChart', label: 'Pie Chart' }
+  ];
 
   if (isLoading) {
     return <Loader />;
@@ -264,82 +306,73 @@ export const ProjectDetailsScreen: React.FC = () => {
       </div>
       
       {/* Tabs navigation */}
-      <div className={styles.tabs}>
-        {/* Показываем вкладку Funding только если есть раунды */}
-        {project?.rounds && project.rounds.length > 0 && (
-          <button
-            className={`${styles.tab} ${activeTab === 'funding' ? styles.active : ''}`}
-            onClick={() => handleTabChange('funding')}
-          >
-            Funding
-          </button>
-        )}
-        
-        {/* Показываем вкладку Unlocks только если есть данные о разблокировках */}
-        {unlockData && (
-          <button
-            className={`${styles.tab} ${activeTab === 'unlocks' ? styles.active : ''}`}
-            onClick={() => handleTabChange('unlocks')}
-          >
-            Unlocks
-          </button>
-        )}
-      </div>
+      {getProjectTabs().length > 0 && (
+        <TabsComponent 
+          tabs={getProjectTabs()} 
+          activeTab={activeTab} 
+          onTabChange={handleTabChange}
+          containerClassname={styles.tabs}
+          tabClassname={styles.tab}
+          activeTabClassname={styles.active}
+        />
+      )}
 
       {/* Funding Tab Content */}
       {activeTab === 'funding' && project?.rounds && (
         <div className={styles.timelineSection}>
           <div className={styles.timeline}>
-            {project.rounds.sort((a, b) => {
-              if (!a.date && !b.date) return 0;
-              if (!a.date) return 1;
-              if (!b.date) return -1;
-              return new Date(b.date).getTime() - new Date(a.date).getTime();
-            }).map((round, index) => (
-              <div key={index} className={styles.timelineItem}>
-                <div className={styles.timelineMarker} />
-                <div 
-                  className={`${styles.roundCard} ${expandedRoundIndex === index ? styles.expanded : ''}`}
-                  onClick={() => handleRoundClick(index)}
-                >
-                  <div className={styles.roundHeader}>
-                    <span className={styles.roundTitle}>
-                      {getRoundIcon(round.round_name)}
-                      {round.date ? formatDate(round.date) + ' ' : ''}{round.round_name === 'Unknown' ? 'Round Unknown' : round.round_name}
-                    </span>
-                    <svg className={styles.expandIcon} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  {expandedRoundIndex === index && (
-                    <div className={styles.roundDetails}>
-                      {round.amount_raised && (
-                        <div className={styles.roundInfo}>
-                          <span className={styles.infoLabel}>Amount Raised</span>
-                          <span className={styles.infoValue}>${round.amount_raised.toLocaleString()}</span>
-                        </div>
-                      )}
-                      {round.fully_diluted_valuation && (
-                        <div className={styles.roundInfo}>
-                          <span className={styles.infoLabel}>FDV</span>
-                          <span className={styles.infoValue}>${round.fully_diluted_valuation.toLocaleString()}</span>
-                        </div>
-                      )}
-                      {round.investors && round.investors.length > 0 && (
-                        <div className={styles.investors}>
-                          <span className={styles.infoLabel}>Investors</span>
-                          <ul className={styles.investorsList}>
-                            {round.investors.map((investor, i) => (
-                              <li key={i} className={styles.investor}>{investor}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+            {project.rounds
+              .sort((a: ProjectRound, b: ProjectRound) => {
+                if (!a.date && !b.date) return 0;
+                if (!a.date) return 1;
+                if (!b.date) return -1;
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+              })
+              .map((round: ProjectRound, index: number) => (
+                <div key={index} className={styles.timelineItem}>
+                  <div className={styles.timelineMarker} />
+                  <div 
+                    className={`${styles.roundCard} ${expandedRoundIndex === index ? styles.expanded : ''}`}
+                    onClick={() => handleRoundClick(index)}
+                  >
+                    <div className={styles.roundHeader}>
+                      <span className={styles.roundTitle}>
+                        {getRoundIcon(round.round_name)}
+                        {round.date ? formatDate(round.date) + ' ' : ''}{round.round_name === 'Unknown' ? 'Round Unknown' : round.round_name}
+                      </span>
+                      <svg className={styles.expandIcon} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </div>
-                  )}
+                    {expandedRoundIndex === index && (
+                      <div className={styles.roundDetails}>
+                        {round.amount_raised && (
+                          <div className={styles.roundInfo}>
+                            <span className={styles.infoLabel}>Amount Raised</span>
+                            <span className={styles.infoValue}>${round.amount_raised.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {round.fully_diluted_valuation && (
+                          <div className={styles.roundInfo}>
+                            <span className={styles.infoLabel}>FDV</span>
+                            <span className={styles.infoValue}>${round.fully_diluted_valuation.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {round.investors && round.investors.length > 0 && (
+                          <div className={styles.investors}>
+                            <span className={styles.infoLabel}>Investors</span>
+                            <ul className={styles.investorsList}>
+                              {round.investors.map((investor: string, i: number) => (
+                                <li key={i} className={styles.investor}>{investor}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       )}
@@ -411,68 +444,118 @@ export const ProjectDetailsScreen: React.FC = () => {
                 </div>
               </div>
               
-              <h3>Allocations</h3>
-              <div className={styles.timeline}>
-                {unlockData.allocations.map((allocation, index) => (
-                  <div key={index} className={styles.timelineItem}>
-                    <div className={styles.timelineMarker} />
-                    <div 
-                      className={`${styles.roundCard} ${expandedAllocationIndex === index ? styles.expanded : ''}`}
-                      onClick={() => handleAllocationClick(index)}
-                    >
-                      <div className={styles.roundHeader}>
-                        <span className={styles.roundTitle}>
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.97 13.5 2.5 11.03 2.5 8C2.5 4.97 4.97 2.5 8 2.5C11.03 2.5 13.5 4.97 13.5 8C13.5 11.03 11.03 13.5 8 13.5ZM8 4V8.25L11.5 10.25L10.75 11.5L6.5 9V4H8Z" fill="var(--tg-theme-text-color)"/>
-                          </svg>
-                          {allocation.name}
-                        </span>
-                        {allocation.unlock_type && (
-                          <span 
-                            className={styles.unlockStatus} 
-                            data-type={getUnlockTypeStyle(allocation.unlock_type)}
-                          >
-                            {formatUnlockType(allocation.unlock_type)}
+              {/* Tabs for Allocations and Pie Chart sections */}
+              <TabsComponent 
+                tabs={unlockTabsItems} 
+                activeTab={unlockTab} 
+                onTabChange={handleUnlockTabChange}
+                containerClassname={styles.unlockTabs}
+                tabClassname={styles.unlockTab}
+                activeTabClassname={styles.activeUnlockTab}
+              />
+              
+              {/* Allocations tab content */}
+              {unlockTab === 'allocations' && (
+                <div className={styles.timeline}>
+                  {unlockData.allocations.map((allocation: ProjectAllocation, index: number) => (
+                    <div key={index} className={styles.timelineItem}>
+                      <div className={styles.timelineMarker} />
+                      <div 
+                        className={`${styles.roundCard} ${expandedAllocationIndex === index ? styles.expanded : ''}`}
+                        onClick={() => handleAllocationClick(index)}
+                      >
+                        <div className={styles.roundHeader}>
+                          <span className={styles.roundTitle}>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.97 13.5 2.5 11.03 2.5 8C2.5 4.97 4.97 2.5 8 2.5C11.03 2.5 13.5 4.97 13.5 8C13.5 11.03 11.03 13.5 8 13.5ZM8 4V8.25L11.5 10.25L10.75 11.5L6.5 9V4H8Z" fill="var(--tg-theme-text-color)"/>
+                            </svg>
+                            {allocation.name}
                           </span>
-                        )}
-                        <svg className={styles.expandIcon} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                      {expandedAllocationIndex === index && (
-                        <div className={styles.roundDetails}>
-                          <div className={styles.roundInfo}>
-                            <span className={styles.infoLabel}>Tokens</span>
-                            <span className={styles.infoValue}>{formatNumber(allocation.tokens)}</span>
-                          </div>
-                          <div className={styles.roundInfo}>
-                            <span className={styles.infoLabel}>Allocation of Supply</span>
-                            <span className={styles.infoValue}>{allocation.allocation_of_supply}%</span>
-                          </div>
-                          {(allocation.tge_unlock !== 0 || allocation.tge_unlock_percent !== 0) && (
-                            <div className={styles.roundInfo}>
-                              <span className={styles.infoLabel}>TGE Unlock</span>
-                              <span className={styles.infoValue}>{formatNumber(allocation.tge_unlock)} ({allocation.tge_unlock_percent}%)</span>
-                            </div>
+                          {allocation.unlock_type && (
+                            <span 
+                              className={styles.unlockStatus} 
+                              data-type={getUnlockTypeStyle(allocation.unlock_type)}
+                            >
+                              {formatUnlockType(allocation.unlock_type)}
+                            </span>
                           )}
-                          {allocation.next_unlock_date && (
-                            <div className={styles.roundInfo}>
-                              <span className={styles.infoLabel}>Next Unlock Date</span>
-                              <span className={styles.infoValue}>{formatUnlockDate(allocation.next_unlock_date)}</span>
-                            </div>
-                          )}
-                          {allocation.next_unlock_tokens !== null && (
-                            <div className={styles.roundInfo}>
-                              <span className={styles.infoLabel}>Next Unlock Tokens</span>
-                              <span className={styles.infoValue}>{formatNumber(allocation.next_unlock_tokens)}</span>
-                            </div>
-                          )}
+                          <svg className={styles.expandIcon} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
                         </div>
-                      )}
+                        {expandedAllocationIndex === index && (
+                          <div className={styles.roundDetails}>
+                            <div className={styles.roundInfo}>
+                              <span className={styles.infoLabel}>Tokens</span>
+                              <span className={styles.infoValue}>{formatNumber(allocation.tokens)}</span>
+                            </div>
+                            <div className={styles.roundInfo}>
+                              <span className={styles.infoLabel}>Allocation of Supply</span>
+                              <span className={styles.infoValue}>{allocation.allocation_of_supply}%</span>
+                            </div>
+                            {(allocation.tge_unlock !== 0 || allocation.tge_unlock_percent !== 0) && (
+                              <div className={styles.roundInfo}>
+                                <span className={styles.infoLabel}>TGE Unlock</span>
+                                <span className={styles.infoValue}>{formatNumber(allocation.tge_unlock)} ({allocation.tge_unlock_percent}%)</span>
+                              </div>
+                            )}
+                            {allocation.next_unlock_date && (
+                              <div className={styles.roundInfo}>
+                                <span className={styles.infoLabel}>Next Unlock Date</span>
+                                <span className={styles.infoValue}>{formatUnlockDate(allocation.next_unlock_date)}</span>
+                              </div>
+                            )}
+                            {allocation.next_unlock_tokens !== null && (
+                              <div className={styles.roundInfo}>
+                                <span className={styles.infoLabel}>Next Unlock Tokens</span>
+                                <span className={styles.infoValue}>{formatNumber(allocation.next_unlock_tokens)}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Pie Chart tab content */}
+              {unlockTab === 'pieChart' && (
+                <div className={styles.pieChartContainer}>
+                  {unlockData.allocations && unlockData.allocations.length > 0 ? (
+                    <>
+                      <h3 className={styles.chartTitle}>Distribution of allocations by types</h3>
+                      <div className={styles.pieChartWrapper}>
+                        <div className={styles.noDataMessage}>
+                          <p>Charts temporarily unavailable</p>
+                        </div>
+                      </div>
+                      
+                      <div className={styles.allocationSummary}>
+                        <h3 className={styles.summaryTitle}>Allocation summary</h3>
+                        <div className={styles.summaryTable}>
+                          <div className={styles.summaryHeader}>
+                            <span className={styles.summaryCell}>Name</span>
+                            <span className={styles.summaryCell}>Tokens</span>
+                            <span className={styles.summaryCell}>%</span>
+                          </div>
+                          {unlockData.allocations.map((allocation, index) => (
+                            <div key={index} className={styles.summaryRow}>
+                              <span className={styles.summaryCell}>{allocation.name}</span>
+                              <span className={styles.summaryCell}>{formatNumber(allocation.tokens)}</span>
+                              <span className={styles.summaryCell}>{allocation.allocation_of_supply}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className={styles.noDataMessage}>
+                      <p>No allocation distribution data available</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -486,7 +569,7 @@ export const ProjectDetailsScreen: React.FC = () => {
             return;
           }
           
-          WebApp.HapticFeedback.impactOccurred('light');
+          webApp?.HapticFeedback.impactOccurred('light');
           try {
             navigate(`/place-rfq/${project.project_id}`, {
               state: {

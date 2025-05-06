@@ -165,8 +165,8 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
   const [shouldShowChart, setShouldShowChart] = useState(true);
 
   // Note: All values on the chart (Y-axis) are represented in FDV (Fully Diluted Valuation)
-  // The black line represents market cap (from market_cap_usd)
-  // The red line represents funding rounds valuation
+  // The green line represents market cap (from market_cap_usd)
+  // The blue line represents funding rounds valuation
   // The green bars represent SecondLane Buy orders
   // The hatched bars represent SecondLane Sell orders
   
@@ -254,13 +254,12 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart 
             data={chartData}
-            margin={{ top: 20, right: 10, left: 0, bottom: 10 }}
+            margin={{ top: 10, right: 10, left: 10, bottom: 20 }}
             barGap={10}
             barCategoryGap="15%"
           >
             <CartesianGrid 
-              vertical={true} 
-              horizontal={true} 
+              strokeDasharray="3 3"
               stroke="var(--tg-theme-hint-color, rgba(0,0,0,0.1))"
               opacity={0.5}
             />
@@ -287,8 +286,8 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               formatter={(value: number, name: string, entry: {payload?: GraphDataPoint}) => {
                 const formattedValue = formatCurrency(value);
                 const labels = {
-                  marketValue: 'Spot FDV',
-                  fundingValue: 'Funding FDV',
+                  marketValue: 'Market Value',
+                  fundingValue: 'Funding Valuation',
                   secondLaneBuy: 'SecondLane Buy',
                   secondLaneSell: 'SecondLane Sell'
                 };
@@ -337,9 +336,11 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
             <Line
               type="monotone"
               dataKey="marketValue"
-              stroke="var(--tg-theme-text-color, #000000)"
+              name="Market Value"
+              stroke="#4cd964"
               strokeWidth={2}
               dot={false}
+              activeDot={{ r: 6 }}
               connectNulls
             />
             
@@ -347,9 +348,11 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               <Line
                 type="stepAfter"
                 dataKey="fundingValue"
-                stroke="#a52a2a"
+                name="Funding Valuation"
+                stroke="#007aff"
                 strokeWidth={2}
                 dot={false}
+                activeDot={{ r: 6 }}
                 connectNulls
               />
             )}
@@ -361,13 +364,13 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
         <div className={styles.legendWrapper}>
           <div className={styles.legendRow}>
             <div className={styles.legendItem}>
-              <div className={styles.legendColor} style={{ backgroundColor: "var(--tg-theme-text-color, #000000)" }} />
-              <span>Spot FDV</span>
+              <div className={styles.legendColor} style={{ backgroundColor: "#4cd964" }} />
+              <span>Market Value</span>
             </div>
             {hasFundingValuation && (
               <div className={styles.legendItem}>
-                <div className={styles.legendColor} style={{ backgroundColor: '#a52a2a' }} />
-                <span>Funding FDV</span>
+                <div className={styles.legendColor} style={{ backgroundColor: '#007aff' }} />
+                <span>Funding Valuation</span>
               </div>
             )}
           </div>

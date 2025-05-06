@@ -10,6 +10,7 @@ import { PortfolioOnboarding } from '../../PortfolioOnboarding/PortfolioOnboardi
 import { PortfolioTabs, PortfolioTab } from '../../../components/PortfolioTabs';
 import { PortfolioSummary } from '../../../components/PortfolioSummary';
 import { PortfolioGraph } from '../../../components/PortfolioGraph';
+import { PortfolioUnlockSummaryScreen } from '../PortfolioUnlockSummaryScreen/PortfolioUnlockSummaryScreen';
 
 interface EnhancedPortfolio extends Portfolio {
   assetsCount?: number;
@@ -326,7 +327,7 @@ export const PortfolioScreen: React.FC = () => {
         </div>
       )}
 
-      <PortfolioTabs activeTab={activeTab} onTabChange={handleTabChange} />
+      <PortfolioTabs activeTab={activeTab} onTabChange={handleTabChange} showUnlocksTab={true} />
 
       {activeTab === 'manage' && (
         <div className={styles.portfolioContent}>
@@ -457,6 +458,10 @@ export const PortfolioScreen: React.FC = () => {
 
       {activeTab === 'history' && (
         <PortfolioGraph />
+      )}
+
+      {activeTab === 'unlocks' && (
+        <PortfolioUnlockSummaryScreen />
       )}
 
       {showNotificationsPopup && (

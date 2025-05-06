@@ -7,6 +7,7 @@ import { OrderbookItem } from '../../types/api';
 import styles from './DealsScreen.module.css';
 import { Loader } from '../../components/Loader';
 import { formatMoney } from '../../utils/money';
+import TabsComponent, { TabItem } from '../../components/TabsComponent/TabsComponent';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -88,9 +89,9 @@ export const DealsScreen = () => {
     observer.current.observe(node);
   }, [hasMore, loading, loadDeals]);
 
-  const handleTabChange = (tab: 'all' | 'buy' | 'sell') => {
+  const handleTabChange = (tabId: string) => {
     webApp?.HapticFeedback.impactOccurred('light');
-    setActiveTab(tab);
+    setActiveTab(tabId as 'all' | 'buy' | 'sell');
     pageRef.current = 1;
     setDeals([]);
   };
@@ -99,6 +100,12 @@ export const DealsScreen = () => {
     setSearchQuery(value);
     pageRef.current = 1;
   };
+
+  const tabs: TabItem[] = [
+    { id: 'all', label: 'All' },
+    { id: 'buy', label: 'Buy' },
+    { id: 'sell', label: 'Sell' }
+  ];
 
   return (
     <div className={styles.dealsScreen}>
@@ -115,26 +122,15 @@ export const DealsScreen = () => {
           />
         </div>
 
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === 'all' ? styles.active : ''}`}
-            onClick={() => handleTabChange('all')}
-          >
-            All
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'buy' ? styles.active : ''}`}
-            onClick={() => handleTabChange('buy')}
-          >
-            Buy
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'sell' ? styles.active : ''}`}
-            onClick={() => handleTabChange('sell')}
-          >
-            Sell
-          </button>
-        </div>
+        <TabsComponent 
+          tabs={tabs} 
+          activeTab={activeTab} 
+          onTabChange={handleTabChange} 
+          containerClassname={styles.tabsContainer} 
+          tabClassname={styles.tab} 
+          activeTabClassname={styles.active}
+        />
+
       </div>
 
       <div className={styles.content}>

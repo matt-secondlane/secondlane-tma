@@ -612,6 +612,7 @@ export interface PortfolioAssetUnlock {
   allocations?: PortfolioAssetUnlockAllocation[];
   status?: 'UPCOMING' | 'IN_PROGRESS' | 'COMPLETED';
   total_allocation_percentage?: number;
+  summary?: PortfolioUnlocksSummary;
 }
 
 // Data for endpoint /api/v1/portfolio/unlocks/summary
@@ -625,7 +626,10 @@ export interface PortfolioUnlockSummaryItem {
 }
 
 export interface PortfolioUnlockSummaryResponse {
-  data: PortfolioUnlockSummaryItem[];
+  data: {
+    summary: PortfolioUnlocksSummary;
+    unlocks: PortfolioUnlockSummaryItem[];
+  };
 }
 
 // Data for endpoint /api/v1/portfolio/{portfolio_id}/unlocks
@@ -636,8 +640,22 @@ export interface PortfolioAssetUnlockItem {
   unlock: PortfolioAssetUnlock;
 }
 
+export interface PortfolioUnlocksSummary {
+  total_amount_locked: number;
+  total_amount_unlocked: number;
+  unlocked_percent: number;
+  locked_percent: number;
+  next_unlock_date?: string;
+  portfolio_count?: number;
+  asset_count?: number;
+  total_tge_amount?: number;
+}
+
 export interface PortfolioUnlocksResponse {
-  data: PortfolioAssetUnlockItem[];
+  data: {
+    summary: PortfolioUnlocksSummary;
+    unlocks: PortfolioAssetUnlockItem[];
+  };
 }
 
 // Data for endpoint /api/v1/portfolio/unlocks/allocations

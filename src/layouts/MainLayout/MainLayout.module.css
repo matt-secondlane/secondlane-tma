@@ -21,4 +21,6 @@
   margin-top: calc(env(safe-area-inset-top) + 56px + 44px);
   margin-bottom: calc(56px + env(safe-area-inset-bottom) + 20px);
   background-color: var(--tg-theme-bg-color);
+  height: 100%;
+  position: relative;
 } 

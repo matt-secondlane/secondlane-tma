@@ -1,6 +1,12 @@
 .unlocksContainer {
   padding: 16px;
   margin-bottom: 24px;
+  width: 100%;
+}
+
+/* Custom style for tabs without side padding */
+.tabsContainer {
+  /* Пустой класс, так как отступы уже удалены из компонента TabsComponent */
 }
 
 .sectionTitle {
@@ -22,6 +28,68 @@
   padding: 20px;
   text-align: center;
   margin-bottom: 20px;
+}
+
+/* Styles for unlock summary */
+.unlockSummaryContainer {
+  margin-bottom: 24px;
+}
+
+.summaryCard {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.summaryItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.summaryValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.nextUnlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid var(--tg-theme-bg-color);
+  padding-top: 12px;
+}
+
+.nextUnlockLabel {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.nextUnlockDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nextUnlockDate {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tg-theme-button-color);
 }
 
 .noUnlockData p {
@@ -49,6 +117,116 @@
   cursor: pointer;
 }
 
+/* Styles for calendar view */
+.monthGroup {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.monthTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+  text-transform: capitalize;
+}
+
+.monthAllocations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calendarItem {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.calendarItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.assetInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assetLogoSmall {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.assetNameSmall {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--tg-theme-text-color);
+}
+
+.unlockDateDisplay {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--tg-theme-text-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unlockDate {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendarItemDetails {
+  margin-top: 8px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.detailLabel {
+  color: var(--tg-theme-hint-color);
+}
+
+.detailValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.cliffBadge, .tgeBadge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.cliffBadge {
+  background-color: #6c5ce7;
+  color: white;
+}
+
+.tgeBadge {
+  background-color: #00b894;
+  color: white;
+}
+
 .unlockItem:hover {
   transform: translateY(-2px);
 }
@@ -60,7 +238,7 @@
   padding: 16px;
 }
 
-.assetInfo {
+.assetInfoLarge {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -256,22 +434,7 @@
   gap: 8px;
 }
 
-.cliffBadge, .tgeBadge {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 500;
-}
-
-.cliffBadge {
-  background-color: var(--tg-theme-button-color);
-  color: white;
-}
-
-.tgeBadge {
-  background-color: #4CD964;
-  color: white;
-}
+/* Use a unified style for badges, defined above */
 
 .allocationDetails {
   margin-top: 8px;
@@ -320,4 +483,277 @@
   background-color: var(--tg-theme-secondary-bg-color);
   border-radius: 12px;
   margin-top: 16px;
-} 
+}
+
+/* Styles for calendar */
+.calendarView {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  padding-bottom: 80px;
+}
+
+.monthGroup {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.monthTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+  text-transform: capitalize;
+}
+
+.monthAllocations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calendarItem {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.calendarItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.unlockDate {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendarItemDetails {
+  margin-top: 8px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.detailLabel {
+  color: var(--tg-theme-hint-color);
+}
+
+.detailValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+/* Styles for unlock summary */
+.unlockSummaryContainer {
+  margin-bottom: 20px;
+}
+
+.summaryCard {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summaryItem {
+  flex: 1;
+  min-width: 120px;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.summaryValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.nextUnlock {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.nextUnlockLabel {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.nextUnlockDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nextUnlockDate {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.nextUnlockAmount {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tg-theme-button-color);
+}
+
+/* Styles for charts view */
+.chartsView {
+  margin-top: 16px;
+}
+
+.chartSection {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.chartTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+  text-align: center;
+}
+
+.pieChartWrapper {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noDataMessage {
+  text-align: center;
+  padding: 20px;
+  color: var(--tg-theme-hint-color);
+}
+
+.summarySection {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.summaryCards {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.summaryCardTitle {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.summaryCardValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.summaryCardPercent {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-top: 2px;
+}
+
+.assetTable {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--tg-theme-bg-color);
+  font-weight: 600;
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  align-items: center;
+  cursor: pointer;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableCell {
+  padding: 0 5px;
+}
+
+.assetNameCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tableAssetLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tableAssetLogoPlaceholder {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--tg-theme-button-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+

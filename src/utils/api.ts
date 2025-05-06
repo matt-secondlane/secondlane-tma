@@ -122,7 +122,16 @@ export const apiService = {
     
     if (response.data && (response.data.data || Array.isArray(response.data))) {
       return Array.isArray(response.data) 
-        ? { data: response.data, project_name: '', symbol: '' }
+        ? { 
+          data: { 
+            project_id: projectId,
+            orders: response.data.map(item => item as any) || [],
+            funding_rounds: [],
+            price_history: []
+          }, 
+          project_name: '', 
+          symbol: '' 
+        }
         : response.data;
     } else {
       return {

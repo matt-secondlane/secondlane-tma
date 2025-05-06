@@ -3,26 +3,18 @@
   max-width: 100%;
   color: var(--tg-theme-text-color);
   background-color: var(--tg-theme-bg-color);
-  min-height: 100vh;
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+  position: static;
 }
 
 .header {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
-}
-
-.backButton {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--tg-theme-button-color);
-  padding: 8px;
-  margin-right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: static;
+  z-index: auto;
 }
 
 .title {
@@ -40,6 +32,158 @@
 
 .summaryContent {
   padding-bottom: 60px;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  height: auto;
+  width: 100%;
+  position: static;
+}
+
+/* Styles for Charts tab */
+.chartsView {
+  padding: 16px 0;
+}
+
+.chartSection {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chartTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.pieChartWrapper {
+  max-width: 100%;
+  height: 300px;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.summarySection {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.summaryCard {
+  background: var(--tg-theme-bg-color);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryCardTitle {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+}
+
+.summaryCardValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.summaryCardPercent {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+}
+
+.assetTable {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--tg-theme-bg-color);
+  font-weight: 500;
+  color: var(--tg-theme-hint-color);
+  font-size: 14px;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--tg-theme-bg-color);
+  font-size: 15px;
+  color: var(--tg-theme-text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableCell {
+  padding: 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assetNameCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tableAssetLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tableAssetLogoPlaceholder {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--tg-theme-button-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.noDataMessage {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--tg-theme-hint-color);
 }
 
 .portfolioSection {
@@ -201,8 +345,218 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  padding: 0 16px;
+  min-height: 200px;
+  padding: 24px 16px;
   text-align: center;
   color: var(--tg-theme-hint-color);
-} 
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+.tabsContainer {
+  /* Пустой класс, так как отступы уже удалены из компонента TabsComponent */
+}
+
+/* Styles for calendar */
+.calendarView {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.monthGroup {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.monthTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+  text-transform: capitalize;
+}
+
+.monthAllocations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calendarItem {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calendarItem:hover, .calendarItem:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.calendarItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.unlockDate {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assetLogoSmall {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.calendarItemDetails {
+  margin-top: 8px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.detailLabel {
+  color: var(--tg-theme-hint-color);
+}
+
+.detailValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.portfolioName {
+  display: block;
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-top: 2px;
+}
+
+.cliffBadge, .tgeBadge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.cliffBadge {
+  background-color: var(--tg-theme-button-color);
+  color: white;
+}
+
+.tgeBadge {
+  background-color: #4CD964;
+  color: white;
+}
+
+/* Styles for unlock summary */
+.unlockSummaryContainer {
+  margin-bottom: 20px;
+}
+
+.summaryCard {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summaryItem {
+  flex: 1;
+  min-width: 100px;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.summaryValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.statsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.statsItem {
+  flex: 1;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statsLabel {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.statsValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.nextUnlock {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.nextUnlockLabel {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.nextUnlockDetails {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nextUnlockDate {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tg-theme-button-color);
+}
