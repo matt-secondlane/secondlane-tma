@@ -476,7 +476,7 @@ export const PortfolioUnlockSummaryScreen: React.FC = () => {
                               </div>
                             )}
                             
-                            {item.unlock.tge_percent !== undefined && (
+                            {item.unlock.tge_percent && (
                               <div className={styles.infoRow}>
                                 <span className={styles.infoLabel}>TGE (%)</span>
                                 <span className={styles.infoValue}>{item.unlock.tge_percent}%</span>
