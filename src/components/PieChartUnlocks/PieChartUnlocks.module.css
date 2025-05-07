@@ -1,0 +1,26 @@
+.noDataMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  color: var(--tg-theme-hint-color);
+  text-align: center;
+  padding: 16px;
+}
+
+.noDataMessage p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Стиль для удаления обводки секторов диаграммы */
+:global(.recharts-sector:focus) {
+  outline: none !important;
+}
+
+:global(.recharts-sector) {
+  outline: none !important;
+  stroke: none !important;
+} 

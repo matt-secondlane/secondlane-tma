@@ -1,0 +1,43 @@
+.tabsContainer {
+  display: flex;
+  background-color: var(--tg-theme-bg-color);
+  padding: 8px 0;
+  border-radius: 12px;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.tabButton {
+  flex: 1;
+  border: none;
+  background-color: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-hint-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.tabButton:active {
+  transform: scale(0.96);
+}
+
+.activeTab {
+  background-color: #4B4F47;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+@media (max-width: 360px) {
+  .tabButton {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+} 

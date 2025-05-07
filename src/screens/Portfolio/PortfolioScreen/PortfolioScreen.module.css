@@ -1,10 +1,11 @@
 .portfolioScreen {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
   background-color: var(--tg-theme-bg-color);
   width: 100%;
-  overflow: hidden;
+  overflow-y: visible;
   padding-top: 14px;
   margin-bottom: -14px;
   
@@ -16,8 +17,7 @@
   flex-direction: column;
   background-color: var(--tg-theme-bg-color);
   margin-bottom: 0;
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 10;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -34,12 +34,12 @@
 
 .portfolioContent {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
   padding-top: 26px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px);
-  position: relative;
+  height: auto;
+  position: static;
   z-index: 1;
 }
 

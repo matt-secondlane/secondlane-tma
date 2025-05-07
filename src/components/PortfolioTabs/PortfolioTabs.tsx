@@ -1,14 +1,15 @@
 import React from 'react';
 import styles from './PortfolioTabs.module.css';
 
-export type PortfolioTab = 'manage' | 'summary' | 'history';
+export type PortfolioTab = 'manage' | 'summary' | 'history' | 'unlocks';
 
 interface PortfolioTabsProps {
   activeTab: PortfolioTab;
   onTabChange: (tab: PortfolioTab) => void;
+  showUnlocksTab?: boolean;
 }
 
-export const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ activeTab, onTabChange }) => {
+export const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ activeTab, onTabChange, showUnlocksTab = false }) => {
   return (
     <div className={styles.tabs}>
       <button
@@ -29,6 +30,14 @@ export const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ activeTab, onTabCh
       >
         History
       </button>
+      {showUnlocksTab && (
+        <button
+          className={`${styles.tab} ${activeTab === 'unlocks' ? styles.active : ''}`}
+          onClick={() => onTabChange('unlocks')}
+        >
+          Unlocks
+        </button>
+      )}
     </div>
   );
 };
