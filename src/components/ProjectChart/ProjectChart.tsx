@@ -286,8 +286,8 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               formatter={(value: number, name: string, entry: {payload?: GraphDataPoint}) => {
                 const formattedValue = formatCurrency(value);
                 const labels = {
-                  marketValue: 'Market Value',
-                  fundingValue: 'Funding Valuation',
+                  marketValue: 'Spot FDV',
+                  fundingValue: 'Funding FDV',
                   secondLaneBuy: 'SecondLane Buy',
                   secondLaneSell: 'SecondLane Sell'
                 };
@@ -336,7 +336,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
             <Line
               type="monotone"
               dataKey="marketValue"
-              name="Market Value"
+              name="Spot FDV"
               stroke="#4cd964"
               strokeWidth={2}
               dot={false}
@@ -348,7 +348,7 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
               <Line
                 type="stepAfter"
                 dataKey="fundingValue"
-                name="Funding Valuation"
+                name="Funding FDV"
                 stroke="#007aff"
                 strokeWidth={2}
                 dot={false}
@@ -365,12 +365,12 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
           <div className={styles.legendRow}>
             <div className={styles.legendItem}>
               <div className={styles.legendColor} style={{ backgroundColor: "#4cd964" }} />
-              <span>Market Value</span>
+              <span>Spot FDV</span>
             </div>
             {hasFundingValuation && (
               <div className={styles.legendItem}>
                 <div className={styles.legendColor} style={{ backgroundColor: '#007aff' }} />
-                <span>Funding Valuation</span>
+                <span>Funding FDV</span>
               </div>
             )}
           </div>
