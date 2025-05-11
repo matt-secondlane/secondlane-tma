@@ -16,7 +16,7 @@ export const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ activeTab, onTabCh
         className={`${styles.tab} ${activeTab === 'manage' ? styles.active : ''}`}
         onClick={() => onTabChange('manage')}
       >
-        Management
+        Manage
       </button>
       <button
         className={`${styles.tab} ${activeTab === 'summary' ? styles.active : ''}`}

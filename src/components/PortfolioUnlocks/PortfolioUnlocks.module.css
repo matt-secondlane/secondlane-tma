@@ -4,11 +4,6 @@
   width: 100%;
 }
 
-/* Custom style for tabs without side padding */
-.tabsContainer {
-  /* Пустой класс, так как отступы уже удалены из компонента TabsComponent */
-}
-
 .sectionTitle {
   font-size: 20px;
   font-weight: 600;
@@ -267,14 +262,14 @@
 .assetName {
   font-size: 16px;
   font-weight: 600;
-  margin: 0;
+  margin: 4px 0 0 0;
   color: var(--tg-theme-text-color);
 }
 
 .unlockType {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .unlockTypeLabel {
@@ -283,6 +278,32 @@
   background-color: var(--tg-theme-bg-color);
   border-radius: 12px;
   color: var(--tg-theme-hint-color);
+}
+
+.statusBadge {
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+  margin-right: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.unlocking {
+  background-color: #ffd700;
+  color: #000000;
+}
+
+.unlocked {
+  background-color: #4cd964;
+  color: #ffffff;
+}
+
+.locked {
+  background-color: #ff3b30;
+  color: #ffffff;
 }
 
 .pendingBadge {
@@ -704,7 +725,7 @@
 
 .tableHeader {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   padding: 10px 0;
   border-bottom: 1px solid var(--tg-theme-bg-color);
   font-weight: 600;
@@ -714,7 +735,7 @@
 
 .tableRow {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   padding: 12px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   align-items: center;
@@ -753,6 +774,39 @@
   justify-content: center;
   font-size: 12px;
   font-weight: 600;
+}
+
+.statusContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.statusBadge {
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+  margin-right: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.unlocking {
+  background-color: #ffd700;
+  color: #000000;
+}
+
+.unlocked {
+  background-color: #4cd964;
+  color: #ffffff;
+}
+
+.locked {
+  background-color: #ff3b30;
+  color: #ffffff;
 }
 
 

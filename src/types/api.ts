@@ -613,6 +613,7 @@ export interface PortfolioAssetUnlock {
   status?: 'UPCOMING' | 'IN_PROGRESS' | 'COMPLETED';
   total_allocation_percentage?: number;
   summary?: PortfolioUnlocksSummary;
+  unlock_status?: 'unlocking' | 'unlocked' | 'locked';
 }
 
 // Data for endpoint /api/v1/portfolio/unlocks/summary

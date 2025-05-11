@@ -14,7 +14,7 @@ const formatDate = (dateString?: string): string => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric'
   });
 };
@@ -36,6 +36,22 @@ const formatPercent = (value?: number): string => {
   if (value === undefined || value === null) return '0%';
   // Round to 2 decimal places
   return `${value.toFixed(2)}%`;
+};
+
+// Formatting unlock type (e.g., "custom" → "Custom")
+const formatUnlockType = (unlockType: string | null | undefined): string => {
+  if (!unlockType) return 'Unknown type';
+  
+  // Convert string with underscores or hyphens to a readable format
+  const formattedType = unlockType
+    .toLowerCase()
+    .replace(/_/g, ' ')
+    .replace(/-/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+    
+  return formattedType;
 };
 
 export const PortfolioUnlockSummaryScreen: React.FC = () => {
@@ -383,8 +399,6 @@ export const PortfolioUnlockSummaryScreen: React.FC = () => {
               <h2 className={styles.chartTitle}>Asset table</h2>
               <div className={styles.tableHeader}>
                 <div className={styles.tableCell}>Asset</div>
-                <div className={styles.tableCell}>Portfolio</div>
-                <div className={styles.tableCell}>Total</div>
                 <div className={styles.tableCell}>Unlocked</div>
                 <div className={styles.tableCell}>Locked</div>
               </div>
@@ -410,8 +424,6 @@ export const PortfolioUnlockSummaryScreen: React.FC = () => {
                       {item.asset_name}
                     </div>
                   </div>
-                  <div className={styles.tableCell}>{item.portfolio_name}</div>
-                  <div className={styles.tableCell}>{formatNumber(item.unlock?.total_amount || 0)}</div>
                   <div className={styles.tableCell}>{formatNumber((item.unlock?.total_amount || 0) * (summary?.unlocked_percent || 0) / 100)}</div>
                   <div className={styles.tableCell}>{formatNumber((item.unlock?.total_amount || 0) * (summary?.locked_percent || 0) / 100)}</div>
                 </div>
@@ -455,7 +467,7 @@ export const PortfolioUnlockSummaryScreen: React.FC = () => {
                         )}
                         <div className={styles.assetInfo}>
                           <h3 className={styles.assetName}>{item.asset_name}</h3>
-                          <span className={styles.unlockType}>{item.unlock?.unlock_type || 'Unknown type'}</span>
+                          <span className={styles.unlockType}>{item.unlock?.unlock_type ? formatUnlockType(item.unlock.unlock_type) : 'Unknown type'}</span>
                         </div>
                       </div>
                       

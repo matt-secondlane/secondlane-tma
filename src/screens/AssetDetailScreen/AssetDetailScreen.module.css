@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-bottom: 16px;
+  padding-bottom: 24px;
 }
 
 .header {
@@ -12,7 +12,8 @@
   gap: 12px;
   background-color: var(--tg-theme-bg-color);
   z-index: 10;
-  margin-top: 10px;
+  margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 .headerContent {
@@ -50,14 +51,18 @@
 .summarySection,
 .graphSection,
 .infoSection,
-.actionsSection {
+.actionsSection,
+.unlockSection,
+.unlockChartSection,
+.allocationsSection {
   width: 100%;
+  margin-bottom: 0;
 }
 
 .sectionTitle {
   font-size: 18px;
   font-weight: 600;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
   color: var(--tg-theme-text-color);
 }
 
@@ -65,7 +70,7 @@
 .infoCard {
   background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
   border-radius: 12px;
-  padding: 16px;
+  padding: 14px;
 }
 
 .summaryRow,
@@ -167,21 +172,27 @@
 }
 
 /* Unlock Section Styles */
-.unlockSection {
-  margin-top: 24px;
+.unlockSection,
+.unlockChartSection,
+.allocationsSection {
+  margin-top: 0;
 }
 
 .unlockSummary {
   background-color: var(--tg-theme-secondary-bg-color);
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
 }
 
 .unlockRow {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+}
+
+.unlockRow:last-child {
+  margin-bottom: 0;
 }
 
 .unlockLabel {
@@ -197,23 +208,27 @@
 
 /* Styles for unlock status */
 .unlockStatusContainer {
-  margin-top: 16px;
+  margin-top: 12px;
   background-color: var(--tg-theme-bg-color);
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
 }
 
 .unlockStatus {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 24px;
+  margin-bottom: 10px;
 }
 
 .unlockStatusItem {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.unlockStatusItem:last-child {
+  text-align: right;
 }
 
 .unlockStatusLabel {
@@ -281,13 +296,14 @@
 
 /* Styles for unlock timeline */
 .unlockAllocations {
-  margin-top: 16px;
+  margin-top: 12px;
+  margin-bottom: 24px;
 }
 
 .unlockTimeline {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   position: relative;
   padding-left: 20px;
 }
@@ -323,7 +339,7 @@
   flex: 1;
   background-color: var(--tg-theme-secondary-bg-color);
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -331,7 +347,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .allocationTitle {
@@ -353,6 +369,11 @@
   display: flex;
   justify-content: space-between;
   font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.allocationRow:last-child {
+  margin-bottom: 0;
 }
 
 .allocationLabel {
@@ -456,8 +477,8 @@
 .unlockChartContainer {
   background-color: var(--tg-theme-secondary-bg-color);
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 24px;
+  padding: 14px;
+  margin-bottom: 16px;
 }
 
 .chartTitle {
@@ -468,7 +489,7 @@
 }
 
 .chartWrapper {
-  height: 300px;
+  height: 280px;
   position: relative;
 }
 
@@ -476,8 +497,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200px;
+  height: 120px;
   background-color: var(--tg-theme-bg-color);
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--tg-theme-hint-color);
+  font-size: 16px;
+  text-align: center;
+  padding: 16px;
 }
