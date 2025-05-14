@@ -291,23 +291,15 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
                   secondLaneBuy: 'SecondLane Buy',
                   secondLaneSell: 'SecondLane Sell'
                 };
-                
-                // If this is a market value entry, just show the value
-                if (name === 'marketValue') {
-                  return [formattedValue, labels[name as keyof typeof labels]];
-                }
-                
                 // If this is a buy or sell order, and there is an array of all orders, enhance the tooltip
                 if (entry?.payload) {
                   const data = entry.payload;
-                  
                   if (name === 'secondLaneBuy' && data.allBuyOrders && data.allBuyOrders.length > 1) {
                     const allOrders = data.allBuyOrders.map((order) => 
                       `- ${formatCurrency(order.fdv)} (${formatCurrency(order.amount)})`
                     ).join('\n');
                     return [`${formattedValue}\nAll Buy Orders:\n${allOrders}`, labels[name as keyof typeof labels]];
                   }
-                  
                   if (name === 'secondLaneSell' && data.allSellOrders && data.allSellOrders.length > 1) {
                     const allOrders = data.allSellOrders.map((order) => 
                       `- ${formatCurrency(order.fdv)} (${formatCurrency(order.amount)})`
@@ -315,8 +307,8 @@ const ProjectChart: React.FC<ProjectChartProps> = ({ projectId }) => {
                     return [`${formattedValue}\nAll Sell Orders:\n${allOrders}`, labels[name as keyof typeof labels]];
                   }
                 }
-                
-                return [formattedValue, labels[name as keyof typeof labels]];
+                // Always return the correct label for all keys
+                return [formattedValue, labels[name as keyof typeof labels] || name];
               }}
               labelFormatter={(label) => `Date: ${label}`}
             />
