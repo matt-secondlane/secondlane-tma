@@ -19,6 +19,8 @@ import {
   Tooltip,
   Legend,
   TooltipItem,
+  BarController,
+  LineController,
 } from 'chart.js';
 
 // Register necessary Chart.js components
@@ -28,6 +30,8 @@ ChartJS.register(
   PointElement,
   LineElement,
   BarElement,
+  BarController,
+  LineController,
   Title,
   Tooltip,
   Legend
