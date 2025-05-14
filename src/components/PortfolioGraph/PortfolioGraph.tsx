@@ -10,7 +10,7 @@ import { Loader } from '../Loader';
 import { formatMoney } from '../../utils/money';
 import styles from './PortfolioGraph.module.css';
 
-// Массив цветов для стекового графика
+// Array of colors for stacked chart
 const COLORS = [
   '#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088fe', 
   '#00c49f', '#ffbb28', '#ff8042', '#a4de6c', '#d0ed57',
@@ -30,25 +30,25 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
   const [assetNames, setAssetNames] = useState<Record<string, string>>({});
   const [activeTooltip, setActiveTooltip] = useState<boolean>(false);
 
-  // Обработчик клика по графику для скрытия тултипа
+  // Chart click handler to hide tooltip
   const handleChartClick = () => {
-    // Скрываем тултип при клике по графику
+    // Hide tooltip when clicking on the chart
     setActiveTooltip(false);
   };
 
-  // Добавляем обработчик клика по документу для скрытия тултипа при клике вне графика
+  // Add document click handler to hide tooltip when clicking outside the chart
   useEffect(() => {
-    // Функция для скрытия тултипа
+    // Function to hide tooltip
     const handleDocumentClick = () => {
       if (activeTooltip) {
         setActiveTooltip(false);
       }
     };
 
-    // Добавляем обработчик глобально на всю страницу
+    // Add handler globally to the entire page
     document.addEventListener('click', handleDocumentClick);
     
-    // Очищаем обработчик при размонтировании компонента
+    // Clean up the handler when component unmounts
     return () => {
       document.removeEventListener('click', handleDocumentClick);
     };
@@ -104,11 +104,11 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
     });
   };
 
-  // Функция для получения всех уникальных ID активов из всех точек графика
+  // Function to get all unique asset IDs from all chart data points
   const getUniqueAssetIds = () => {
     const assetIds = new Set<string>();
     
-    // Соберем все уникальные ID активов из всех точек графика
+    // Collect all unique asset IDs from all chart data points
     chartData.forEach(dataPoint => {
       if (dataPoint.assets && dataPoint.assets.length > 0) {
         dataPoint.assets.forEach(asset => {
@@ -144,9 +144,9 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
     );
   }
 
-  // Получение всех уникальных ID активов
+  // Get all unique asset IDs
   const uniqueAssetIds = getUniqueAssetIds();
-  // Проверяем, есть ли активы для отображения
+  // Check if there are assets to display
   const hasAssets = uniqueAssetIds.length > 0;
 
   return (
@@ -198,7 +198,7 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
               wrapperStyle={{ zIndex: 1000, position: 'absolute', top: 0 }}
               allowEscapeViewBox={{ x: true, y: true }}
               content={({ active, payload, label }) => {
-                // Обновляем состояние активности тултипа
+                // Update tooltip active state
                 if (active !== activeTooltip) {
                   setActiveTooltip(!!active);
                 }
@@ -264,7 +264,7 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
         </ResponsiveContainer>
       </div>
 
-      {/* Отображаем нижний график только если есть активы */}
+      {/* Only display bottom chart if there are assets */}
       {hasAssets && (
         <>
           <div className={styles.graphHeader} style={{ marginTop: '12px' }}>
@@ -297,7 +297,7 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
                       return [formatMoney(value), 'Other Assets'];
                     }
                     
-                    // Находим ID актива из имени датаключа (формат: asset_value_[asset_id])
+                    // Find asset ID from datakey name (format: asset_value_[asset_id])
                     const assetIdMatch = name.match(/asset_value_(.+)/);
                     if (assetIdMatch && assetIdMatch[1]) {
                       const assetId = assetIdMatch[1];
@@ -323,11 +323,11 @@ export const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ portfolioId }) =
                       return 'Other Assets';
                     }
                     
-                    // Находим ID актива из имени датаключа
+                    // Find asset ID from datakey name
                     const assetIdMatch = value.match(/asset_value_(.+)/);
                     if (assetIdMatch && assetIdMatch[1]) {
                       const assetId = assetIdMatch[1];
-                      // Если есть имя актива, используем его, иначе используем "Project X"
+                      // If asset name exists, use it, otherwise use "Project X"
                       return assetNames[assetId] || `Project ${uniqueAssetIds.indexOf(assetId) + 1}`;
                     }
                     return value;

@@ -36,13 +36,13 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ portfolioId 
           setAssets(summaryData.assets);
         } else {
           console.log('No assets in summary data');
-          // Если активы не получены из summary, сделаем дополнительный запрос
+          // If assets are not received from summary, make an additional request
           try {
             if (portfolioId) {
               const portfolioAssets = await apiService.getPortfolioAssets(portfolioId);
               if (portfolioAssets && portfolioAssets.length > 0) {
                 console.log('Received assets from additional request:', portfolioAssets.length);
-                // Преобразуем формат если нужно
+                // Transform the format if needed
                 const formattedAssets = portfolioAssets.map(asset => ({
                   asset_id: asset.asset_id,
                   project: {

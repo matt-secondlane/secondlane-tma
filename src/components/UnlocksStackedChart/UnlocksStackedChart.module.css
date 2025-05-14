@@ -1,0 +1,15 @@
+.noDataMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  color: var(--tg-theme-hint-color);
+}
+
+.noDataMessage p {
+  margin: 0;
+  font-size: 14px;
+} 

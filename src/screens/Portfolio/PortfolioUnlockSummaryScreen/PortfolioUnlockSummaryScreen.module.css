@@ -1,0 +1,570 @@
+.container {
+  padding: 16px;
+  max-width: 100%;
+  color: var(--tg-theme-text-color);
+  background-color: var(--tg-theme-bg-color);
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+  position: static;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  position: static;
+  z-index: auto;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.description {
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.summaryContent {
+  padding-bottom: 60px;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  height: auto;
+  width: 100%;
+  position: static;
+}
+
+/* Styles for Charts tab */
+.chartsView {
+  padding: 16px 0;
+}
+
+.chartSection {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chartTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+  margin: 0 0 18px 0;
+  text-align: center;
+}
+
+.pieChartWrapper {
+  max-width: 100%;
+  height: 300px;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.summarySection {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.summaryCard {
+  background: var(--tg-theme-bg-color);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryCardTitle {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+}
+
+.summaryCardValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.summaryCardPercent {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+}
+
+.assetTable {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1fr;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid var(--tg-theme-bg-color);
+  font-weight: 600;
+  color: var(--tg-theme-hint-color);
+  font-size: 15px;
+  text-align: center;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1fr;
+  gap: 12px;
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--tg-theme-bg-color);
+  font-size: 15px;
+  color: var(--tg-theme-text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.tableRow:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableCell {
+  padding: 4px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableCell:first-child {
+  justify-content: flex-start;
+}
+
+.assetNameCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.tableAssetLogo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tableAssetLogoPlaceholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--tg-theme-button-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.noDataMessage {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--tg-theme-hint-color);
+}
+
+.portfolioSection {
+  margin-bottom: 24px;
+  background-color: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.05));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.portfolioHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.05));
+  cursor: pointer;
+}
+
+.portfolioName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.assetCount {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color);
+}
+
+.assetsList {
+  padding: 0 12px 12px;
+}
+
+.assetCard {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.assetCard:hover, .assetCard:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.assetHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.assetLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.assetLogoPlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.assetInfo {
+  flex: 1;
+}
+
+.assetName {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.unlockType {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: rgba(var(--tg-theme-button-color-rgb, 0, 122, 255), 0.1);
+  border-radius: 12px;
+}
+
+.unlockInfo {
+  background-color: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.05));
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.infoRow:last-child {
+  margin-bottom: 0;
+}
+
+.infoLabel {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+}
+
+.infoValue {
+  font-size: 13px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: var(--tg-theme-hint-color);
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.errorMessage {
+  color: #ff3b30;
+  margin-bottom: 16px;
+}
+
+.retryButton {
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.noData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--tg-theme-hint-color);
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+/* Styles for calendar */
+.calendarView {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.monthGroup {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.monthTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+  text-transform: capitalize;
+}
+
+.monthAllocations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calendarItem {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calendarItem:hover, .calendarItem:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.calendarItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.unlockDate {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assetLogoSmall {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.calendarItemDetails {
+  margin-top: 8px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.detailLabel {
+  color: var(--tg-theme-hint-color);
+}
+
+.detailValue {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+.portfolioName {
+  display: block;
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-top: 2px;
+}
+
+.cliffBadge, .tgeBadge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.cliffBadge {
+  background-color: var(--tg-theme-button-color);
+  color: white;
+}
+
+.tgeBadge {
+  background-color: #4CD964;
+  color: white;
+}
+
+/* Styles for unlock summary */
+.unlockSummaryContainer {
+  margin-bottom: 20px;
+}
+
+.summaryCard {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summaryItem {
+  flex: 1;
+  min-width: 100px;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.summaryValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.statsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.statsItem {
+  flex: 1;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statsLabel {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 4px;
+}
+
+.statsValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.nextUnlock {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.nextUnlockLabel {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.nextUnlockDetails {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nextUnlockDate {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tg-theme-button-color);
+}

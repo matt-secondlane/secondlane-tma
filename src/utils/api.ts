@@ -38,7 +38,11 @@ import type {
   PortfolioGraphResponse,
   AssetSummary,
   AssetGraphResponse,
-  CSVPortfolioResponse
+  CSVPortfolioResponse,
+  ProjectUnlockResponse,
+  PortfolioUnlocksResponse,
+  PortfolioUnlockSummaryResponse,
+  PortfolioUnlockAllocationsResponse
 } from '../types/api';
 
 export const apiService = {
@@ -118,7 +122,16 @@ export const apiService = {
     
     if (response.data && (response.data.data || Array.isArray(response.data))) {
       return Array.isArray(response.data) 
-        ? { data: response.data, project_name: '', symbol: '' }
+        ? { 
+          data: { 
+            project_id: projectId,
+            orders: response.data.map(item => item as any) || [],
+            funding_rounds: [],
+            price_history: []
+          }, 
+          project_name: '', 
+          symbol: '' 
+        }
         : response.data;
     } else {
       return {
@@ -654,5 +667,29 @@ export const apiService = {
   // Mark multiple notifications as read
   readNotificationsBatch: async (notificationIds: string[]): Promise<void> => {
     await api.post('/notifications/read-batch', { notification_ids: notificationIds });
+  },
+
+  // Get project unlocks
+  getProjectUnlocks: async (projectId: string): Promise<ProjectUnlockResponse> => {
+    const response = await api.get(`/projects/${projectId}/unlock`);
+    return response.data;
+  },
+
+  // Get portfolio unlocks
+  getPortfolioUnlocks: async (portfolioId: string): Promise<PortfolioUnlocksResponse['data']> => {
+    const response = await api.get(`/portfolio/${portfolioId}/unlocks`);
+    return response.data.data;
+  },
+
+  // Get all unlocks summary across portfolios
+  getUnlocksSummary: async (): Promise<PortfolioUnlockSummaryResponse['data']> => {
+    const response = await api.get('/portfolio/unlocks/summary');
+    return response.data.data;
+  },
+
+  // Get all unlock allocations across portfolios
+  getUnlocksAllocations: async (): Promise<PortfolioUnlockAllocationsResponse['data']> => {
+    const response = await api.get('/portfolio/unlocks/allocations');
+    return response.data.data;
   },
 }; 
