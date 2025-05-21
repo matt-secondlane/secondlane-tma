@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import { apiService } from '../../utils/api';
@@ -7,7 +7,6 @@ import { Loader } from '../../components/Loader';
 import AssetGraph from '../../components/AssetGraph/AssetGraph';
 import { formatMoney } from '../../utils/money';
 import styles from './AssetDetailScreen.module.css';
-import { Chart } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,7 +17,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  TooltipItem,
   BarController,
   LineController,
 } from 'chart.js';
@@ -130,60 +128,6 @@ const convertProjectUnlockToAssetUnlock = (projectUnlock: {
   };
 };
 
-// Chart options factory
-const getChartOptions = () => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    y: {
-      type: 'linear' as const,
-      display: true,
-      position: 'left' as const,
-      title: {
-        display: true,
-        text: 'Unlocked per month',
-      },
-      ticks: {
-        callback: function(tickValue: number | string) {
-          const numericValue = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
-          if (isNaN(numericValue as number)) return tickValue;
-          return formatNumberWithAbbr(numericValue as number);
-        }
-      }
-    },
-    y1: {
-      type: 'linear' as const,
-      display: true,
-      position: 'right' as const,
-      title: {
-        display: true,
-        text: 'Total amount',
-      },
-      grid: {
-        drawOnChartArea: false,
-      },
-      ticks: {
-        callback: function(tickValue: number | string) {
-          const numericValue = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
-          if (isNaN(numericValue as number)) return tickValue;
-          return formatNumberWithAbbr(numericValue as number);
-        }
-      }
-    },
-  },
-  plugins: {
-    tooltip: {
-      callbacks: {
-        label: function(context: TooltipItem<'bar' | 'line'>) {
-          const label = context.dataset.label || '';
-          const value = context.raw || 0;
-          return `${label}: ${formatNumberWithAbbr(value as number)}`;
-        }
-      }
-    }
-  }
-});
-
 const AssetDetailScreen: React.FC = () => {
   const { assetId } = useParams<{ assetId: string }>();
   const navigate = useNavigate();
@@ -193,9 +137,6 @@ const AssetDetailScreen: React.FC = () => {
   const [assetData, setAssetData] = useState<AssetSummary | null>(null);
   const [unlockData, setUnlockData] = useState<PortfolioAssetUnlock | null>(null);
   const [unlockLoading, setUnlockLoading] = useState(false);
-
-  // Pre-compute chart options
-  const chartOptions = useMemo(() => getChartOptions(), []);
 
   useEffect(() => {
     const fetchAssetData = async () => {
@@ -244,77 +185,6 @@ const AssetDetailScreen: React.FC = () => {
     navigate(-1);
   };
   
-  // Generate chart data from unlock allocations
-  const generateChartData = (allocations: PortfolioAssetUnlockAllocation[]) => {
-    try {
-      // Group by months
-      const monthlyData: Record<string, { amount: number, cumulativeAmount: number }> = {};
-      let cumulativeTotal = 0;
-      
-      // Sort allocations by date
-      const sortedAllocations = [...allocations].sort((a, b) => {
-        return new Date(a.unlock_date).getTime() - new Date(b.unlock_date).getTime();
-      });
-      
-      // Group by months and calculate cumulative sums
-      sortedAllocations.forEach(allocation => {
-        const date = new Date(allocation.unlock_date);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        
-        if (!monthlyData[monthKey]) {
-          monthlyData[monthKey] = { amount: 0, cumulativeAmount: 0 };
-        }
-        
-        monthlyData[monthKey].amount += allocation.amount;
-        cumulativeTotal += allocation.amount;
-        monthlyData[monthKey].cumulativeAmount = cumulativeTotal;
-      });
-      
-      // Prepare data for the chart
-      const sortedMonths = Object.keys(monthlyData).sort();
-      
-      if (sortedMonths.length === 0) {
-        return null;
-      }
-      
-      const labels = sortedMonths.map(monthKey => {
-        const [year, month] = monthKey.split('-');
-        return new Date(parseInt(year), parseInt(month) - 1, 1)
-          .toLocaleString('en-US', { month: 'short', year: 'numeric' });
-      });
-      
-      const monthlyAmounts = sortedMonths.map(month => monthlyData[month].amount);
-      const cumulativeAmounts = sortedMonths.map(month => monthlyData[month].cumulativeAmount);
-      
-      return {
-        labels,
-        datasets: [
-          {
-            label: 'Unlocked per month',
-            data: monthlyAmounts,
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
-            type: 'bar' as const,
-            yAxisID: 'y',
-          },
-          {
-            label: 'Total unlock amount',
-            data: cumulativeAmounts,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 2,
-            type: 'line' as const,
-            yAxisID: 'y1',
-          },
-        ],
-      };
-    } catch (error) {
-      console.error('Error generating chart data:', error);
-      return null;
-    }
-  };
-
   // Render asset summary section
   const renderAssetSummary = () => (
     <section className={styles.summarySection}>
@@ -443,28 +313,79 @@ const AssetDetailScreen: React.FC = () => {
 
   // Render unlock chart
   const renderUnlockChart = () => {
-    if (!unlockData?.allocations || unlockData.allocations.length === 0) {
+    if (!unlockData?.summary) {
       return null;
     }
     
-    const chartData = generateChartData(unlockData.allocations);
+    const { total_amount_unlocked, total_amount_locked, unlocked_percent } = unlockData.summary;
+    const totalTokens = total_amount_unlocked + total_amount_locked;
     
-    if (!chartData) {
+    if (totalTokens <= 0) {
       return null;
     }
     
     return (
       <section className={styles.unlockChartSection}>
-        <h2 className={styles.sectionTitle}>Unlock Chart</h2>
+        <h2 className={styles.sectionTitle}>Unlock Progress</h2>
         <div className={styles.unlockChartContainer}>
-          <div className={styles.chartWrapper}>
-            <Chart 
-              type='bar'
-              data={chartData} 
-              options={chartOptions}
-              height={300}
-              key={`unlock-chart-${assetId}`}
-            />
+          <div className={styles.progressChartContainer}>
+            <div className={styles.progressCircleWrapper}>
+              <div className={styles.progressCircle}>
+                <svg width="160" height="160" viewBox="0 0 160 160">
+                  <defs>
+                    <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FFA726" />
+                      <stop offset="100%" stopColor="#FF7043" />
+                    </linearGradient>
+                    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#2196F3" />
+                      <stop offset="100%" stopColor="#00B0FF" />
+                    </linearGradient>
+                  </defs>
+                  <circle
+                    cx="80"
+                    cy="80"
+                    r="70"
+                    fill="none"
+                    stroke="url(#orangeGradient)"
+                    strokeWidth="12"
+                    strokeLinecap="round"
+                  />
+                  <circle
+                    cx="80"
+                    cy="80"
+                    r="70"
+                    fill="none"
+                    stroke="url(#blueGradient)"
+                    strokeWidth="12"
+                    strokeDasharray={`${2 * Math.PI * 70 * (unlocked_percent / 100)} ${2 * Math.PI * 70}`}
+                    strokeDashoffset="0"
+                    strokeLinecap="round"
+                    transform="rotate(-90 80 80)"
+                  />
+                </svg>
+                <div className={styles.progressCircleContent}>
+                  <div className={styles.tokenValue}>{formatNumberWithAbbr(totalTokens)}</div>
+                  <div className={styles.tokenLabel}>out of {unlockData.total_amount ? formatNumberWithAbbr(unlockData.total_amount) : 'Total'}</div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.progressLegend}>
+              <div className={styles.legendItem}>
+                <div className={styles.legendColorUnlocked}></div>
+                <div className={styles.legendText}>
+                  <div className={styles.legendTitle}>Unlocked</div>
+                  <div className={styles.legendValue}>{formatPercent(unlocked_percent)}</div>
+                </div>
+              </div>
+              <div className={styles.legendItem}>
+                <div className={styles.legendColorLocked}></div>
+                <div className={styles.legendText}>
+                  <div className={styles.legendTitle}>Locked</div>
+                  <div className={styles.legendValue}>{formatPercent(100 - unlocked_percent)}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

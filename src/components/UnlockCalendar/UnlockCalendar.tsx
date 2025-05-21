@@ -41,6 +41,38 @@ interface UnlockCalendarProps {
   formatDate?: (dateString?: string) => string;
 }
 
+// Helper function to generate Google Calendar URL
+const generateGoogleCalendarUrl = (event: {
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate?: Date;
+  location?: string;
+}): string => {
+  const { title, description, startDate, endDate, location } = event;
+  
+  // Format dates for Google Calendar
+  const formatDate = (date: Date): string => {
+    return date.toISOString().replace(/-|:|\.\d+/g, '');
+  };
+  
+  const baseUrl = 'https://www.google.com/calendar/render?action=TEMPLATE';
+  const dateParam = endDate 
+    ? `&dates=${formatDate(startDate)}/${formatDate(endDate)}`
+    : `&dates=${formatDate(startDate)}/${formatDate(new Date(startDate.getTime() + 60 * 60 * 1000))}`;
+  
+  const params = [
+    `&text=${encodeURIComponent(title)}`,
+    dateParam,
+    `&details=${encodeURIComponent(description)}`,
+    location ? `&location=${encodeURIComponent(location)}` : '',
+  ];
+  
+  return baseUrl + params.join('');
+};
+
+
+
 // Formats numbers by default
 const defaultFormatNumber = (value: number): string => {
   if (value >= 1000000) {
@@ -303,47 +335,78 @@ export const UnlockCalendar: React.FC<UnlockCalendarProps> = ({
           Unlocks on {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
         </h3>
         <div className={styles.unlocksList}>
-          {dayUnlocks.map((unlock, index) => (
-            <div 
-              key={`${unlock.asset_id}-${index}`} 
-              className={styles.unlockCard}
-              onClick={() => onItemClick && onItemClick(unlock.asset_id)}
-            >
-              <div className={styles.unlockHeader}>
-                <div className={styles.unlockAssetInfo}>
-                  {unlock.logo ? (
-                    <img 
-                      src={unlock.logo} 
-                      alt={unlock.asset_name} 
-                      className={styles.assetLogo}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <div className={styles.assetIconPlaceholder}>
-                      {unlock.asset_name.substring(0, 2).toUpperCase()}
-                    </div>
-                  )}
-                  <span className={styles.assetName}>{unlock.asset_name}</span>
+          {dayUnlocks.map((unlock, index) => {
+            // Create event details for calendars
+            const eventDate = new Date(unlock.unlock_date);
+            const endDate = new Date(eventDate);
+            endDate.setHours(eventDate.getHours() + 1);
+            
+            const eventTitle = `${unlock.asset_name} Token Unlock`;
+            const eventDescription = `${formatNumber(unlock.amount)} tokens (${formatPercent(unlock.percent_of_total)} of total supply) will be unlocked for ${unlock.asset_name}.${unlock.is_cliff ? ' This is a cliff unlock event.' : ''}${unlock.is_tge ? ' This is a TGE unlock event.' : ''}`;
+            
+            const googleCalendarUrl = generateGoogleCalendarUrl({
+              title: eventTitle,
+              description: eventDescription,
+              startDate: eventDate,
+              endDate: endDate
+            });
+            
+            return (
+              <div 
+                key={`${unlock.asset_id}-${index}`} 
+                className={styles.unlockCard}
+                onClick={() => onItemClick && onItemClick(unlock.asset_id)}
+              >
+                <div className={styles.calendarButtons}>
+                  <a 
+                    href={googleCalendarUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.calendarButton}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19.5 3h-15A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3zM7 18.75c-.75 0-1.5-.75-1.5-1.5V12c0-.75.75-1.5 1.5-1.5h10.5V15c0 2.25-1.5 3.75-3.75 3.75H7z" fill="currentColor"/>
+                    </svg>
+                    Add to Google
+                  </a>
                 </div>
-                <div className={styles.unlockBadges}>
-                  {unlock.is_cliff && <span className={styles.cliffBadge}>Cliff</span>}
-                  {unlock.is_tge && <span className={styles.tgeBadge}>TGE</span>}
+                <div className={styles.unlockHeader}>
+                  <div className={styles.unlockAssetInfo}>
+                    {unlock.logo ? (
+                      <img 
+                        src={unlock.logo} 
+                        alt={unlock.asset_name} 
+                        className={styles.assetLogo}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className={styles.assetIconPlaceholder}>
+                        {unlock.asset_name.substring(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <span className={styles.assetName}>{unlock.asset_name}</span>
+                  </div>
+                  <div className={styles.unlockBadges}>
+                    {unlock.is_cliff && <span className={styles.cliffBadge}>Cliff</span>}
+                    {unlock.is_tge && <span className={styles.tgeBadge}>TGE</span>}
+                  </div>
+                </div>
+                <div className={styles.unlockDetails}>
+                  <div className={styles.unlockDetail}>
+                    <span className={styles.detailLabel}>Amount:</span>
+                    <span className={styles.detailValue}>{formatNumber(unlock.amount)}</span>
+                  </div>
+                  <div className={styles.unlockDetail}>
+                    <span className={styles.detailLabel}>% of total:</span>
+                    <span className={styles.detailValue}>{formatPercent(unlock.percent_of_total)}</span>
+                  </div>
                 </div>
               </div>
-              <div className={styles.unlockDetails}>
-                <div className={styles.unlockDetail}>
-                  <span className={styles.detailLabel}>Amount:</span>
-                  <span className={styles.detailValue}>{formatNumber(unlock.amount)}</span>
-                </div>
-                <div className={styles.unlockDetail}>
-                  <span className={styles.detailLabel}>% of total:</span>
-                  <span className={styles.detailValue}>{formatPercent(unlock.percent_of_total)}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );

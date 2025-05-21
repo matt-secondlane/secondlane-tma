@@ -6,7 +6,6 @@ import { PortfolioUnlockSummaryItem, PortfolioUnlocksSummary } from '../../../ty
 import { Loader } from '../../../components/Loader';
 import styles from './PortfolioUnlockSummaryScreen.module.css';
 import TabsComponent, { TabItem } from '../../../components/TabsComponent/TabsComponent';
-import PieChartUnlocks from '../../../components/PieChartUnlocks/PieChartUnlocks';
 
 // Date formatting
 const formatDate = (dateString?: string): string => {
@@ -61,7 +60,7 @@ export const PortfolioUnlockSummaryScreen: React.FC = () => {
   const [unlockData, setUnlockData] = useState<PortfolioUnlockSummaryItem[]>([]);
   const [summary, setSummary] = useState<PortfolioUnlocksSummary | null>(null);
   const [groupedByPortfolio, setGroupedByPortfolio] = useState<Record<string, PortfolioUnlockSummaryItem[]>>({});
-  const [activeTab, setActiveTab] = useState<'assets' | 'calendar' | 'charts'>('assets');
+  const [activeTab, setActiveTab] = useState<'assets' | 'calendar'>('assets');
   
   // Loading unlock data for all portfolios
   useEffect(() => {
@@ -334,13 +333,12 @@ export const PortfolioUnlockSummaryScreen: React.FC = () => {
 
   const tabs: TabItem[] = [
     { id: 'assets', label: 'Assets' },
-    { id: 'calendar', label: 'Calendar' },
-    { id: 'charts', label: 'Charts' }
+    { id: 'calendar', label: 'Calendar' }
   ];
   
   const handleTabChange = (tabId: string) => {
     WebApp.HapticFeedback.impactOccurred('light');
-    setActiveTab(tabId as 'assets' | 'calendar' | 'charts');
+    setActiveTab(tabId as 'assets' | 'calendar');
   };
 
   return (
@@ -364,72 +362,6 @@ export const PortfolioUnlockSummaryScreen: React.FC = () => {
         
         {activeTab === 'calendar' ? (
           renderCalendarView()
-        ) : activeTab === 'charts' ? (
-          <div className={styles.chartsView}>
-            <div className={styles.chartSection}>
-              <h2 className={styles.chartTitle}>Distribution of unlocks by assets</h2>
-              <div className={styles.pieChartWrapper}>
-                <PieChartUnlocks unlocks={unlockData} />
-              </div>
-            </div>
-            
-            {summary && (
-              <div className={styles.summarySection}>
-                <h2 className={styles.chartTitle}>Unlock summary</h2>
-                <div className={styles.summaryCards}>
-                  <div className={styles.summaryCard}>
-                    <div className={styles.summaryCardTitle}>Total tokens</div>
-                    <div className={styles.summaryCardValue}>{formatNumber((summary.total_amount_locked || 0) + (summary.total_amount_unlocked || 0))}</div>
-                  </div>
-                  <div className={styles.summaryCard}>
-                    <div className={styles.summaryCardTitle}>Unlocked</div>
-                    <div className={styles.summaryCardValue}>{formatNumber(summary.total_amount_unlocked || 0)}</div>
-                    <div className={styles.summaryCardPercent}>{formatPercent(summary.unlocked_percent || 0)}</div>
-                  </div>
-                  <div className={styles.summaryCard}>
-                    <div className={styles.summaryCardTitle}>Locked</div>
-                    <div className={styles.summaryCardValue}>{formatNumber(summary.total_amount_locked || 0)}</div>
-                    <div className={styles.summaryCardPercent}>{formatPercent(summary.locked_percent || 0)}</div>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            <div className={styles.assetTable}>
-              <h2 className={styles.chartTitle}>Asset table</h2>
-              <div className={styles.tableHeader}>
-                <div className={styles.tableCell}>Asset</div>
-                <div className={styles.tableCell}>Unlocked</div>
-                <div className={styles.tableCell}>Locked</div>
-              </div>
-              {unlockData.map(item => (
-                <div key={item.asset_id} className={styles.tableRow} onClick={() => handleAssetClick(item.asset_id)}>
-                  <div className={styles.tableCell}>
-                    <div className={styles.assetNameCell}>
-                      {item.logo ? (
-                        <img 
-                          src={item.logo} 
-                          alt={item.asset_name} 
-                          className={styles.tableAssetLogo}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'https://via.placeholder.com/24?text=' + item.asset_name.charAt(0);
-                          }}
-                        />
-                      ) : (
-                        <div className={styles.tableAssetLogoPlaceholder}>
-                          {item.asset_name.charAt(0)}
-                        </div>
-                      )}
-                      {item.asset_name}
-                    </div>
-                  </div>
-                  <div className={styles.tableCell}>{formatNumber((item.unlock?.total_amount || 0) * (summary?.unlocked_percent || 0) / 100)}</div>
-                  <div className={styles.tableCell}>{formatNumber((item.unlock?.total_amount || 0) * (summary?.locked_percent || 0) / 100)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
         ) : (
           <>
             {Object.entries(groupedByPortfolio).map(([portfolioId, items]) => (

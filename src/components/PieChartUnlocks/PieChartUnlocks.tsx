@@ -1,6 +1,5 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { PortfolioAssetUnlockItem } from '../../types/api';
 import styles from './PieChartUnlocks.module.css';
 
 // Array of colors for pie chart sectors
@@ -12,8 +11,19 @@ const COLORS = [
   '#00C5E5', '#06AED4', '#00B8D9', '#0052CC', '#0747A6'
 ];
 
+interface ProjectAllocation {
+  name: string;
+  tokens: number;
+  allocation_of_supply: number;
+  unlock_type?: string;
+  tge_unlock?: number;
+  tge_unlock_percent?: number;
+  next_unlock_date?: string;
+  next_unlock_tokens?: number;
+}
+
 interface PieChartUnlocksProps {
-  unlocks: PortfolioAssetUnlockItem[];
+  allocations: ProjectAllocation[];
 }
 
 // Number formatting
@@ -35,15 +45,15 @@ const formatPercent = (value?: number): string => {
   return `${value.toFixed(2)}%`;
 };
 
-export const PieChartUnlocks: React.FC<PieChartUnlocksProps> = ({ unlocks }) => {
-  // Filter unlocks with data and prepare data for pie chart
-  const chartData = unlocks
-    .filter(item => item.unlock && item.unlock.total_amount)
+export const PieChartUnlocks: React.FC<PieChartUnlocksProps> = ({ allocations }) => {
+  // Filter allocations with data and prepare data for pie chart
+  const chartData = allocations
+    .filter(item => item.tokens > 0)
     .map(item => ({
-      name: item.asset_name,
-      value: item.unlock?.total_amount || 0,
-      assetId: item.asset_id,
-      logo: item.logo,
+      name: item.name,
+      value: item.tokens,
+      percentage: item.allocation_of_supply,
+      unlockType: item.unlock_type
     }))
     .sort((a, b) => b.value - a.value); // Sort from largest to smallest
 

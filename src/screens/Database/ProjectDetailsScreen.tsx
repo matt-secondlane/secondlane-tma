@@ -7,6 +7,7 @@ import { Project, ProjectUnlock } from '../../types/api';
 import { Loader } from '../../components/Loader/Loader';
 import ProjectChart from '../../components/ProjectChart/ProjectChart';
 import TabsComponent, { TabItem } from '../../components/TabsComponent/TabsComponent';
+import PieChartUnlocks from '../../components/PieChartUnlocks/PieChartUnlocks';
 
 // Define interfaces for missing types
 interface ProjectRound {
@@ -526,9 +527,7 @@ export const ProjectDetailsScreen: React.FC = () => {
                     <>
                       <h3 className={styles.chartTitle}>Distribution of allocations by types</h3>
                       <div className={styles.pieChartWrapper}>
-                        <div className={styles.noDataMessage}>
-                          <p>Charts temporarily unavailable</p>
-                        </div>
+                        <PieChartUnlocks allocations={unlockData.allocations} />
                       </div>
                       
                       <div className={styles.allocationSummary}>

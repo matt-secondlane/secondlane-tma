@@ -5,7 +5,6 @@ import { apiService } from '../../utils/api';
 import { PortfolioAssetUnlockItem } from '../../types/api';
 import { Loader } from '../Loader';
 import TabsComponent, { TabItem } from '../../components/TabsComponent/TabsComponent';
-import UnlocksStackedChart from '../UnlocksStackedChart';
 import UnlockCalendar from '../UnlockCalendar';
 
 interface PortfolioUnlocksProps {
@@ -59,7 +58,22 @@ const formatUnlockType = (unlockType: string | null | undefined): string => {
 
 // Get unlock status from API
 const getUnlockStatus = (item: PortfolioAssetUnlockItem): 'unlocking' | 'unlocked' | 'locked' => {
-  return item.unlock?.unlock_status || 'locked';
+  // If no unlock data, return locked
+  if (!item.unlock || !item.unlock.start_date || !item.unlock.end_date) {
+    return 'locked';
+  }
+  
+  const now = new Date();
+  const startDate = new Date(item.unlock.start_date);
+  const endDate = new Date(item.unlock.end_date);
+  
+  if (now < startDate) {
+    return 'locked';  // Red - Before start date
+  } else if (now > endDate) {
+    return 'unlocked'; // Green - After end date
+  } else {
+    return 'unlocking'; // Yellow - Between start and end date
+  }
 };
 
 // Форматирование чисел по умолчанию
@@ -91,7 +105,7 @@ export const PortfolioUnlocks: React.FC<PortfolioUnlocksProps> = ({ portfolioId 
   const [error, setError] = useState<string | null>(null);
   const [unlocks, setUnlocks] = useState<PortfolioAssetUnlockItem[]>([]);
   const [expandedAssetId, setExpandedAssetId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'assets' | 'calendar' | 'charts'>('assets');
+  const [activeTab, setActiveTab] = useState<'assets' | 'calendar'>('assets');
 
   useEffect(() => {
     const fetchUnlocks = async () => {
@@ -142,7 +156,7 @@ export const PortfolioUnlocks: React.FC<PortfolioUnlocksProps> = ({ portfolioId 
 
   const handleTabChange = (tabId: string) => {
     WebApp.HapticFeedback.impactOccurred('light');
-    setActiveTab(tabId as 'assets' | 'calendar' | 'charts');
+    setActiveTab(tabId as 'assets' | 'calendar');
   };
 
   if (loading) {
@@ -226,8 +240,7 @@ export const PortfolioUnlocks: React.FC<PortfolioUnlocksProps> = ({ portfolioId 
 
   const tabs: TabItem[] = [
     { id: 'assets', label: 'Assets' },
-    { id: 'calendar', label: 'Calendar' },
-    { id: 'charts', label: 'Charts' }
+    { id: 'calendar', label: 'Calendar' }
   ];
 
   return (
@@ -253,62 +266,6 @@ export const PortfolioUnlocks: React.FC<PortfolioUnlocksProps> = ({ portfolioId 
 
       {activeTab === 'calendar' ? (
         renderCalendarView()
-      ) : activeTab === 'charts' ? (
-        <div className={styles.chartsView}>
-          <div className={styles.chartSection}>
-            <h2 className={styles.chartTitle}>Stacked Unlocks Over Time (by Asset)</h2>
-            <div className={styles.chartWrapper}>
-              <UnlocksStackedChart unlocks={sortedUnlocks} />
-            </div>
-          </div>
-          
-          <div className={styles.assetTable}>
-            <h2 className={styles.chartTitle}>Asset table</h2>
-            <div className={styles.tableHeader}>
-              <div className={styles.tableCell}>Asset</div>
-              <div className={styles.tableCell}>Type</div>
-            </div>
-            {sortedUnlocks.map(item => {
-              const status = getUnlockStatus(item);
-              
-              return (
-                <div key={item.asset_id} className={styles.tableRow} onClick={() => handleAssetClick(item.asset_id)}>
-                  <div className={styles.tableCell}>
-                    <div className={styles.assetNameCell}>
-                      {item.logo ? (
-                        <img 
-                          src={item.logo} 
-                          alt={item.asset_name} 
-                          className={styles.tableAssetLogo}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'https://via.placeholder.com/24?text=' + item.asset_name.charAt(0);
-                          }}
-                        />
-                      ) : (
-                        <div className={styles.tableAssetLogoPlaceholder}>
-                          {item.asset_name.charAt(0)}
-                        </div>
-                      )}
-                      {item.asset_name}
-                    </div>
-                  </div>
-                  <div className={styles.tableCell}>
-                    <div className={styles.unlockType}>
-                      <span className={`${styles.statusBadge} ${styles[status]}`}>
-                        {status === 'unlocking' ? 'Unlocking' : 
-                         status === 'unlocked' ? 'Unlocked' : 'Locked'}
-                      </span>
-                      <span className={styles.unlockTypeLabel}>
-                        {item.unlock?.unlock_type ? formatUnlockType(item.unlock.unlock_type) : 'Unknown'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       ) : (
         <div className={styles.unlocksList}>
         {sortedUnlocks.map((item) => {
