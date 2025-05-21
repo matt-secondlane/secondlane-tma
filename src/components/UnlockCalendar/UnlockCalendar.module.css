@@ -1,0 +1,447 @@
+.calendarContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 16px;
+  background-color: var(--tg-theme-secondary-bg-color);
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.calendarControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.navButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background-color: #5a5a5a;
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover {
+  background-color: #717171;
+  transform: translateY(-1px);
+}
+
+/* Styles for custom selector */
+.customSelect {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 160px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.selectArrow {
+  font-size: 10px;
+  margin-left: 8px;
+  color: #666;
+}
+
+.selectDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background-color: var(--tg-theme-bg-color);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow-y: auto;
+  max-height: 320px;
+  width: 180px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.selectOption {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.selectOption:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.selectedOption {
+  background-color: rgba(90, 90, 90, 0.1);
+  font-weight: 500;
+}
+
+/* Styles for scrollbar in dropdown list */
+.selectDropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.selectDropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.selectDropdown::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 4px;
+}
+
+.monthSelect {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px top 50%;
+  background-size: 10px auto;
+  padding-right: 24px;
+}
+
+.monthSelect option {
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
+.todayButton {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  background-color: #5a5a5a;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.todayButton:hover {
+  background-color: #717171;
+}
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 12px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8c8c8c;
+  padding: 8px 0;
+}
+
+.calendarGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day {
+  position: relative;
+  min-height: 46px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.currentMonth {
+  color: var(--tg-theme-text-color);
+}
+
+.otherMonth {
+  color: #b0b0b0;
+  opacity: 0.6;
+}
+
+.dayNumber {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.today {
+  background-color: rgba(90, 90, 90, 0.1);
+  border: 2px solid #5a5a5a;
+}
+
+.selected {
+  background-color: #5a5a5a !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.selected .unlockIndicator {
+  background-color: white;
+}
+
+.selected .unlockCount {
+  color: #5a5a5a;
+}
+
+.hasUnlocks {
+  font-weight: 600;
+}
+
+.unlockIndicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #5a5a5a;
+}
+
+.unlockCount {
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+}
+
+.selectedDayUnlocks {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 12px;
+}
+
+.selectedDayTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tg-theme-text-color);
+}
+
+.unlocksList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.unlockCard {
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 12px;
+  padding: 14px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.unlockCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.unlockHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-right: 120px;
+}
+
+.unlockAssetInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 120px);
+}
+
+.assetLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.assetIconPlaceholder {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #5a5a5a;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.assetName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.unlockBadges {
+  display: flex;
+  gap: 6px;
+}
+
+.cliffBadge, .tgeBadge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cliffBadge {
+  background-color: #6c5ce7;
+  color: white;
+}
+
+.tgeBadge {
+  background-color: #00b894;
+  color: white;
+}
+
+.unlockDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.unlockDetail {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.detailLabel {
+  color: var(--tg-theme-hint-color);
+}
+
+.detailValue {
+  font-weight: 500;
+}
+
+.noUnlocksSelected {
+  padding: 24px;
+  text-align: center;
+  color: var(--tg-theme-hint-color);
+}
+
+/* Calendar buttons styles */
+.calendarButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 0;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+}
+
+.calendarButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.calendarButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendarButton:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
+.calendarButton svg {
+  opacity: 0.7;
+}
+
+/* Медиа-запрос для мобильных устройств */
+@media (max-width: 480px) {
+  .calendarButtons {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .calendarButton {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .calendarButton svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .unlockHeader {
+    padding-right: 100px;
+  }
+  
+  .unlockAssetInfo {
+    max-width: calc(100% - 100px);
+  }
+} 

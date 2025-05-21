@@ -7,6 +7,7 @@ import { OrderbookItem } from '../../types/api';
 import styles from './DealsScreen.module.css';
 import { Loader } from '../../components/Loader';
 import { formatMoney } from '../../utils/money';
+import TabsComponent, { TabItem } from '../../components/TabsComponent/TabsComponent';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -15,7 +16,7 @@ export const DealsScreen = () => {
   const { isReady, webApp } = useTelegram();
   const [activeTab, setActiveTab] = useState<'all' | 'buy' | 'sell'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(1);
+  const pageRef = useRef(1);
   const [deals, setDeals] = useState<OrderbookItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +66,7 @@ export const DealsScreen = () => {
   useEffect(() => {
     if (isReady) {
       WebApp.ready();
-      setPage(1);
+      pageRef.current = 1;
       loadDeals(1);
     }
   }, [isReady, activeTab, searchQuery, loadDeals]);
@@ -78,11 +79,8 @@ export const DealsScreen = () => {
     
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore && !loadingRef.current && !loading) {
-        setPage(prevPage => {
-          const nextPage = prevPage + 1;
-          loadDeals(nextPage);
-          return nextPage;
-        });
+        pageRef.current += 1;
+        loadDeals(pageRef.current);
       }
     }, {
       rootMargin: '100px' // Preload before reaching end of list
@@ -91,17 +89,23 @@ export const DealsScreen = () => {
     observer.current.observe(node);
   }, [hasMore, loading, loadDeals]);
 
-  const handleTabChange = (tab: 'all' | 'buy' | 'sell') => {
+  const handleTabChange = (tabId: string) => {
     webApp?.HapticFeedback.impactOccurred('light');
-    setActiveTab(tab);
-    setPage(1);
+    setActiveTab(tabId as 'all' | 'buy' | 'sell');
+    pageRef.current = 1;
     setDeals([]);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setPage(1);
+    pageRef.current = 1;
   };
+
+  const tabs: TabItem[] = [
+    { id: 'all', label: 'All' },
+    { id: 'buy', label: 'Buy' },
+    { id: 'sell', label: 'Sell' }
+  ];
 
   return (
     <div className={styles.dealsScreen}>
@@ -118,26 +122,15 @@ export const DealsScreen = () => {
           />
         </div>
 
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === 'all' ? styles.active : ''}`}
-            onClick={() => handleTabChange('all')}
-          >
-            All
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'buy' ? styles.active : ''}`}
-            onClick={() => handleTabChange('buy')}
-          >
-            Buy
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'sell' ? styles.active : ''}`}
-            onClick={() => handleTabChange('sell')}
-          >
-            Sell
-          </button>
-        </div>
+        <TabsComponent 
+          tabs={tabs} 
+          activeTab={activeTab} 
+          onTabChange={handleTabChange} 
+          containerClassname={styles.tabsContainer} 
+          tabClassname={styles.tab} 
+          activeTabClassname={styles.active}
+        />
+
       </div>
 
       <div className={styles.content}>
